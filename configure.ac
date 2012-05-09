@@ -18,6 +18,10 @@ AC_DEFINE([PROGRAM_NAME], ["OSD Lyrics"], [The full name of the program to displ
 AC_PATH_X
 AC_CHECK_HEADERS([fcntl.h libintl.h limits.h locale.h stddef.h stdlib.h string.h sys/time.h unistd.h])
 
+# automake 1.12 seems to require this, but automake 1.11 doesn't recognize it
+m4_pattern_allow([AM_PROG_AR])
+AM_PROG_AR
+
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_CXX
@@ -59,7 +63,7 @@ AC_SUBST(OL_GUIDIR)
 
 # gprof support
 AC_ARG_WITH(gprof-support,
-[  --with-gprof-support=DIR   Include gmon.out file renaming support 
+[  --with-gprof-support=DIR   Include gmon.out file renaming support
   --without-gprof-support    Don't do gmon.out file renaming (default)],
 [ case "$withval" in
   yes)
@@ -128,8 +132,8 @@ AS_IF([test "x$enable_amarok1" != xno],
 
 # Checks for libraries.
 AC_CHECK_LIB([dl], [exp])
-PKG_CHECK_MODULES([GTK2], [gtk+-2.0 >= 2.20.0, 
-                          gthread-2.0, 
+PKG_CHECK_MODULES([GTK2], [gtk+-2.0 >= 2.20.0,
+                          gthread-2.0,
                           gmodule-export-2.0,
                           gio-2.0,
                           gio-unix-2.0])
@@ -137,7 +141,7 @@ PKG_CHECK_MODULES([X11], [x11])   dnl For XGrabKey
 PKG_CHECK_MODULES([DBUS_GLIB], [dbus-glib-1])
 PKG_CHECK_MODULES([CURL], [libcurl])
 PKG_CHECK_MODULES([NOTIFY], [libnotify])
-PKG_CHECK_EXISTS([libnotify >= 0.7], 
+PKG_CHECK_EXISTS([libnotify >= 0.7],
   AC_DEFINE(HAVE_LIBNOTIFY_0_7, 1, [Have libnotify >= 0.7]))
 
 PKG_CHECK_MODULES([SQLITE], [sqlite3 >= 3.3.0])
