@@ -27,6 +27,9 @@
 #include "ol_singleton.h"
 #include "config.h"
 #include "ol_debug.h"
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif
 
 const char *LOCK_FILENAME = "singleton.lock";
 
