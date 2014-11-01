@@ -13,6 +13,8 @@ check_PROGRAMS = \
         ol_lyric_source_test \
         $(NULL)
 
+AUTOMAKE_OPTIONS = subdir-objects
+
 AM_CPPFLAGS = \
         -DDATADIR='"$(datadir)"' \
         -DICONDIR='"$(OL_ICONDIR)"' \
