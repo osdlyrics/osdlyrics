@@ -42,8 +42,7 @@ static const OlColor DEFAULT_ACTIVE_COLOR = {0.89,0.81,0};
 static const OlColor DEFAULT_INACTIVE_COLOR = {0.98,0.92,0.84};
 static const OlColor DEFAULT_BG_COLOR = {0,0,0};
 static const char *DEFAULT_FONT_NAME = "serif 13";
-static const double DEFAULT_ALIGNMENT = 0.5;
-static const gint DEFAULT_LINE_MARGIN = 1;
+static const gint DEFAULT_LINE_MARGIN = 7;
 static const gint DEFAULT_PADDING_X = 10;
 static const gint DEFAULT_PADDING_Y = 5;
 static const gint DEFAULT_CORNER_RADIUS = 10;
@@ -62,7 +61,6 @@ struct __OlScrollWindowPrivate
   OlColor inactive_color;          /*Color of non-playing lyric*/
   OlColor bg_color;
   gchar *font_name;                /*Font string, including family, size, and style*/
-  double alignment;                /*Lyric alignment, 0.0 is left, 1.0 is right*/ 
   gint line_margin;                /*Margin between two lines*/
   gint padding_x;
   gint padding_y;
@@ -153,7 +151,6 @@ ol_scroll_window_init (OlScrollWindow *self)
   priv->inactive_color = DEFAULT_INACTIVE_COLOR;
   priv->bg_color = DEFAULT_BG_COLOR;
   priv->font_name = g_strdup (DEFAULT_FONT_NAME);
-  priv->alignment = DEFAULT_ALIGNMENT;
   priv->line_margin = DEFAULT_LINE_MARGIN;
   priv->padding_x = DEFAULT_PADDING_X;
   priv->padding_y = DEFAULT_PADDING_Y;
@@ -232,7 +229,7 @@ ol_scroll_window_class_init (OlScrollWindowClass *klass)
 
 void
 ol_scroll_window_add_toolbar (OlScrollWindow *scroll,
-                              GtkWidget	*widget)
+                              GtkWidget *widget)
 {
   ol_assert (OL_IS_SCROLL_WINDOW (scroll));
   OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (scroll);
@@ -486,6 +483,9 @@ _paint_lyrics (OlScrollWindow *scroll, cairo_t *cr)
   
   /* set the font */
   PangoLayout *layout = _get_pango (scroll, cr);
+  pango_layout_set_alignment (layout, PANGO_ALIGN_LEFT);
+  pango_layout_set_width (layout, (width - priv->padding_x*2) * PANGO_SCALE);
+  pango_layout_set_indent (layout, -20 * PANGO_SCALE);
   /* paint the lyrics*/
   cairo_save (cr);
   cairo_new_path (cr);
@@ -537,6 +537,13 @@ _paint_lyrics (OlScrollWindow *scroll, cairo_t *cr)
       pango_cairo_update_layout (cr, layout);
       pango_cairo_show_layout (cr, layout);
       cairo_restore (cr);
+
+      if (pango_layout_is_wrapped (layout)) {
+        // There is more than one line, offset ypos according to the number of
+        // additional lines
+        ypos += (pango_layout_get_line_count (layout) - 1)
+                * ol_scroll_window_get_font_height (scroll);
+      }
     }
   }
   g_object_unref (layout);

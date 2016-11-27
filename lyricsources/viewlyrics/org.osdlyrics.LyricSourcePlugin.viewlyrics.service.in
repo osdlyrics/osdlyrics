@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.osdlyrics.LyricSourcePlugin.viewlyrics
+Exec=@PYTHON@ @pkglibdir@/lyricsources/viewlyrics/viewlyrics.py

@@ -610,7 +610,9 @@ _initialize (int argc, char **argv)
   bind_textdomain_codeset(PACKAGE, "UTF-8");
 #endif
 
+#ifndef GLIB_VERSION_2_32
   g_thread_init(NULL);
+#endif
   gtk_init (&argc, &argv);
   _parse_cmd_args (&argc, &argv);
   g_set_prgname (_(PROGRAM_NAME));

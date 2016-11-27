@@ -16,12 +16,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
-#/
+#
 
 import re
 import httplib
-import urllib
-import urlparse
+# import urlparse
 import gettext
 import HTMLParser
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
@@ -99,7 +98,7 @@ class XiamiSource(BaseLyricSourcePlugin):
                 not isinstance(downloadinfo, unicode):
             raise TypeError('Expect the downloadinfo as a string of url, but got type ',
                             type(downloadinfo))
-        parts = urlparse.urlparse(downloadinfo)
+        # parts = urlparse.urlparse(downloadinfo)
         status, content = http_download(downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:

@@ -3,7 +3,7 @@
 # Copyright (C) 2011  Tiger Soldier
 #
 # This file is part of OSD Lyrics.
-# 
+#
 # OSD Lyrics is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -15,18 +15,21 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>. 
-#/
+# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+import logging
 
 import dbus
 import dbus.service
 import dbus.types
-import osdlyrics
-import osdlyrics.dbusext
 
-from dbus.mainloop.glib import DBusGMainLoop
-from osdlyrics.player_proxy import *
+import osdlyrics
 from osdlyrics.metadata import Metadata
+from osdlyrics.player_proxy import (
+    BasePlayer, BasePlayerProxy, PlayerInfo, CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
+    CAPS_PREV, CAPS_SEEK, REPEAT_ALL, REPEAT_NONE, REPEAT_TRACK, STATUS_PAUSED,
+    STATUS_PLAYING, STATUS_STOPPED)
 
 PROXY_NAME = 'Mpris2'
 BUS_NAME = osdlyrics.PLAYER_PROXY_BUS_NAME_PREFIX + PROXY_NAME
@@ -45,7 +48,7 @@ def player_info_from_name(name):
 class ProxyObject(BasePlayerProxy):
     """ The DBus object for MPRIS2 player proxy
     """
-    
+
     def __init__(self):
         """
         """
@@ -56,7 +59,7 @@ class ProxyObject(BasePlayerProxy):
 
         The bus names in names with prefix of MPRIS2_PREFIX will be treated as MPRIS2
         players. The suffix of these names will be treated as player name
-        
+
         Arguments:
         - `names`: list of bus names
         """
@@ -124,7 +127,7 @@ class Mpris2Player(BasePlayer):
                      'Shuffle': 'shuffle_changed',
                      'Metadata': 'track_changed',
                      }
-        status_props = ['PlaybackStatus', 'LoopStatus', 'Shuffle']
+        # status_props = ['PlaybackStatus', 'LoopStatus', 'Shuffle']
         logging.debug('Status changed: %s' % changed)
         for caps in caps_props:
             if caps in changed:
@@ -140,7 +143,7 @@ class Mpris2Player(BasePlayer):
     @property
     def object_path(self):
         return self._object_path
-            
+
     @property
     def connected(self):
         return self._connected
@@ -156,10 +159,10 @@ class Mpris2Player(BasePlayer):
 
     def stop(self):
         self._player.Stop()
-    
+
     def play(self):
         self._player.Play()
-    
+
     def set_repeat(self, repeat):
         try:
             if repeat == REPEAT_TRACK:
@@ -177,7 +180,7 @@ class Mpris2Player(BasePlayer):
                          'Stopped': STATUS_STOPPED}
         try:
             return playback_dict[self._player_prop.Get(MPRIS2_IFACE, 'PlaybackStatus')]
-        except Exception, e:
+        except Exception as e:
             logging.error('Failed to get status: %s' % e)
             return STATUS_PLAYING
 
@@ -215,14 +218,14 @@ class Mpris2Player(BasePlayer):
 
     def set_volume(self, volume):
         self._player_prop.Set(MPRIS2_IFACE, 'Volume', volume)
-    
+
     def get_volume(self):
         return self._player_prop.Get(MPRIS2_IFACE, 'Volume')
-    
+
     def set_position(self, time_in_mili):
         track_id = self._player_prop.Get(MPRIS2_IFACE, 'Metadata')['mpris:trackid']
         self._player.SetPosition(track_id, time_in_mili * 1000)
-    
+
     def get_position(self):
         return self._player_prop.Get(MPRIS2_IFACE, 'Position') / 1000
 

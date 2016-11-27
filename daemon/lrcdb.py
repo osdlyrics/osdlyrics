@@ -3,7 +3,7 @@
 # Copyright (C) 2011  Tiger Soldier
 #
 # This file is part of OSD Lyrics.
-# 
+#
 # OSD Lyrics is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -15,19 +15,17 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>. 
-#/
+# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 import logging
 import sqlite3
 import os.path
-import config
 import urllib
 import osdlyrics.utils
 from osdlyrics.utils import ensure_unicode, ensure_utf8
 from osdlyrics.consts import METADATA_URI, METADATA_TITLE, METADATA_ALBUM, \
     METADATA_ARTIST, METADATA_TRACKNUM
-from osdlyrics.metadata import Metadata
 
 __all__ = (
     'LrcDb',
@@ -204,6 +202,7 @@ UPDATE %s
 def test():
     """
     >>> import dbus
+    >>> from osdlyrics.metadata import Metadata
     >>> db = LrcDb('/tmp/asdf')
     >>> db.assign(Metadata.from_dict({'title': 'Tiger',
     ...                               'artist': 'Soldier',

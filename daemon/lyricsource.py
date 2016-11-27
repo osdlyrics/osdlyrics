@@ -3,7 +3,7 @@
 # Copyright (C) 2011  Tiger Soldier
 #
 # This file is part of OSD Lyrics.
-# 
+#
 # OSD Lyrics is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -15,20 +15,19 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>. 
-#/
+# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-import logging
 import dbus
-import osdlyrics
-import osdlyrics.dbusext
-import osdlyrics.config
+import logging
 
-__all__ = ('LyricSource',)
+import osdlyrics
+import osdlyrics.config
 
 STATUS_SUCCESS = 0
 STATUS_CANCELLED = 1
 STATUS_FAILURE = 2
+
 
 def validateticket(component):
     def decorator(func):
@@ -43,7 +42,7 @@ def validateticket(component):
             func(self, source_id, ticket, *args, **kwargs)
         return dec_func
     return decorator
-            
+
 
 class LyricSource(dbus.service.Object):
     """ Implement org.osdlyrics.LyricSource interface
@@ -65,12 +64,12 @@ class LyricSource(dbus.service.Object):
         for bus_name in self.connection.list_names():
             try:
                 self._connect_source(bus_name, False)
-            except Exception, e:
+            except Exception as e:
                 logging.warning('Fail to connect source %s: %s' % (bus_name, e))
         for bus_name in self.connection.list_activatable_names():
             try:
                 self._connect_source(bus_name, True)
-            except Exception, e:
+            except Exception as e:
                 logging.warning('Fail to connect source %s: %s' % (bus_name, e))
 
     def _connect_source(self, bus_name, activate):
@@ -83,7 +82,7 @@ class LyricSource(dbus.service.Object):
         if activate:
             try:
                 self.connection.activate_name_owner(bus_name)
-            except Exception, e:
+            except Exception as e:
                 logging.warning('Cannot activate lyric source %s: %s' % (bus_name, e))
                 return
         path = osdlyrics.LYRIC_SOURCE_PLUGIN_OBJECT_PATH_PREFIX + source_id

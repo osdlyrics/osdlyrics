@@ -16,11 +16,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
-#/
+#
+
+import logging
+import re
 
 import dbus
+
 import utils
-import re
 
 class Metadata(object):
     """

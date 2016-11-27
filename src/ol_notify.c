@@ -106,7 +106,7 @@ ol_notify_music_change (OlMetadata *info, const char *icon)
   const char *artist = ol_metadata_get_artist (info);
   if (title == NULL && artist == NULL)
     return;
-  if (title == NULL)
+  if (title == NULL || !title[0])
     title = _(UNKNOWN_TITLE);
   if (artist == NULL)
     artist = _(UNKNOWN_ARTIST);

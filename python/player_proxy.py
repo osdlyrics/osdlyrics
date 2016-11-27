@@ -16,21 +16,20 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
-#/
+#
+
 import logging
+
 import dbus
 import dbus.service
-import app
-import dbusext
-import utils
-import timer
-import errors
 
-from consts import \
-    PLAYER_PROXY_OBJECT_PATH_PREFIX, \
-    PLAYER_PROXY_INTERFACE, \
-    MPRIS1_INTERFACE, \
-    MPRIS2_PLAYER_INTERFACE
+from app import App
+from consts import (MPRIS2_PLAYER_INTERFACE, PLAYER_PROXY_INTERFACE,
+                    PLAYER_PROXY_OBJECT_PATH_PREFIX)
+from dbusext.service import Object as DBusObject, property as dbus_property
+import errors
+import timer
+import utils
 
 class ConnectPlayerError(errors.BaseError):
     """
@@ -50,7 +49,7 @@ class BasePlayerProxy(dbus.service.Object):
         - `name`: The suffix of the bus name. The full bus name is
           `org.osdlyrics.PlayerProxy.` + name
         """
-        self._app = app.App('PlayerProxy.' + name)
+        self._app = App('PlayerProxy.' + name)
         super(BasePlayerProxy, self).__init__(
             conn=self._app.connection,
             object_path=PLAYER_PROXY_OBJECT_PATH_PREFIX + name)
@@ -205,7 +204,8 @@ REPEAT_NONE = 0
 REPEAT_TRACK = 1
 REPEAT_ALL = 2
 
-class BasePlayer(dbusext.Object):
+
+class BasePlayer(DBusObject):
     """ Base class of a player
 
     Derived classes MUST reimplement following methods:
@@ -531,9 +531,9 @@ class BasePlayer(dbusext.Object):
     def OpenUri(self, uri):
         self.open_uri(uri)
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='s',
-                      writeable=False)
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='s',
+                   writeable=False)
     def PlaybackStatus(self):
         status_map = {
             STATUS_PLAYING: 'Playing',
@@ -546,8 +546,8 @@ class BasePlayer(dbusext.Object):
     def PlaybackStatus(self, status):
         self.__status = status
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='s')
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='s')
     def LoopStatus(self):
         status_map = {
             REPEAT_NONE: 'None',
@@ -571,8 +571,8 @@ class BasePlayer(dbusext.Object):
             raise ValueError('Unknown loop status ' + loop_status)
         self.set_repeat(status_map[loop_status])
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='d')
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='d')
     def Rate(self):
         return 1.0
 
@@ -580,8 +580,8 @@ class BasePlayer(dbusext.Object):
     def Rate(self, rate):
         pass
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='b')
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='b')
     def Shuffle(self):
         return self._get_cached_shuffle()
 
@@ -593,9 +593,9 @@ class BasePlayer(dbusext.Object):
     def Shuffle(self, shuffle):
         self.set_shuffle(shuffle)
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='a{sv}',
-                      writeable=False)
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='a{sv}',
+                   writeable=False)
     def Metadata(self):
         return self._get_cached_metadata()
 
@@ -603,8 +603,8 @@ class BasePlayer(dbusext.Object):
     def Metadata(self, metadata):
         self.__metadata = metadata
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='d')
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='d')
     def Volume(self):
         return self.get_volume()
 
@@ -616,24 +616,24 @@ class BasePlayer(dbusext.Object):
             volume = 1.0
         self.set_volume(volume)
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='x')
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='x')
     def Position(self):
         return self._get_cached_position()
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='d')
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='d')
     def MinimumRate(self):
         return 1.0
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='d')
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='d')
     def MaximumRate(self):
         return 1.0
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='b',
-                      writeable=False)
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='b',
+                   writeable=False)
     def CanGoNext(self):
         return CAPS_NEXT in self._get_cached_caps()
 
@@ -641,9 +641,9 @@ class BasePlayer(dbusext.Object):
     def CanGoNext(self, value):
         pass
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='b',
-                      writeable=False)
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='b',
+                   writeable=False)
     def CanGoPrevious(self):
         return CAPS_PREV in self._get_cached_caps()
 
@@ -651,9 +651,9 @@ class BasePlayer(dbusext.Object):
     def CanGoPrevious(self, value):
         pass
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='b',
-                      writeable=False)
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='b',
+                   writeable=False)
     def CanPlay(self):
         return CAPS_PLAY in self._get_cached_caps()
 
@@ -661,9 +661,9 @@ class BasePlayer(dbusext.Object):
     def CanPlay(self, value):
         pass
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='b',
-                      writeable=False)
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='b',
+                   writeable=False)
     def CanPause(self):
         return CAPS_PAUSE in self._get_cached_caps()
 
@@ -671,9 +671,9 @@ class BasePlayer(dbusext.Object):
     def CanPause(self, value):
         pass
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='b',
-                      writeable=False)
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='b',
+                   writeable=False)
     def CanSeek(self):
         return CAPS_SEEK in self._get_cached_caps()
 
@@ -681,8 +681,8 @@ class BasePlayer(dbusext.Object):
     def CanSeek(self, value):
         pass
 
-    @dbusext.property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
-                      type_signature='b')
+    @dbus_property(dbus_interface=MPRIS2_PLAYER_INTERFACE,
+                   type_signature='b')
     def CanControl(self):
         return True
 
@@ -691,11 +691,13 @@ class BasePlayer(dbusext.Object):
     def Seeked(self, position):
         pass
 
-    def track_changed(self):
+    def track_changed(self, metadata=None):
         self.__current_trackid += 1
         if self.__timer is not None:
-            self.__timer.time = 0
-        self.Metadata = self._make_metadata(self.get_metadata())
+            self.__timer.time = self.get_position()
+        if metadata is None:
+            metadata = self.get_metadata()
+        self.Metadata = self._make_metadata(metadata)
 
     def status_changed(self):
         """

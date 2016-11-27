@@ -3,7 +3,7 @@
 # Copyright (C) 2012  Tiger Soldier
 #
 # This file is part of OSD Lyrics.
-# 
+#
 # OSD Lyrics is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -15,13 +15,18 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>. 
-#/
+# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+from contextlib import contextmanager
+import logging
 
 import dbus
-import osdlyrics
 
-from osdlyrics.player_proxy import *
+from osdlyrics.player_proxy import (
+    BasePlayer, BasePlayerProxy, PlayerInfo, CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
+    CAPS_PREV, CAPS_SEEK, REPEAT_ALL, REPEAT_NONE, REPEAT_TRACK, STATUS_PAUSED,
+    STATUS_PLAYING, STATUS_STOPPED)
 from osdlyrics.metadata import Metadata
 
 PROXY_NAME = 'Mpris1'
@@ -44,13 +49,22 @@ MPRIS1_CAPS_MAP = {
     1 << 4: CAPS_SEEK,
     }
 
+# The constants actually have the same values but that is the legacy of MPRIS1.
+MPRIS1_STATUS_MAP = {
+    0: STATUS_PLAYING,
+    1: STATUS_PAUSED,
+    2: STATUS_STOPPED,
+}
+
+
 def player_info_from_name(name):
     return PlayerInfo(name, icon=name)
+
 
 class ProxyObject(BasePlayerProxy):
     """ The DBus object for MPRIS1 player proxy
     """
-    
+
     def __init__(self):
         """
         """
@@ -61,7 +75,7 @@ class ProxyObject(BasePlayerProxy):
                 if name.startswith(MPRIS1_PREFIX) and not name.startswith(MPRIS1_PREFIX + 'MediaPlayer2.')]
 
     def do_list_active_players(self):
-        return self._get_player_from_bus_names(self.connection.list_names());
+        return self._get_player_from_bus_names(self.connection.list_names())
 
     def do_list_supported_players(self):
         return self.do_list_activatable_players()
@@ -74,12 +88,15 @@ class ProxyObject(BasePlayerProxy):
         player = Mpris1Player(self, player_name)
         return player
 
+
 class Mpris1Player(BasePlayer):
     def __init__(self, proxy, player_name):
         super(Mpris1Player, self).__init__(proxy,
                                            player_name)
-        self._signals = [];
+        self._signals = []
         self._name_watch = None
+        self._status_tuple = None, None, None, None
+        self._use_cached_status = False
         try:
             self._player = dbus.Interface(self.connection.get_object(MPRIS1_PREFIX + player_name,
                                                                      '/Player'),
@@ -93,8 +110,8 @@ class Mpris1Player(BasePlayer):
                                                                 self._caps_change_cb))
             self._name_watch = self.connection.watch_name_owner(mpris1_service_name,
                                                                 self._name_lost)
-        except Exception, e:
-            print 'Fail to connect to mpris1 player %s: %s' % (player_name, e)
+        except Exception as e:
+            logging.error('Fail to connect to mpris1 player %s: %s', player_name, e)
             self.disconnect()
 
     def _name_lost(self, name):
@@ -123,10 +140,10 @@ class Mpris1Player(BasePlayer):
 
     def stop(self):
         self._player.Stop()
-    
+
     def play(self):
         self._player.Play()
-    
+
     def set_repeat(self, repeat):
         if repeat in [REPEAT_TRACK, REPEAT_ALL]:
             self._player.Repeat(True)
@@ -134,14 +151,15 @@ class Mpris1Player(BasePlayer):
             self._player.Repeat(False)
 
     def get_status(self):
-        status, shuffle, repeat, loop = self._player.GetStatus()
-        if isinstance(status, int) and status >= 0 and status < 3:
-            return [STATUS_PLAYING, STATUS_PAUSED, STATUS_STOPPED][status]
-        else:
-            return STATUS_STOPPED
+        status_tuple = (self._status_tuple if self._use_cached_status else
+                        self._player.GetStatus())
+        status, shuffle, repeat, loop = status_tuple
+        return MPRIS1_STATUS_MAP.get(status, STATUS_STOPPED)
 
     def get_repeat(self):
-        status, shuffle, repeat, loop = self._player.GetStatus()
+        status_tuple = (self._status_tuple if self._use_cached_status else
+                        self._player.GetStatus())
+        status, shuffle, repeat, loop = status_tuple
         if repeat:
             return REPEAT_TRACK
         if loop:
@@ -149,12 +167,14 @@ class Mpris1Player(BasePlayer):
         return REPEAT_NONE
 
     def get_shuffle(self):
-        status, shuffle, repeat, loop = self._player.GetStatus()
+        status_tuple = (self._status_tuple if self._use_cached_status else
+                        self._player.GetStatus())
+        status, shuffle, repeat, loop = status_tuple
         return True if shuffle == 1 else False
 
     def get_metadata(self):
         mt = self._player.GetMetadata()
-        print mt
+        logging.debug(repr(mt))
         return Metadata.from_dict(mt)
 
     def get_caps(self):
@@ -172,7 +192,7 @@ class Mpris1Player(BasePlayer):
         if volume > 100:
             volume = 100
         self._player.VolumeSet(volume)
-    
+
     def get_volume(self):
         volume = float(self._player.VolumeGet()) / 100
         if volume > 1.0:
@@ -188,19 +208,37 @@ class Mpris1Player(BasePlayer):
         return self._player.PositionGet()
 
     def _track_change_cb(self, metadata):
-        self.track_changed()
+        metadata = Metadata.from_dict(metadata)
+        self.track_changed(metadata)
 
-    def _status_change_cb(self, status):
-        self.status_changed()
-        self.repeat_changed()
-        self.shuffle_changed()
+    def _status_change_cb(self, status_tuple):
+        status, shuffle, repeat, loop = status_tuple
+        old_status, old_shuffle, old_repeat, old_loop = self._status_tuple
+        self._status_tuple = status_tuple
+        with self._reuse_cached_status_tuple():
+            if status != old_status:
+                self.status_changed()
+            if repeat != old_repeat or loop != old_loop:
+                self.repeat_changed()
+            if shuffle != old_shuffle:
+                self.shuffle_changed()
 
     def _caps_change_cb(self, caps):
         self.caps_changed()
 
+    @contextmanager
+    def _reuse_cached_status_tuple(self):
+        try:
+            self._use_cached_status = True
+            yield
+        finally:
+            self._use_cached_status = False
+
+
 def run():
     mpris1 = ProxyObject()
     mpris1.run()
+
 
 if __name__ == '__main__':
     run()

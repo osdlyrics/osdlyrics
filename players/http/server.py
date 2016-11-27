@@ -3,7 +3,7 @@
 # Copyright (C) 2011  Tiger Soldier
 #
 # This file is part of OSD Lyrics.
-# 
+#
 # OSD Lyrics is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -15,25 +15,21 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>. 
-#/
+# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 import BaseHTTPServer
-import uuid
 import json
+import logging
 import urlparse
-from validator import validate_params, param_str, param_enum, param_set, param_int
-from error import *
-from osdlyrics.player_proxy import \
-    STATUS_PLAYING, \
-    STATUS_PAUSED, \
-    STATUS_STOPPED, \
-    CAPS_NEXT, \
-    CAPS_PREV, \
-    CAPS_PAUSE, \
-    CAPS_PLAY, \
-    CAPS_SEEK
+
 from osdlyrics.metadata import Metadata
+from osdlyrics.player_proxy import (CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
+    CAPS_PREV, CAPS_SEEK, STATUS_PAUSED, STATUS_PLAYING, STATUS_STOPPED)
+
+from error import BadRequestError, HttpError, NotFoundError
+from validator import (param_enum, param_int, param_set, param_str,
+                       validate_params)
 
 PARAM_STATUS = param_enum({'playing': STATUS_PLAYING,
                            'paused': STATUS_PAUSED,
@@ -85,7 +81,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             try:
                 content = getattr(self, 'do_' + cmd)(params)
                 self._send_content(content)
-            except HttpError, e:
+            except HttpError as e:
                 self._send_error(e)
         else:
             self._send_error(NotFoundError('Invalid request: %s' % cmd))
@@ -99,7 +95,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
                       'caps': PARAM_CAPS,
                       })
     def do_connect(self, params):
-        print 'caps: %s' % params['caps']
+        logging.debug('caps: %s', params['caps'])
         return json.dumps({'id': self.server.player_proxy.add_player(params['name'],
                                                                      params['caps']),
                            })
@@ -151,8 +147,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def get_player(self, name):
         try:
             return self.server.player_proxy.get_player(name)
-        except Exception, e:
-            print e
+        except:
             raise BadRequestError('Invalid player id: %s' % name)
         
 

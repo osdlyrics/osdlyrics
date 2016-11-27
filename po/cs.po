@@ -1,0 +1,676 @@
+#
+# Czech translation for OSD lyrics
+# This file is distributed under the same license as the osdlyrics package.
+# Ondřej Svoboda <ondrej@svobodasoft.cz>, 2015.
+#
+msgid ""
+msgstr ""
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-12-12 03:10+0000\n"
+"Last-Translator: Ondřej Svoboda <ondrej@svobodasoft.cz>\n"
+"Language: cs\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n>=2 && n<=4 ? 1 : 2;\n"
+
+#: ../src/ol_menu.c:126
+msgid "LRC files"
+msgstr "Soubory *.lrc"
+
+#: ../src/ol_menu.c:132
+msgid "Choose LRC file to assign"
+msgstr "Zvolte soubor s textem (*.lrc)"
+
+#: ../src/ol_main.c:59
+msgid ""
+"The level of debug messages to log, can be 'none', 'error', 'debug', or "
+"'info'"
+msgstr ""
+
+#: ../src/ol_main.c:61
+msgid "Show version information"
+msgstr ""
+
+#: ../src/ol_main.c:253
+#, c-format
+msgid "Searching lyrics from %s"
+msgstr "Hledá se text na %s…"
+
+#: ../src/ol_main.c:238
+msgid "Lyrics not found"
+msgstr "Text se nenašel"
+
+#: ../src/ol_main.c:192 ../src/ol_search_dialog.c:239
+msgid "Fail to download lyric"
+msgstr "Nepodařilo se stáhnout text"
+
+#: ../src/ol_main.c:209
+msgid "Downloading lyric"
+msgstr "Stahuje se text"
+
+#: ../src/ol_main.c:471
+#, c-format
+msgid "No supported player is running, exit.\n"
+msgstr ""
+
+#: ../src/ol_main.c:597
+msgid ""
+"debug level should be one of ``none'', ``error'', ``debug'', or ``info''"
+msgstr ""
+
+#: ../src/ol_main.c:645
+msgid "Another OSD Lyrics is running, exit."
+msgstr ""
+
+#: ../src/ol_trayicon.c:36 ../src/ol_notify.c:27
+msgid "Unknown title"
+msgstr "Neznámý název"
+
+#: ../src/ol_trayicon.c:37 ../src/ol_notify.c:28
+msgid "Unknown artist"
+msgstr "Neznámý autor"
+
+#: ../src/ol_trayicon.c:73 ../data/osdlyrics.desktop.in.h:1
+msgid "OSD Lyrics"
+msgstr ""
+
+#: ../src/ol_option.c:1598
+msgid "Choose on startup"
+msgstr "vybírat při spuštění"
+
+# This is used to mean a "custom command" but also "custom (colour) theme".
+#. gtk_list_store_append (liststore, &iter);
+#. gtk_list_store_set (liststore, &iter,
+#. 0, "Customize",
+#. 1, "",
+#. -1);
+#: ../src/ol_option.c:1620 ../data/dialogs.glade.h:7
+msgid "Customize"
+msgstr "vlastní"
+# msgstr "vlastní příkaz"
+
+#: ../src/ol_option.c:1682
+msgid "Select a folder"
+msgstr "Zvolte adresář s texty"
+
+#: ../src/ol_lyric_candidate_list.c:47
+msgid "Title"
+msgstr "Název"
+
+#: ../src/ol_lyric_candidate_list.c:52
+msgid "Artist"
+msgstr "Autor"
+
+#: ../src/ol_lyric_candidate_list.c:57
+msgid "Album"
+msgstr "Album"
+
+#: ../src/ol_search_dialog.c:29
+#, c-format
+msgid "Searching lyrics from %s..."
+msgstr "Hledají se texty na %s…"
+
+#: ../src/ol_search_dialog.c:30
+msgid "Ooops, no lyric found :("
+msgstr "Nenašel se žádný text."
+
+# TODO: is ngettext() used?
+#: ../src/ol_search_dialog.c:31
+#, c-format
+msgid "%d lyrics found :)"
+msgstr "Našlo se %d textů."
+
+#: ../src/ol_search_dialog.c:32
+msgid "Fail to search. Please check network connection"
+msgstr "Stahování se nedaří, zkontrolujte síťové připojení"
+
+#: ../src/ol_search_dialog.c:33
+msgid "Cancelled"
+msgstr "Zrušeno"
+
+#: ../src/ol_search_dialog.c:96
+msgid "Downloading..."
+msgstr "Stahuje se…"
+
+#: ../src/ol_search_dialog.c:228
+msgid "Download complete, but fail to assign to the track"
+msgstr "Staženo, ale nepodařilo se text přiřadit ke skladbě"
+
+#: ../src/ol_search_dialog.c:232
+msgid "Download complete"
+msgstr "Staženo"
+
+#: ../src/ol_player_chooser.c:247
+msgid "Supported players"
+msgstr "Podporované přehrávače"
+
+#: ../src/ol_player_chooser.c:248
+msgid "All players"
+msgstr "Všechny přehrávače"
+
+#: ../src/ol_player_chooser.c:252 ../src/ol_player_chooser.c:324
+msgid "Choose a player to launch"
+msgstr "Vyberte, který přehrávač spustit"
+
+#: ../src/ol_player_chooser.c:268
+msgid "Use command:"
+msgstr "Příkaz pro přehrávač:"
+
+#: ../src/ol_player_chooser.c:273
+msgid "Launch"
+msgstr "Spustit"
+
+#: ../src/ol_player_chooser.c:286
+msgid "Remember my choice"
+msgstr "Zapamatovat mou volbu"
+
+#: ../src/ol_player_chooser.c:438
+#, c-format
+msgid "Failed to launch %s"
+msgstr "Nepodařilo se spustit %s"
+
+#: ../src/ol_player_chooser.c:448
+#, c-format
+msgid "Launching %s"
+msgstr "Spouštím %s"
+
+#: ../src/ol_player_chooser.c:450
+#, c-format
+msgid ""
+"OSD Lyrics is trying to launch and connect to %s. Please wait for a second."
+msgstr "Pokouším se spustit %s a připojit se k němu. Počkejte prosím chvilku."
+
+#: ../src/ol_player_chooser.c:560
+msgid "There is no supported player running"
+msgstr "Momentálně neběží žádný z podporovaných přehrávačů."
+
+#: ../src/ol_player_chooser.c:561
+msgid "Please choose a player below to launch"
+msgstr "Vyberte prosím, který spustit."
+
+#: ../src/ol_player_chooser.c:565
+#, c-format
+msgid "Failed to connect to %s"
+msgstr ""
+
+#: ../src/ol_player_chooser.c:567
+#, c-format
+msgid ""
+"%s is not supported by OSD Lyrics, or not running. Please launch another "
+"player"
+msgstr ""
+
+#: ../src/ol_app_info.c:179 ../src/ol_app_info.c:189
+msgid "Unnamed"
+msgstr ""
+
+#: ../src/ol_scroll_window.c:51
+msgid ""
+"Drag to move the window\n"
+"Hold CTRL to seek"
+msgstr ""
+
+#: ../src/ol_scroll_window.c:52
+msgid "Drag to move the window"
+msgstr "Okno můžete posouvat, když ho chytíte"
+
+#: ../data/dialogs.glade.h:60
+#, no-c-format
+msgid ""
+"  %t - Title\n"
+"  %p - Artist\n"
+"  %a - Album\n"
+"  %n - Track number\n"
+"  %f - File name (without extension)"
+msgstr ""
+"  %t - název\n"
+"  %p - autor\n"
+"  %a - album\n"
+"  %n - číslo stopy\n"
+"  %f - název souboru (bez přípony)"
+
+#: ../data/dialogs.glade.h:110
+#, no-c-format
+msgid "%a - Album"
+msgstr "%a - album"
+
+#: ../data/dialogs.glade.h:116
+#, no-c-format
+msgid "%f - Filename"
+msgstr "%f - název souboru"
+
+#: ../data/dialogs.glade.h:113
+#, no-c-format
+msgid "%n - Track number"
+msgstr "%n - číslo stopy"
+
+#: ../data/dialogs.glade.h:107
+#, no-c-format
+msgid "%p - Artist"
+msgstr "%p - autor"
+
+#: ../data/dialogs.glade.h:104
+#, no-c-format
+msgid "%t - Title"
+msgstr "%t - název"
+
+#: ../data/dialogs.glade.h:54
+msgid "<b>Background</b>"
+msgstr "<b>Pozadí</b>"
+
+#: ../data/dialogs.glade.h:70
+msgid "<b>Download</b>"
+msgstr "<b>Stahování</b>"
+
+#: ../data/dialogs.glade.h:36
+msgid "<b>Lyric _Alignment</b>"
+msgstr "<b>_Zarovnání řádků (vodorovné)</b>"
+
+#: ../data/dialogs.glade.h:44
+msgid "<b>Lyric _Color</b>"
+msgstr "<b>Barva _textu</b>"
+
+#: ../data/dialogs.glade.h:49
+msgid "<b>Lyrics</b>"
+msgstr "<b>Text</b>"
+
+#: ../data/dialogs.glade.h:80
+msgid "<b>Proxy</b>"
+msgstr ""
+
+#: ../data/dialogs.glade.h:65
+msgid "<b>_Filename</b>"
+msgstr "<b>_Názvy souborů s texty</b>"
+
+#: ../data/dialogs.glade.h:58
+msgid "<b>_Path</b>"
+msgstr "<b>_Cesty</b>"
+
+#: ../data/dialogs.glade.h:57
+#, no-c-format
+msgid "A single \"%\" means the directory where the playing music is."
+msgstr "Samotné % znamená adresář, v němž je přehrávaná skladba."
+
+#: ../data/dialogs.glade.h:46
+msgid "Ac_tive color:"
+msgstr "Barva _aktuálního řádku:"
+
+#: ../data/dialogs.glade.h:39
+msgid "Acti_ve lyrics:"
+msgstr "Pře_hraný:"
+
+#: ../data/dialogs.glade.h:97
+msgid "Adjust lyric delay by +0.2 s"
+msgstr "Zpozdit text o 0,2 s"
+
+#: ../data/dialogs.glade.h:95
+msgid "Adjust lyrics delay by -0.2 s"
+msgstr "Snížit posun textu oproti skladbě o 0,2 s"
+
+#: ../data/dialogs.glade.h:11
+msgid "Always"
+msgstr "neustále"
+
+#: ../data/dialogs.glade.h:2
+msgid ""
+"An OSD lyric show compatible with various media players and supports lyrics "
+"downloading.\n"
+msgstr ""
+"Karaoke v pokoji. Program spolupracuje s mnoha přehrávači a umí stahovat "
+"texty z několika serverů.\n"
+
+#: ../data/dialogs.glade.h:91
+msgid "Assign local LRC file to current music"
+msgstr "Přiřadit aktuální skladbě vlastní soubor *.lrc z disku"
+
+#: ../data/dialogs.glade.h:72
+msgid "Au_to-detect system settings"
+msgstr "Použít nastavení _systému"
+
+#: ../data/dialogs.glade.h:17
+msgid "Auto la_unch player:"
+msgstr "_Spouštět přehrávač:"
+
+#: ../data/dialogs.glade.h:12
+msgid "By lines"
+msgstr "po řádcích"
+
+#: ../data/dialogs.glade.h:38
+msgid "C_ustomize colors"
+msgstr "_Upravit barvy"
+
+#: ../data/dialogs.glade.h:98
+msgid "Choose LRC file to download"
+msgstr ""
+
+#: ../data/dialogs.glade.h:50
+msgid "Colo_r:"
+msgstr "_Barva:"
+
+#: ../data/dialogs.glade.h:37
+msgid "Color _Theme:"
+msgstr "_Barevné téma:"
+
+#: ../data/dialogs.glade.h:1
+msgid "Copyright 2009-2011 The OSD Lyrics project."
+msgstr "Projekt OSD Lyrics. Copyright 2009–2015."
+
+#: ../data/dialogs.glade.h:99
+msgid "D_on't ask me again"
+msgstr "_Znovu se neptat"
+
+#: ../data/dialogs.glade.h:14
+msgid "Display mode:"
+msgstr "Způsob zobrazení:"
+
+#. In preference/download, automately download the most matched lyric
+#: ../data/dialogs.glade.h:69
+msgid "Do_wnload the first candidate"
+msgstr "_Stáhnout prvního kandidáta"
+
+#: ../data/dialogs.glade.h:31
+msgid "Doc_k"
+msgstr "zakázané"
+
+#: ../data/dialogs.glade.h:93
+msgid "Don't assign lyric to this music"
+msgstr "K této skladbě nezobrazovat text"
+
+#: ../data/dialogs.glade.h:34
+msgid "F_irst line:"
+msgstr "_Horní:"
+
+#: ../data/dialogs.glade.h:5
+msgid "GPL v3"
+msgstr ""
+
+#: ../data/dialogs.glade.h:8
+msgid "HTTP"
+msgstr ""
+
+#: ../data/dialogs.glade.h:86
+msgid "Hide the OSD Window"
+msgstr "Skrýt panel s textem"
+
+#: ../data/dialogs.glade.h:84
+msgid "If locked, you can't move OSD window by mouse"
+msgstr "Znemožnit posouvání panelu s textem myší"
+
+#: ../data/dialogs.glade.h:100
+msgid ""
+"If there are more than one lrc files matched with the search condition, "
+"download the first one without prompting the user."
+msgstr ""
+
+#: ../data/dialogs.glade.h:43
+msgid "Inactiv_e lyrics:"
+msgstr "_Nadcházející:"
+
+#: ../data/dialogs.glade.h:67
+msgid "Lyric _sites:"
+msgstr "_Servery s texty:"
+
+#: ../data/dialogs.glade.h:96
+msgid "Lyric delay +"
+msgstr "Posunout text dopředu"
+
+#: ../data/dialogs.glade.h:94
+msgid "Lyric delay -"
+msgstr "Posunout text dozadu"
+
+#: ../data/dialogs.glade.h:27
+msgid "Lyric lines:"
+msgstr "Řádků s textem:"
+
+#: ../data/dialogs.glade.h:30
+msgid "Mode:"
+msgstr "Hýbaní s panelem:"
+
+#: ../data/dialogs.glade.h:71
+msgid "No _proxy"
+msgstr "_Nepoužívat"
+
+#: ../data/dialogs.glade.h:32
+msgid "Nor_mal"
+msgstr "po_volené"
+
+#: ../data/dialogs.glade.h:82
+msgid "OSD _mode"
+msgstr "Přepnout text přes obra_zovku"
+
+#: ../data/dialogs.glade.h:15
+msgid "OS_D"
+msgstr "přes obra_zovku"
+
+#: ../data/dialogs.glade.h:51
+msgid "O_pacity:"
+msgstr "_Viditelnost:"
+
+#: ../data/dialogs.glade.h:53
+msgid "Opaque"
+msgstr "úplná"
+
+#. The outline width of text in OSD window
+#: ../data/dialogs.glade.h:23
+msgid "Out_line:"
+msgstr "Ob_rys:"
+
+#: ../data/dialogs.glade.h:78
+msgid "Passwo_rd:"
+msgstr "_Heslo:"
+
+#: ../data/dialogs.glade.h:18
+msgid "Pla_yer command:"
+msgstr "Pří_kaz přehrávače:"
+
+#: ../data/dialogs.glade.h:75
+msgid "Po_rt:"
+msgstr ""
+
+#: ../data/dialogs.glade.h:13
+msgid "Preferences"
+msgstr "Nastavení"
+
+#: ../data/dialogs.glade.h:9
+msgid "SOCKS4"
+msgstr ""
+
+#: ../data/dialogs.glade.h:10
+msgid "SOCKS5"
+msgstr ""
+
+#: ../data/dialogs.glade.h:16
+msgid "Sc_rolling"
+msgstr "v okně"
+
+#: ../data/dialogs.glade.h:48
+msgid "Scroll _mode:"
+msgstr "Způsob _posouvání:"
+
+#: ../data/dialogs.glade.h:83
+msgid "Scrolling _mode"
+msgstr "Přepnout text do _okna"
+
+#: ../data/dialogs.glade.h:117
+msgid "Search lyrics"
+msgstr "Hledat texty"
+
+#: ../data/dialogs.glade.h:89
+msgid "Search lyrics from Internet"
+msgstr "Vyhledat texty na podporovaných serverech"
+
+#: ../data/dialogs.glade.h:19
+msgid "Show _bubble notification"
+msgstr "_Oznamovat přehrávané skladby"
+
+#: ../data/dialogs.glade.h:79
+msgid "Show passwor_d"
+msgstr "_Zobrazovat heslo"
+
+#: ../data/dialogs.glade.h:28
+msgid "Si_ngle line"
+msgstr "_jeden"
+
+#: ../data/dialogs.glade.h:26
+msgid "Strong"
+msgstr "výrazné"
+
+#: ../data/dialogs.glade.h:33
+msgid "T_ranslucent on mouse over"
+msgstr "Z_průhledňovat panel pod kurzorem myši"
+
+#: ../data/dialogs.glade.h:105
+msgid "The artist of the current track"
+msgstr "Autor aktuální skladby"
+
+#: ../data/dialogs.glade.h:114
+msgid "The filename of the current track"
+msgstr "Název souboru se skladbou"
+
+#: ../data/dialogs.glade.h:111
+msgid "The number of the current track"
+msgstr "Číslo aktuální skladby"
+
+#: ../data/dialogs.glade.h:108
+msgid "The title of album of the current track"
+msgstr "Album aktuální skladby"
+
+#: ../data/dialogs.glade.h:102
+msgid "The title of the current track"
+msgstr "Název aktuální skladby"
+
+#: ../data/dialogs.glade.h:52
+msgid "Transparent"
+msgstr "průhledná"
+
+#: ../data/dialogs.glade.h:73
+msgid "Use _manual settings"
+msgstr "_Manuálně"
+
+#: ../data/dialogs.glade.h:25
+msgid "Weak"
+msgstr "slabé"
+
+#: ../data/dialogs.glade.h:119
+msgid "_Artist:"
+msgstr "_Autor:"
+
+#: ../data/dialogs.glade.h:90
+msgid "_Assign lyric..."
+msgstr "_Přiřadit text…"
+
+#: ../data/dialogs.glade.h:24
+msgid "_Blur:"
+msgstr "Roz_mazání:"
+
+#: ../data/dialogs.glade.h:29
+msgid "_Double lines"
+msgstr "_dva"
+
+#: ../data/dialogs.glade.h:101
+msgid "_Download"
+msgstr "_Stáhnout"
+
+#: ../data/dialogs.glade.h:21
+msgid "_Font:"
+msgstr "_Písmo:"
+
+#. From witch web site to search and download lyrics
+#: ../data/dialogs.glade.h:122
+msgid "_From:"
+msgstr "_Kde:"
+
+#: ../data/dialogs.glade.h:20
+msgid "_General"
+msgstr "_Obecné"
+
+#: ../data/dialogs.glade.h:87
+msgid "_Hide"
+msgstr "_Skrýt"
+
+#: ../data/dialogs.glade.h:74
+msgid "_Host:"
+msgstr "_Server:"
+
+#: ../data/dialogs.glade.h:47
+msgid "_Inactive color:"
+msgstr "Barva _ostatních řádků:"
+
+#: ../data/dialogs.glade.h:85
+msgid "_Lock Position"
+msgstr "_Zakázat hýbání s panelem"
+
+#: ../data/dialogs.glade.h:66
+msgid "_Lyric Location"
+msgstr "_Texty"
+
+#: ../data/dialogs.glade.h:81
+msgid "_Network"
+msgstr "_Internet"
+
+#: ../data/dialogs.glade.h:92
+msgid "_No lyric"
+msgstr "_Bez textu"
+
+#: ../data/dialogs.glade.h:45
+msgid "_OSD"
+msgstr "Obra_zovka"
+
+#: ../data/dialogs.glade.h:55
+msgid "_Scrolling"
+msgstr "_Okno"
+
+#: ../data/dialogs.glade.h:120
+msgid "_Search"
+msgstr "_Hledat"
+
+#: ../data/dialogs.glade.h:88
+msgid "_Search lyric..."
+msgstr "_Hledat texty…"
+
+#: ../data/dialogs.glade.h:35
+msgid "_Second line:"
+msgstr "Spo_dní:"
+
+#: ../data/dialogs.glade.h:118
+msgid "_Title:"
+msgstr "_Název:"
+
+#: ../data/dialogs.glade.h:76
+msgid "_Type:"
+msgstr "_Protokol:"
+
+#: ../data/dialogs.glade.h:77
+msgid "_Username:"
+msgstr "_Uživatel:"
+
+#: ../data/dialogs.glade.h:42
+msgid "bottom"
+msgstr "spodek"
+
+#: ../data/dialogs.glade.h:4
+msgid "http://code.google.com/p/osd-lyrics/"
+msgstr ""
+
+#: ../data/dialogs.glade.h:41
+msgid "middle"
+msgstr "prostředek"
+
+#: ../data/dialogs.glade.h:40
+msgid "top"
+msgstr "vršek písmen"
+
+#: ../data/dialogs.glade.h:6
+msgid "translator-credits"
+msgstr "Ondřej Svoboda <ondrej@svobodasoft.cz>"
+
+#: ../data/osdlyrics.desktop.in.h:2
+msgid "Lyrics Show"
+msgstr "Přehrávač textů"
+
+#: ../data/osdlyrics.desktop.in.h:3
+msgid "Download and show lyrics for your favorite media player"
+msgstr "Stahuje a zobrazuje časovaný text k přehrávaným skladbám"
+
+#: ../lyricsources/xiami/xiami.py:49
+msgid "Xiami"
+msgstr ""

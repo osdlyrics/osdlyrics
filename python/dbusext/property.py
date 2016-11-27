@@ -15,18 +15,16 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>. 
-#/
-
-__all__ = (
-    'Property',
-    )
+# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 import dbus.exceptions
+
 
 class AccessDeniedError(dbus.exceptions.DBusException):
     def __init__(self, *args):
         dbus.exceptions.DBusException.__init__(self, dbus_error_name='org.osdlyrics.Error.AccessDenied', *args)
+
 
 class Property(object):
     """ DBus property class
@@ -63,7 +61,7 @@ class Property(object):
         self._emit_change = emit_change
         self._readable = readable
         self._writeable = writeable
-        
+
     @property
     def interface(self):
         """ Return the dbus interface of this property
@@ -90,12 +88,12 @@ class Property(object):
         if obj is None:
             return self
         if self._fget is None:
-            raise AttributeError, "unreadable attribute"
+            raise AttributeError("unreadable attribute")
         return wrap_dbus_type(self._type_signature, self._fget(obj))
-        
+
     def __set__(self, obj, value):
         if self._fset is None:
-            raise AttributeError, "can't set attribute"
+            raise AttributeError("can't set attribute")
         self._set_value(obj, value, self._fset)
 
     def dbus_set(self, obj, value):
@@ -114,7 +112,7 @@ class Property(object):
         elif self.writeable and callable(self._fset):
             self._set_value(obj, value, self._fset)
         else:
-            raise AccessDeniedError, 'Property %s is not writeable' % self.__name__
+            raise AccessDeniedError('Property %s is not writeable' % self.__name__)
 
     def _set_value(self, obj, value, setter):
         changed = setter(obj, value)
@@ -188,6 +186,7 @@ class Property(object):
         self._dbusset = fset
         return self
 
+
 DBUS_TYPE_MAP = {
     'y': dbus.Byte,
     'b': dbus.Boolean,
@@ -202,6 +201,7 @@ DBUS_TYPE_MAP = {
     'o': dbus.ObjectPath,
     'g': dbus.Signature,
     }
+
 
 def wrap_dbus_type(signature, value):
     if signature in DBUS_TYPE_MAP:

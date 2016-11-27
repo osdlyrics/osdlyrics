@@ -128,6 +128,12 @@ popup (GtkStatusIcon *status_icon,
                   button,
                   activate_time);
 }
+
+static void scroll (GtkStatusIcon *icon, GdkEventScroll *event, gpointer userdata)
+{
+	int sign = event->direction == GDK_SCROLL_UP ? 1 : -1;
+	ol_app_adjust_lyric_offset(sign * 200);
+}
 #endif  /* HAVE_APP_INDICATOR */
 
 void ol_trayicon_init ()
@@ -161,6 +167,9 @@ void ol_trayicon_init ()
 
     g_signal_connect (G_OBJECT (status_icon), "activate",
                       G_CALLBACK (activate), NULL);
+
+    g_signal_connect (G_OBJECT (status_icon), "scroll-event",
+                      G_CALLBACK (scroll), NULL);
   }
 #endif  /* HAVE_APP_INDICATOR */
 }

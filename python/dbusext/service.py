@@ -3,7 +3,7 @@
 # Copyright (C) 2011  Tiger Soldier
 #
 # This file is part of OSD Lyrics.
-# 
+#
 # OSD Lyrics is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -15,26 +15,24 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>. 
+# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
 #/
 
+import logging
 import dbus
 import dbus.exceptions
 import dbus.service
-import property as dbus_prop
 import xml.etree.ElementTree as xet
 import glib
 
-__all__ = (
-    'Object',
-    'property',
-    )
+from property import Property
+
 
 class ObjectTypeCls(dbus.service.Object.__class__):
     def __init__(cls, name, bases, dct):
         property_dict = {}
         for k, v in dct.items():
-            if isinstance(v, dbus_prop.Property):
+            if isinstance(v, Property):
                 property_dict.setdefault(v.interface, {})[v.__name__] = v
 
         property_table = getattr(cls, '_dbus_property_table', {})
@@ -59,7 +57,7 @@ class Object(ObjectType):
     def __init__(self, conn=None, object_path=None, bus_name=None):
         """
         Either conn or bus_name is required; object_path is also required.
-        
+
         Arguments:
         - `conn`: (dbus.connection.Connection or None) - The connection on which
            to export this object.
@@ -70,11 +68,11 @@ class Object(ObjectType):
            For backwards compatibility, if an instance of dbus.service.BusName is
            passed as the first parameter, this is equivalent to passing its
            associated Bus as conn, and passing the BusName itself as bus_name.
-           
+
         - `object_path`: (str or None) - A D-Bus object path at which to make this
            Object available immediately. If this is not None, a conn or bus_name
            must also be provided.
-           
+
         - `bus_name`: (dbus.service.BusName or None) - Represents a well-known name
            claimed by this process. A reference to the BusName object will be held
            by this Object, preventing the name from being released during this
@@ -105,7 +103,7 @@ class Object(ObjectType):
         """ Callback for properties when a new value is set
 
         This method is called by properties of type osdlyrics.dbus.Property
-        
+
         Arguments:
         - `prop_name`:
         - `changed`:
@@ -113,19 +111,19 @@ class Object(ObjectType):
         self._changed_props[prop_name] = emit_with_value
         if not self._prop_change_timer:
             self._prop_change_timer = glib.idle_add(self._prop_changed_timeout_cb)
-        
+
     @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
                          in_signature='ss',
                          out_signature='v')
     def Get(self, iface_name, prop_name):
         """ DBus property getter
-        
+
         Arguments:
         - `iface_name`:
         - `prop_name`:
         """
         prop = getattr(self.__class__, prop_name, None)
-        if isinstance(prop, dbus_prop.Property) and \
+        if isinstance(prop, Property) and \
                 (len(iface_name) == 0 or prop.interface == iface_name):
             return getattr(self, prop_name)
         raise dbus.exceptions.DBusException('No property of %s.%s' % (iface_name, prop_name))
@@ -136,14 +134,14 @@ class Object(ObjectType):
                          out_signature='')
     def Set(self, iface_name, prop_name, value):
         """ DBus property setter
-        
+
         Arguments:
         - `iface_name`:
         - `prop_name`:
         - `value`:
         """
         prop = getattr(self.__class__, prop_name, None)
-        if isinstance(prop, dbus_prop.Property) and \
+        if isinstance(prop, Property) and \
                 (len(iface_name) == 0 or prop.interface == iface_name):
             prop.dbus_set(self, value)
         else:
@@ -154,7 +152,7 @@ class Object(ObjectType):
                          out_signature='a{sv}')
     def GetAll(self, iface_name):
         """ List all DBus properties
-        
+
         Arguments:
         - `iface_name`:
         """
@@ -175,9 +173,9 @@ class Object(ObjectType):
     @dbus.service.signal(dbus_interface=dbus.PROPERTIES_IFACE,
                          signature='sa{sv}as')
     def PropertiesChanged(self, iface_name, changed_props, invalidated_props):
-        print '%s changed: %s invalidated: %s' % (iface_name, changed_props, invalidated_props)
+        logging.debug('%s changed: %s invalidated: %s', iface_name, changed_props, invalidated_props)
         pass
-        
+
     @dbus.service.method(dbus.service.INTROSPECTABLE_IFACE, in_signature='', out_signature='s',
                          path_keyword='object_path', connection_keyword='connection')
     def Introspect(self, object_path, connection):
@@ -218,13 +216,14 @@ def property(type_signature,
 
     To use this decorator, define your class and member as below::
 
-       class Obj(osdlyrics.dbus.Object):
+       class Obj(osdlyrics.dbusext.service.Object):
             def __init__(*args, **kwargs):
-                osdlyrics.dbus.Object.__init__(*args, **kwargs)
+                osdlyrics.dbusext.service.Object.__init__(*args, **kwargs)
                 self._x = 0
 
-            @osdlyrics.dbus.property(type_signature='i',
-                                     dbus_interface='org.example.Interface')
+            @osdlyrics.dbusext.service.property(
+                type_signature='i',
+                dbus_interface='org.example.Interface')
             def x(self):
                 return self._x
 
@@ -255,17 +254,20 @@ def property(type_signature,
         Arguments:
         - `fget`: getter function
         """
-        return dbus_prop.Property(type_signature=type_signature,
-                                  dbus_interface=dbus_interface,
-                                  emit_change=emit_change,
-                                  name=fget.__name__,
-                                  readable=readable,
-                                  writeable=writeable,
-                                  fget=fget)
+        return Property(type_signature=type_signature,
+                        dbus_interface=dbus_interface,
+                        emit_change=emit_change,
+                        name=fget.__name__,
+                        readable=readable,
+                        writeable=writeable,
+                        fget=fget)
     return dec_handler
 
 def _property2element(prop):
-    """Convert a osdlyrics.dbusext.Property object to xml.etree.ElementTree.ElementTree object"""
+    """
+    Convert an osdlyrics.dbusext.service.Property object to
+    an xml.etree.ElementTree.ElementTree object.
+    """
     access = ''
     if prop.readable:
         access += 'read'
@@ -330,7 +332,7 @@ def test():
         @baz.setter
         def baz(self, value):
             raise Exception('Shouldn\'t be called')
-            
+
         @dbus.service.method(dbus_interface=IFACE,
                              in_signature='',
                              out_signature='')
@@ -340,29 +342,29 @@ def test():
     def get_reply_handler(expected_value):
         def handler(value):
             if value != expected_value:
-                print 'Get failed, expect %s but %s got' % (expected_value, value)
+                logging.warning('Get failed, expect %s but %s got', expected_value, value)
             else:
-                print 'Get succesful'
+                logging.debug('Get succesful')
         return handler
 
     def get_all_reply_handler(expected_dict):
         def handler(value):
             for k, v in value.iteritems():
                 if not k in expected_dict:
-                    print 'GetAll: unexpected key %s' % k
+                    logging.warning('GetAll: unexpected key %s', k)
                 elif v != expected_dict[k]:
-                    print 'GetAll: expected value of key %s is %s but %s got' % (k, expected_dict[k], v)
+                    logging.warning('GetAll: expected value of key %s is %s but %s got', k, expected_dict[k], v)
             for k in expected_dict.iterkeys():
                 if not k in value:
-                    print 'GetAll: missing key %s' % k
-            print 'GetAll finished'
+                    logging.warning('GetAll: missing key %s', k)
+            logging.debug('GetAll finished')
         return handler
 
     def set_reply_handler():
-        print 'Set succeed'
+        logging.debug('Set succeed')
 
     def error_handler(e):
-        print 'Error %s' % e
+        logging.error('Error %s', e)
 
     def introspect_reply_handler(xml):
         # print xml
@@ -370,11 +372,10 @@ def test():
 
     def msg_handler(msg):
         def handler(*args, **kwargs):
-            print msg
+            logging.debug(msg)
         return handler
 
     def test_timeout():
-        import time
         proxy = conn.get_object(BUS_NAME, PATH)
         proxy.GetAll('',
                      reply_handler=get_all_reply_handler({'foo': DEFAULT_VALUE, 'baz': 'baz'}),
@@ -423,6 +424,6 @@ def test():
     testobj = TestObjSub(loop)
     glib.timeout_add(100, test_timeout)
     loop.run()
-    
+
 if __name__ == '__main__':
     test()

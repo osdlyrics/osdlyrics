@@ -16,15 +16,19 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
-#/
+#
+
+import ConfigParser
 
 import dbus
 import dbus.service
-import osdlyrics
-import osdlyrics.utils
-import osdlyrics.errors
-import ConfigParser
 import glib
+
+from osdlyrics.app import App
+from osdlyrics.consts import CONFIG_BUS_NAME, CONFIG_OBJECT_PATH
+import osdlyrics.errors
+import osdlyrics.utils
+
 
 class MalformedKeyError(osdlyrics.errors.BaseError):
     def __init__(self, *args):
@@ -43,9 +47,8 @@ class IniConfig(dbus.service.Object):
     def __init__(self,
                  conn,
                  filename=osdlyrics.utils.get_config_path('osdlyrics.conf')):
-        super(IniConfig, self).__init__(
-            conn=conn,
-            object_path=osdlyrics.CONFIG_OBJECT_PATH)
+        super(IniConfig, self).__init__(conn=conn,
+                                        object_path=CONFIG_OBJECT_PATH)
         self._conn = conn
         self._confparser = ConfigParser.RawConfigParser()
         osdlyrics.utils.ensure_path(filename)
@@ -69,7 +72,7 @@ class IniConfig(dbus.service.Object):
             self._confparser.add_section(parts[0])
         return parts[0], parts[1]
 
-    @dbus.service.method(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
                          in_signature='s',
                          out_signature='b')
     def GetBool(self, key):
@@ -79,7 +82,7 @@ class IniConfig(dbus.service.Object):
         except:
             raise ValueNotExistError(key)
 
-    @dbus.service.method(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
                          in_signature='s',
                          out_signature='i')
     def GetInt(self, key):
@@ -89,7 +92,7 @@ class IniConfig(dbus.service.Object):
         except:
             raise ValueNotExistError(key)
 
-    @dbus.service.method(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
                          in_signature='s',
                          out_signature='d')
     def GetDouble(self, key):
@@ -99,7 +102,7 @@ class IniConfig(dbus.service.Object):
         except:
             raise ValueNotExistError(key)
 
-    @dbus.service.method(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
                          in_signature='s',
                          out_signature='s')
     def GetString(self, key):
@@ -109,7 +112,7 @@ class IniConfig(dbus.service.Object):
         except:
             raise ValueNotExistError(key)
 
-    @dbus.service.method(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
                          in_signature='s',
                          out_signature='as')
     def GetStringList(self, key):
@@ -127,37 +130,37 @@ class IniConfig(dbus.service.Object):
             self._schedule_save()
             self._schedule_signal()
 
-    @dbus.service.method(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
                          in_signature='sb',
                          out_signature='')
     def SetBool(self, key, value):
         self._set_value(key, 'true' if value else 'false')
 
-    @dbus.service.method(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
                          in_signature='si',
                          out_signature='')
     def SetInt(self, key, value):
         self._set_value(key, value)
 
-    @dbus.service.method(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
                          in_signature='sd',
                          out_signature='')
     def SetDouble(self, key, value):
         self._set_value(key, value)
 
-    @dbus.service.method(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
                          in_signature='ss',
                          out_signature='')
     def SetString(self, key, value):
         self._set_value(key, value)
 
-    @dbus.service.method(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
                          in_signature='sas',
                          out_signature='')
     def SetStringList(self, key, value):
         self._set_value(key, join(value))
 
-    @dbus.service.method(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
                          in_signature='a{sv}',
                          out_signature='')
     def SetDefaultValues(self, values):
@@ -194,7 +197,7 @@ class IniConfig(dbus.service.Object):
         self.ValueChanged(changed)
         self._changed_signals = {}
 
-    @dbus.service.signal(dbus_interface=osdlyrics.CONFIG_BUS_NAME,
+    @dbus.service.signal(dbus_interface=CONFIG_BUS_NAME,
                          signature='as')
     def ValueChanged(self, changed):
         pass
@@ -235,7 +238,6 @@ def split(value, sep=';'):
         elif value[curr] == '\\' and curr < len(value) - 1:
             tag = value[curr + 1]
             if tag == '\\' or tag == sep:
-                has_tag = True
                 item.append(value[start:curr])
                 start = curr + 1
                 curr = start
@@ -269,7 +271,7 @@ def test():
     doctest.testmod()
 
 def run():
-    app = osdlyrics.App('Config')
+    app = App('Config')
     if len(sys.argv) > 1:
         ini_conf = IniConfig(app.connection, sys.argv[1])
     else:

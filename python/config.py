@@ -3,7 +3,7 @@
 # Copyright (C) 2011  Tiger Soldier
 #
 # This file is part of OSD Lyrics.
-# 
+#
 # OSD Lyrics is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -15,12 +15,13 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>. 
-#/
+# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+#
 
-import consts
 import logging
 import dbus
+
+import consts
 
 class Config(object):
     """ Helper class to retrive configs from OSD Lyrics through DBus
@@ -51,7 +52,7 @@ class Config(object):
     def get_bool(self, key, default=None):
         try:
             return self._proxy.GetBool(key)
-        except Exception, e:
+        except Exception as e:
             if default is not None:
                 try:
                     self._proxy.SetBool(key, default)
@@ -66,7 +67,7 @@ class Config(object):
     def get_int(self, key, default=None):
         try:
             return self._proxy.GetInt(key)
-        except Exception, e:
+        except Exception as e:
             if default is not None:
                 try:
                     self._proxy.SetInt(key, default)
@@ -81,7 +82,7 @@ class Config(object):
     def get_double(self, key, default=None):
         try:
             return self._proxy.GetDouble(key)
-        except Exception, e:
+        except Exception as e:
             if default is not None:
                 try:
                     self._proxy.SetBool(key, default)
@@ -96,7 +97,7 @@ class Config(object):
     def get_string(self, key, default=None):
         try:
             return self._proxy.GetString(key)
-        except Exception, e:
+        except Exception as e:
             if default is not None:
                 try:
                     self._proxy.SetString(key, default)
@@ -111,7 +112,7 @@ class Config(object):
     def get_string_list(self, key, default=None):
         try:
             return self._proxy.GetStringList(key)
-        except Exception, e:
+        except Exception as e:
             if default is not None:
                 try:
                     self._proxy.SetStringList(key, default)

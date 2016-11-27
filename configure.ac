@@ -9,7 +9,7 @@ m4_define(OL_BUILD_VER,
 
 m4_define([OL_VERSION], [OL_MAJOR_VER.OL_MINOR_VER.OL_MICRO_VER[]OL_BUILD[]OL_BUILD_VER])
 AC_INIT([osdlyrics], [OL_VERSION], [http://code.google.com/p/osd-lyrics/issues/list])
-AM_INIT_AUTOMAKE([-Wall -Werror])
+AM_INIT_AUTOMAKE([subdir-objects -Wall -Werror])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AC_CONFIG_SRCDIR([src/ol_main.c])
@@ -183,6 +183,7 @@ AC_CONFIG_FILES([
         lyricsources/Makefile
         lyricsources/xiami/Makefile
         lyricsources/lrc123/Makefile
+	lyricsources/viewlyrics/Makefile
         tools/Makefile
 ])
 
