@@ -9,7 +9,14 @@ OSD Lyrics is released under GPL v3. See COPYING for more detail.
 
 ## Usage
 
-To use OSD Lyrics, just launch your media player, then launch OSD Lyrics. OSD Lyrics will detect and connect to the media player. 
+To use OSD Lyrics, just launch your media player, then launch OSD Lyrics. OSD Lyrics will detect and connect to the media player.
+
+## Dependencies
+### Ubuntu
+The following packages need to be installed to compile osdlyrics:
+- `libappindicator-dev`
+- `libdbus-glib-1-dev`
+
 
 ## Troubleshooting
 >Here is a place to register some troubleshooting with the development or with the compilation.
@@ -21,6 +28,9 @@ When run the `autogen.sh` script or run command like `autoconf` or `autoreconf -
   On debian like system: `sudo apt-get install intltool`
 
 - if have a problem with a package dependencies, just install the needed package (particulary the development version).
+
+- Application indicator can be enabled with `./configure --enable-appindicator=yes`
+
 
 ## Contact Us
 The official source repository is on Github: http://github.com/osdlyrics/osdlyrics
