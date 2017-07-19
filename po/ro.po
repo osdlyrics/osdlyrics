@@ -650,8 +650,8 @@ msgid "bottom"
 msgstr "jos"
 
 #: ../data/dialogs.glade.h:119
-msgid "http://code.google.com/p/osd-lyrics/"
-msgstr "http://code.google.com/p/osd-lyrics/"
+msgid "https://github.com/osdlyrics/osdlyrics/"
+msgstr "https://github.com/osdlyrics/osdlyrics/"
 
 #: ../data/dialogs.glade.h:120
 msgid "middle"

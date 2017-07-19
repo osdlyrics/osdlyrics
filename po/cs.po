@@ -648,7 +648,7 @@ msgid "bottom"
 msgstr "spodek"
 
 #: ../data/dialogs.glade.h:4
-msgid "http://code.google.com/p/osd-lyrics/"
+msgid "https://github.com/osdlyrics/osdlyrics/"
 msgstr ""
 
 #: ../data/dialogs.glade.h:41

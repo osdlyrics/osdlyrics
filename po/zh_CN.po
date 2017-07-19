@@ -229,8 +229,8 @@ msgid ""
 msgstr "支持多种播放器和自动歌词下载的桌面歌词秀\n"
 
 #: ../data/dialogs.glade.h:4
-msgid "http://code.google.com/p/osd-lyrics/"
-msgstr "http://code.google.com/p/osd-lyrics/"
+msgid "https://github.com/osdlyrics/osdlyrics/"
+msgstr "https://github.com/osdlyrics/osdlyrics/"
 
 #: ../data/dialogs.glade.h:5
 msgid "GPL v3"

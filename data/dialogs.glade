@@ -30,8 +30,8 @@
     <property name="copyright" translatable="yes">Copyright 2009-2011 The OSD Lyrics project.</property>
     <property name="comments" translatable="yes">An OSD lyric show compatible with various media players and supports lyrics downloading.
 </property>
-    <property name="website">http://code.google.com/p/osd-lyrics/ </property>
-    <property name="website_label" translatable="yes">http://code.google.com/p/osd-lyrics/</property>
+    <property name="website">https://github.com/osdlyrics/osdlyrics</property>
+    <property name="website_label" translatable="yes">https://github.com/osdlyrics/osdlyrics</property>
     <property name="license" translatable="yes">GPL v3</property>
     <property name="authors">Tiger Soldier &lt;tigersoldi@gmail.com&gt;
 SarlmolApple &lt;sarlmolapple@gmail.com&gt;
