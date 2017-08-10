@@ -30,8 +30,10 @@ _ = gettext.gettext
 
 XIAMI_HOST = 'www.xiami.com'
 XIAMI_SEARCH_URL = '/search'
+XIAMI_SONG_URL = '/song/'
 XIAMI_LRC_URL = '/song/playlist/id/'
-XIAMI_SEARCH_PATTERN = re.compile(r'(<a [^<]*?href="/song/(\d+).*?>).*?(<a [^<]*?href="/artist/.*?>).*?(<a [^<]*?href="/album/.*?>)', re.DOTALL)
+XIAMI_SEARCH_PATTERN = re.compile(r'(<a [^<]*?href="http://www.xiami.com/song/(\w+)".*?>).*?(<a [^<]*?href="http://www.xiami.com/artist/.*?>).*?(<a [^<]*?href="http://www.xiami.com/album/.*?>)', re.DOTALL)
+XIAMI_ID_PATTERN = re.compile(r'<a [^<]*?onclick="tag\((\d+).*?>')
 XIAMI_URL_PATTERN = re.compile(r'<lyric>(.*?)</lyric>', re.DOTALL)
 TITLE_ATTR_PATTERN = re.compile(r'title="(.*?)"')
 
@@ -79,8 +81,20 @@ class XiamiSource(BaseLyricSourcePlugin):
                                                downloadinfo=url))
         return result
 
+    def get_songid(self, id):
+        status, content = http_download(url=XIAMI_HOST + XIAMI_SONG_URL + str(id),
+                                        proxy=get_proxy_settings(self.config_proxy))
+        if status < 200 or status >= 400:
+            return None
+        match = XIAMI_ID_PATTERN.search(content)
+        if not match:
+            return None
+        songid = match.group(1).strip()
+        return songid
+
     def get_url(self, id):
-        status, content = http_download(url=XIAMI_HOST + XIAMI_LRC_URL + str(id),
+        songid = self.get_songid(id)
+        status, content = http_download(url=XIAMI_HOST + XIAMI_LRC_URL + str(songid),
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
             return None
