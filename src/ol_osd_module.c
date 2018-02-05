@@ -45,7 +45,6 @@ struct _OlOsdModule
   gint current_line;
   gint line_count;
   OlLrc *lrc;
-  gboolean display;
   OlOsdWindow *window;
   OlOsdToolbar *toolbar;
   guint message_source;
@@ -507,7 +506,6 @@ ol_osd_module_init_osd (OlOsdModule *osd)
     g_object_ref (osd->toolbar);
     ol_osd_toolbar_set_player (osd->toolbar, osd->player);
   }
-  osd->display = FALSE;
   OlConfigProxy *config = ol_config_proxy_get_instance ();
   ol_assert (config != NULL);
   
@@ -698,8 +696,6 @@ ol_osd_module_set_lrc (struct OlDisplayModule *module, OlLrc *lrc_file)
   {
     clear_lyrics (priv);
   }
-  /* if (lrc_file != NULL) */
-  /*   module->display = TRUE; */
 }
 
 static void
@@ -764,7 +760,6 @@ clear_lyrics (OlOsdModule *osd)
   ol_log_func ();
   if (osd->window != NULL && osd->message_source == 0)
   {
-    osd->display = FALSE;
     /* gtk_widget_hide (GTK_WIDGET (module->window)); */
     ol_osd_window_set_lyric (osd->window, 0, NULL);
     ol_osd_window_set_lyric (osd->window, 1, NULL);
