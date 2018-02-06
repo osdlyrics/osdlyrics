@@ -611,8 +611,6 @@ _update_metadata (OlOsdModule *module)
   ol_log_func ();
   ol_assert (module != NULL);
   ol_player_get_metadata (module->player, module->metadata);
-  clear_lyrics (module);
-  hide_message (module);
 }
 
 static void
@@ -685,17 +683,21 @@ ol_osd_module_set_lrc (struct OlDisplayModule *module, OlLrc *lrc_file)
   ol_assert (priv != NULL);
   if (priv->lrc)
     g_object_unref (priv->lrc);
-  priv->lrc = lrc_file;
   if (lrc_file)
     g_object_ref (lrc_file);
-  if (lrc_file != NULL && priv->message_source != 0)
+
+  if (priv->message_source != 0)
   {
+    /* A message can only be displayed if no lyrics are currently assigned. */
+    ol_assert (priv->lrc == NULL);
     ol_osd_module_clear_message (module);
   }
-  if (lrc_file == NULL && priv->message_source == 0)
+  else if (lrc_file == NULL)
   {
     clear_lyrics (priv);
   }
+
+  priv->lrc = lrc_file;
 }
 
 static void
@@ -746,10 +748,8 @@ hide_message (OlOsdModule *osd)
 {
   ol_log_func ();
   ol_assert_ret (osd != NULL, FALSE);
-  if (osd->lrc != NULL)
-    return FALSE;
+  ol_assert_ret (osd->lrc == NULL, FALSE);
   ol_osd_window_set_lyric (osd->window, 0, NULL);
-  /* gtk_widget_hide (GTK_WIDGET (module->window)); */
   osd->message_source = 0;
   return FALSE;
 }
@@ -760,7 +760,6 @@ clear_lyrics (OlOsdModule *osd)
   ol_log_func ();
   if (osd->window != NULL && osd->message_source == 0)
   {
-    /* gtk_widget_hide (GTK_WIDGET (module->window)); */
     ol_osd_window_set_lyric (osd->window, 0, NULL);
     ol_osd_window_set_lyric (osd->window, 1, NULL);
   }
