@@ -107,6 +107,7 @@ static void ol_osd_module_update_next_lyric (OlOsdModule *osd,
                                              OlLrcIter *iter);
 static void ol_osd_module_init_osd (OlOsdModule *osd);
 static gboolean hide_message (OlOsdModule *osd);
+static gboolean is_message_displayed (OlOsdModule *osd);
 static void clear_lyrics (OlOsdModule *osd);
 
 /* OSD Window signal handlers */
@@ -572,7 +573,7 @@ ol_osd_module_free (struct OlDisplayModule *module)
     gtk_widget_destroy (GTK_WIDGET (priv->window));
     priv->window = NULL;
   }
-  if (priv->message_source > 0)
+  if (is_message_displayed (priv))
   {
     g_source_remove (priv->message_source);
     priv->message_source = 0;
@@ -686,7 +687,7 @@ ol_osd_module_set_lrc (struct OlDisplayModule *module, OlLrc *lrc_file)
   if (lrc_file)
     g_object_ref (lrc_file);
 
-  if (priv->message_source != 0)
+  if (is_message_displayed (priv))
   {
     /* A message can only be displayed if no lyrics are currently assigned. */
     ol_assert (priv->lrc == NULL);
@@ -718,7 +719,7 @@ ol_osd_module_set_message (struct OlDisplayModule *module,
   ol_osd_window_set_current_percentage (priv->window, 1.0);
   ol_osd_window_set_lyric (priv->window, 0, message);
   ol_osd_window_set_lyric (priv->window, 1, NULL);
-  if (priv->message_source != 0)
+  if (is_message_displayed (priv))
     g_source_remove (priv->message_source);
   priv->message_source = g_timeout_add (duration_ms,
                                         (GSourceFunc) hide_message,
@@ -754,11 +755,18 @@ hide_message (OlOsdModule *osd)
   return FALSE;
 }
 
+static gboolean
+is_message_displayed (OlOsdModule *osd)
+{
+  ol_assert_ret (osd != NULL, FALSE);
+  return osd->message_source != 0;
+}
+
 static void
 clear_lyrics (OlOsdModule *osd)
 {
   ol_log_func ();
-  if (osd->window != NULL && osd->message_source == 0)
+  if (osd->window != NULL && !is_message_displayed (osd))
   {
     ol_osd_window_set_lyric (osd->window, 0, NULL);
     ol_osd_window_set_lyric (osd->window, 1, NULL);
@@ -775,7 +783,7 @@ ol_osd_module_clear_message (struct OlDisplayModule *module)
   ol_assert (module != NULL);
   OlOsdModule *priv = ol_display_module_get_data (module);
   ol_assert (priv != NULL);
-  if (priv->message_source != 0)
+  if (is_message_displayed (priv))
   {
     g_source_remove (priv->message_source);
     hide_message (priv);
