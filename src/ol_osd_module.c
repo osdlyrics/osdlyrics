@@ -44,6 +44,7 @@ struct _OlOsdModule
   gint lrc_next_id;
   gint current_line;
   gint line_count;
+  gboolean force_refresh_on_set_played_time;
   OlLrc *lrc;
   OlOsdWindow *window;
   OlOsdToolbar *toolbar;
@@ -538,6 +539,7 @@ ol_osd_module_new (struct OlDisplayModule *module,
   data->window = NULL;
   data->lrc = NULL;
   reset_lyrics_state (data);
+  data->force_refresh_on_set_played_time = FALSE;
   data->message_source = 0;
   data->metadata = ol_metadata_new ();
   data->config_bindings = NULL;
@@ -655,12 +657,14 @@ ol_osd_module_set_played_time (struct OlDisplayModule *module,
       if (percentage > 0.5 && priv->lrc_next_id == -1)
         ol_osd_module_update_next_lyric (priv, iter);
     }
-    else if (priv->lrc_id != -1)
+    else if (priv->lrc_id != -1 || priv->force_refresh_on_set_played_time)
     {
       hide_lyrics (priv);
       reset_lyrics_state (priv);
     }
     ol_lrc_iter_free (iter);
+
+    priv->force_refresh_on_set_played_time = FALSE;
   }
 }
 
@@ -696,6 +700,10 @@ ol_osd_module_set_lrc (struct OlDisplayModule *module, OlLrc *lrc_file)
   else if (lrc_file == NULL)
   {
     hide_lyrics (priv);
+  }
+  else
+  {
+    priv->force_refresh_on_set_played_time = TRUE;
   }
 
   priv->lrc = lrc_file;
