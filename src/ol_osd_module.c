@@ -108,7 +108,8 @@ static void ol_osd_module_update_next_lyric (OlOsdModule *osd,
 static void ol_osd_module_init_osd (OlOsdModule *osd);
 static gboolean hide_message (OlOsdModule *osd);
 static gboolean is_message_displayed (OlOsdModule *osd);
-static void clear_lyrics (OlOsdModule *osd);
+static void reset_lyrics_state (OlOsdModule *osd);
+static void hide_lyrics (OlOsdModule *osd);
 
 /* OSD Window signal handlers */
 static void ol_osd_moved_handler (OlOsdWindow *osd, gpointer data);
@@ -536,9 +537,7 @@ ol_osd_module_new (struct OlDisplayModule *module,
   data->player = player;
   data->window = NULL;
   data->lrc = NULL;
-  data->lrc_id = -1;
-  data->lrc_next_id = -1;
-  data->current_line = 0;
+  reset_lyrics_state (data);
   data->message_source = 0;
   data->metadata = ol_metadata_new ();
   data->config_bindings = NULL;
@@ -658,7 +657,8 @@ ol_osd_module_set_played_time (struct OlDisplayModule *module,
     }
     else if (priv->lrc_id != -1)
     {
-      clear_lyrics (priv);
+      hide_lyrics (priv);
+      reset_lyrics_state (priv);
     }
     ol_lrc_iter_free (iter);
   }
@@ -695,10 +695,11 @@ ol_osd_module_set_lrc (struct OlDisplayModule *module, OlLrc *lrc_file)
   }
   else if (lrc_file == NULL)
   {
-    clear_lyrics (priv);
+    hide_lyrics (priv);
   }
 
   priv->lrc = lrc_file;
+  reset_lyrics_state (priv);
 }
 
 static void
@@ -763,7 +764,15 @@ is_message_displayed (OlOsdModule *osd)
 }
 
 static void
-clear_lyrics (OlOsdModule *osd)
+reset_lyrics_state (OlOsdModule *osd)
+{
+  osd->current_line = 0;
+  osd->lrc_id = -1;
+  osd->lrc_next_id = -1;
+}
+
+static void
+hide_lyrics (OlOsdModule *osd)
 {
   ol_log_func ();
   if (osd->window != NULL && !is_message_displayed (osd))
@@ -771,9 +780,6 @@ clear_lyrics (OlOsdModule *osd)
     ol_osd_window_set_lyric (osd->window, 0, NULL);
     ol_osd_window_set_lyric (osd->window, 1, NULL);
   }
-  osd->current_line = 0;
-  osd->lrc_id = -1;
-  osd->lrc_next_id = -1;
 }
 
 static void
