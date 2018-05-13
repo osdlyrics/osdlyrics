@@ -118,6 +118,9 @@ static void _font_changed_cb (OlConfigProxy *config,
 static void _size_changed_cb (OlConfigProxy *config,
                               const char *key,
                               OlScrollModule *module);
+static void _pos_changed_cb (OlConfigProxy *config,
+                             const char *key,
+                             OlScrollModule *module);
 static void _active_color_changed_cb (OlConfigProxy *config,
                                       const char *key,
                                       OlScrollModule *module);
@@ -137,6 +140,8 @@ static void _scroll_mode_changed_cb (OlConfigProxy *config,
 static struct _ConfigMapping _config_mapping[] = {
   { "ScrollMode/width", _size_changed_cb },
   { "ScrollMode/height", _size_changed_cb },
+  { "ScrollMode/x", _pos_changed_cb },
+  { "ScrollMode/y", _pos_changed_cb },
   { "ScrollMode/font-name", _font_changed_cb },
   { "ScrollMode/active-lrc-color", _active_color_changed_cb },
   { "ScrollMode/inactive-lrc-color", _inactive_color_changed_cb },
@@ -193,11 +198,14 @@ _window_configure_cb (GtkWidget *widget,
   if (_config_is_setting)
     return FALSE;
   _config_is_setting = TRUE;
-  gint width, height;
+  gint width, height, x, y;
   OlConfigProxy *config = ol_config_proxy_get_instance ();
   gtk_window_get_size (GTK_WINDOW (widget), &width, &height);
+  gtk_window_get_position (GTK_WINDOW (widget), &x, &y);
   ol_config_proxy_set_int (config, "ScrollMode/width", width);
   ol_config_proxy_set_int (config, "ScrollMode/height", height);
+  ol_config_proxy_set_int (config, "ScrollMode/x", x);
+  ol_config_proxy_set_int (config, "ScrollMode/y", y);
   _config_is_setting = FALSE;
   return FALSE;
 }
@@ -261,6 +269,16 @@ _size_changed_cb (OlConfigProxy *config,
   gint width = ol_config_proxy_get_int (config, "ScrollMode/width");
   gint height = ol_config_proxy_get_int (config, "ScrollMode/height");
   gtk_window_resize (GTK_WINDOW (module->scroll), width, height);
+}
+
+static void
+_pos_changed_cb (OlConfigProxy *config,
+                 const char *key,
+                 OlScrollModule *module)
+{
+  gint x = ol_config_proxy_get_int (config, "ScrollMode/x");
+  gint y = ol_config_proxy_get_int (config, "ScrollMode/y");
+  gtk_window_move (GTK_WINDOW (module->scroll), x, y);
 }
 
 static void
