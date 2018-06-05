@@ -30,6 +30,7 @@ struct _OlOsdToolbarPriv
 {
   OlPlayer *player;
   enum OlPlayerStatus status;
+  gboolean window_visible;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (OlOsdToolbar, ol_osd_toolbar, GTK_TYPE_ALIGNMENT);
@@ -202,6 +203,9 @@ _update_status (OlOsdToolbar *toolbar)
 {
   ol_log_func ();
   OlOsdToolbarPriv *priv = OL_OSD_TOOLBAR_GET_PRIVATE (toolbar);
+  if (!priv->window_visible)
+    return;
+
   enum OlPlayerStatus status;
   if (priv->player)
     status = ol_player_get_status (priv->player);
@@ -223,7 +227,6 @@ _update_status (OlOsdToolbar *toolbar)
     gtk_widget_show (GTK_WIDGET (toolbar->play_button));
     break;
   }
-  gtk_widget_queue_draw (GTK_WIDGET (toolbar));
 }
 
 static void
@@ -254,6 +257,7 @@ ol_osd_toolbar_init (OlOsdToolbar *toolbar)
     toolbar->next_button = _add_button (toolbar, &btn_spec[BTN_NEXT]);
 
     priv->player = NULL;
+    priv->window_visible = FALSE;
     _update_status (toolbar);
     _update_caps (toolbar);
   }
@@ -323,4 +327,15 @@ ol_osd_toolbar_set_player (OlOsdToolbar *toolbar,
   priv->player = player;
   _update_caps (toolbar);
   _update_status (toolbar);
+}
+
+void ol_osd_toolbar_set_window_visibility(OlOsdToolbar *toolbar,
+                                          gboolean window_visible)
+{
+  ol_assert (OL_IS_OSD_TOOLBAR (toolbar));
+  OlOsdToolbarPriv *priv = OL_OSD_TOOLBAR_GET_PRIVATE (toolbar);
+
+  priv->window_visible = window_visible;
+  if (window_visible)
+    _update_status(toolbar);
 }

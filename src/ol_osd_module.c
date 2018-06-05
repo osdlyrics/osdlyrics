@@ -269,14 +269,9 @@ _visible_changed_cb (OlConfigProxy *config,
                      OlOsdModule *osd)
 {
   gboolean visible = ol_config_proxy_get_bool (config, key);
-  if (visible)
-  {
-    gtk_widget_show (GTK_WIDGET (osd->window));
-  }
-  else
-  {
-    gtk_widget_hide (GTK_WIDGET (osd->window));
-  }
+  gtk_widget_set_visible (GTK_WIDGET (osd->window), visible);
+  if (osd->toolbar != NULL)
+    ol_osd_toolbar_set_window_visibility(osd->toolbar, visible);
 }
 
 static void
