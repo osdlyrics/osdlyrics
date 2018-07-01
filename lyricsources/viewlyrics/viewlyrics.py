@@ -20,8 +20,7 @@
 
 from future import standard_library
 standard_library.install_aliases()
-from builtins import chr
-from builtins import map
+from builtins import bytes
 from builtins import filter
 import string
 import unicodedata
@@ -107,11 +106,9 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
         if status < 200 or status >= 400:
                 raise http.client.HTTPException(status, '')
         
-        contentbytes = list(map(ord, content))
+        contentbytes = bytearray(content)
         codekey = contentbytes[1]
-        deccontent = ''
-        for char in contentbytes[22:]:
-                deccontent += chr(char ^ codekey)
+        deccontent = bytes(map(codekey.__xor__, contentbytes[22:]))
         
         result = []
         pagesleft = 0
