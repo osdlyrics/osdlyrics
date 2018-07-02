@@ -26,15 +26,15 @@ import dbus
 import dbus.mainloop.glib
 from dbus.mainloop.glib import DBusGMainLoop
 import dbus.service
-import glib
-import gobject
+from gi.repository import GLib
+from gi.repository import GObject
 
 from .consts import DAEMON_BUS_NAME
 
 APP_BUS_PREFIX = 'org.osdlyrics.'
 
 
-gobject.threads_init()
+GObject.threads_init()
 dbus.mainloop.glib.threads_init()
 
 
@@ -75,7 +75,7 @@ class App(object):
         self._name = name
         self._namewatch = None
         self._watch_daemon = watch_daemon
-        self._loop = glib.MainLoop()
+        self._loop = GLib.MainLoop()
         self._conn = dbus.SessionBus(mainloop=DBusGMainLoop())
         self._bus_names = []
         try:
@@ -142,7 +142,7 @@ class App(object):
         def timeout_func():
             target(*args, **kwargs)
             return False
-        source = glib.Timeout(0)
+        source = GLib.Timeout(0)
         source.set_callback(timeout_func)
         source.attach(self._loop.get_context())
 

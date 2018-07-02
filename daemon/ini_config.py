@@ -26,7 +26,7 @@ import configparser
 
 import dbus
 import dbus.service
-import glib
+from gi.repository import GLib
 
 from osdlyrics.app import App
 from osdlyrics.consts import CONFIG_BUS_NAME, CONFIG_OBJECT_PATH
@@ -173,7 +173,7 @@ class IniConfig(dbus.service.Object):
 
     def _schedule_save(self, filename=None):
         if self._save_timer is None:
-            self._save_timer = glib.timeout_add(1000,
+            self._save_timer = GLib.timeout_add(1000,
                                                 lambda: self.save(filename))
 
     def save(self, filename=None):
@@ -181,17 +181,17 @@ class IniConfig(dbus.service.Object):
             filename = self._filename
         self._confparser.write(open(filename, 'w'))
         if self._save_timer is not None:
-            glib.source_remove(self._save_timer)
+            GLib.source_remove(self._save_timer)
             self._save_timer = None
 
     def _schedule_signal(self):
         if self._signal_timer is None:
-            self._signal_timer = glib.timeout_add(500,
+            self._signal_timer = GLib.timeout_add(500,
                                                   lambda: self.emit_change())
 
     def emit_change(self):
         if self._signal_timer is not None:
-            glib.source_remove(self._signal_timer)
+            GLib.source_remove(self._signal_timer)
             self._signal_timer = None
         changed = list(self._changed_signals.keys())
         self.ValueChanged(changed)
