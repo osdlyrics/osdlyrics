@@ -214,7 +214,7 @@ def get_gsettings_proxy():
     settings = Gio.Settings('org.gnome.system.proxy')
     if settings.get_string('mode') != 'manual':
         return ProxySettings(protocol='no')
-    protocol_map = { 'http': 'http', 'socks5': 'socks' }
+    protocol_map = {'http': 'http', 'socks5': 'socks'}
     for protocol, key in protocol_map.items():
         settings = Gio.Settings('org.gnome.system.proxy.' + key)
         host = settings.get_string('host').strip()

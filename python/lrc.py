@@ -3,7 +3,7 @@
 # Copyright (C) 2011  Tiger Soldier
 #
 # This file is part of OSD Lyrics.
-# 
+#
 # OSD Lyrics is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -15,8 +15,8 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
-#/
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
+#
 
 from __future__ import print_function
 from builtins import object
@@ -148,8 +148,8 @@ def parse_lrc(content):
             timetags.append(token.time)
         else:
             for timestamp in timetags:
-                lyrics.append({ 'timestamp': dbus.types.Int64(timestamp),
-                                'text': token.text })
+                lyrics.append({'timestamp': dbus.types.Int64(timestamp),
+                               'text': token.text})
             timetags = []
     lyrics.sort(key=lambda a: a['timestamp'])
     i = 0

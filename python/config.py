@@ -167,11 +167,11 @@ def test():
     dbus_mainloop = DBusGMainLoop()
     conn = dbus.SessionBus(mainloop=dbus_mainloop)
     config = Config(conn)
-    testcase = { 'bool': False,
-                 'int': 123,
-                 'double': 123.54,
-                 'string': 'Foobar',
-                 'string_list': ['Foo', 'bar'],
+    testcase = {'bool': False,
+                'int': 123,
+                'double': 123.54,
+                'string': 'Foobar',
+                'string_list': ['Foo', 'bar'],
                  }
     for k in testcase:
         config.connect_change('test/' + k, value_changed)

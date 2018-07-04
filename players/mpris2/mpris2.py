@@ -122,10 +122,10 @@ class Mpris2Player(BasePlayer):
 
     def _player_properties_changed(self, iface, changed, invalidated):
         caps_props = ['CanGoNext', 'CanGoPrevious', 'CanPlay', 'CanPause', 'CanSeek']
-        prop_map = { 'PlaybackStatus': 'status_changed',
-                     'LoopStatus': 'repeat_changed',
-                     'Shuffle': 'shuffle_changed',
-                     'Metadata': 'track_changed',
+        prop_map = {'PlaybackStatus': 'status_changed',
+                    'LoopStatus': 'repeat_changed',
+                    'Shuffle': 'shuffle_changed',
+                    'Metadata': 'track_changed',
                      }
         # status_props = ['PlaybackStatus', 'LoopStatus', 'Shuffle']
         logging.debug('Status changed: %s', changed)
@@ -211,11 +211,11 @@ class Mpris2Player(BasePlayer):
 
     def get_caps(self):
         caps = set()
-        caps_dict = { 'CanGoNext': CAPS_NEXT,
-                      'CanGoPrevious': CAPS_PREV,
-                      'CanPlay': CAPS_PLAY,
-                      'CanPause': CAPS_PAUSE,
-                      'CanSeek': CAPS_SEEK,
+        caps_dict = {'CanGoNext': CAPS_NEXT,
+                     'CanGoPrevious': CAPS_PREV,
+                     'CanPlay': CAPS_PLAY,
+                     'CanPause': CAPS_PAUSE,
+                     'CanSeek': CAPS_SEEK,
             }
         for k, v in caps_dict.items():
             if self._player_prop.Get(MPRIS2_PLAYER_INTERFACE, k):

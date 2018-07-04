@@ -63,7 +63,7 @@ class PlayerSupport(dbus.service.Object):
 
     def _start_detect_player(self):
         self._detect_timer = glib.timeout_add(self.DETECT_PLAYER_TIMEOUT,
-                                              lambda : not self._detect_player())
+                                              lambda: not self._detect_player())
 
     def _detect_player(self):
         """

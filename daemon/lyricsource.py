@@ -125,7 +125,7 @@ class LyricSource(dbus.service.Object):
         if (status == STATUS_SUCCESS and results) or \
                 status == STATUS_CANCELLED:
             self.SearchComplete(myticket, status, results)
-        else: #STATUS_FAILURE
+        else:  # STATUS_FAILURE
             mytask = self._search_tasks[myticket]
             # mytask['failure'] is set to True only when all sources fail to search.
             # To ensure that, we set this value to None when task is created, and
@@ -231,7 +231,7 @@ class LyricSource(dbus.service.Object):
     @dbus.service.method(dbus_interface=LYRIC_SOURCE_INTERFACE,
                          in_signature='i',
                          out_signature='')
-    def CancelSearch(self,ticket):
+    def CancelSearch(self, ticket):
         if ticket not in self._search_tasks:
             return
         task = self._search_tasks[ticket]
@@ -260,7 +260,7 @@ class LyricSource(dbus.service.Object):
     @dbus.service.method(dbus_interface=LYRIC_SOURCE_INTERFACE,
                          in_signature='i',
                          out_signature='')
-    def CancelDownload(self,ticket):
+    def CancelDownload(self, ticket):
         if ticket not in self._download_tasks:
             return
         task = self._download_tasks[ticket]

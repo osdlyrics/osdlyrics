@@ -80,8 +80,8 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
 
     def real_search(self, title='', artist='', page=0):
         query = VIEWLYRICS_QUERY_FORM
-        query =  query.replace('%title', title)
-        query =  query.replace('%artist', artist)
+        query = query.replace('%title', title)
+        query = query.replace('%artist', artist)
         query = query.replace('%etc', ' client="MiniLyrics" RequestPage=\'%d\'' % page)  # Needs real RequestPage
         query = query.encode('utf-8')
 

@@ -168,10 +168,10 @@ class Metadata(object):
         file:///path/to/file
         """
         ret = dbus.Dictionary(signature='sv')
-        mpris2map = { 'title': 'xesam:title',
-                      'album': 'xesam:album',
-                      'arturl': 'mpris:artUrl',
-                      'location': 'xesam:url',
+        mpris2map = {'title': 'xesam:title',
+                     'album': 'xesam:album',
+                     'arturl': 'mpris:artUrl',
+                     'location': 'xesam:url',
                       }
         for k in ['title', 'album', 'arturl', 'location']:
             if getattr(self, k) is not None:

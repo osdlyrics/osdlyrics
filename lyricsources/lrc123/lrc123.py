@@ -80,7 +80,7 @@ class Lrc123Source(BaseLyricSourcePlugin):
 
     def do_download(self, downloadinfo):
         # type: (Any) -> bytes
-        status, content = http_download(url=HOST+downloadinfo,
+        status, content = http_download(url=HOST + downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
             raise http.client.HTTPException(status, '')

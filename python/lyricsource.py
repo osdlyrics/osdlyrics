@@ -81,12 +81,12 @@ class SearchResult(object):
     def to_dict(self, ):
         """ Convert the result to a dict so that it can be sent with D-Bus.
         """
-        return { 'title': self._title,
-                 'artist': self._artist,
-                 'album': self._album,
-                 'comment': self._comment,
-                 'sourceid': self._sourceid,
-                 'downloadinfo': self._downloadinfo }
+        return {'title': self._title,
+                'artist': self._artist,
+                'album': self._album,
+                'comment': self._comment,
+                'sourceid': self._sourceid,
+                'downloadinfo': self._downloadinfo}
 
 
 class BaseTaskThread(threading.Thread):
@@ -360,7 +360,7 @@ def test():
         if status == 0:
             downloadinfo = results[0]['downloadinfo']
             source.Download(downloadinfo,
-                            reply_handler=lambda t:download_reply(t, 0),
+                            reply_handler=lambda t: download_reply(t, 0),
                             error_handler=dummy_error)
         del search_tickets[ticket]
         check_quit()
@@ -412,10 +412,10 @@ def test():
                   reply_handler=lambda t: search_reply(t, 0),
                   error_handler=dummy_error)
     source.Search({'foo': 'bar'},
-                  reply_handler=lambda t:search_reply(t, 2),
+                  reply_handler=lambda t: search_reply(t, 2),
                   error_handler=dummy_error)
     source.Download(123,
-                    reply_handler=lambda t:download_reply(t, 2),
+                    reply_handler=lambda t: download_reply(t, 2),
                     error_handler=dummy_error)
     app.run()
 
