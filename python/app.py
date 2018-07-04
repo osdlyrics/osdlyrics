@@ -139,9 +139,9 @@ class App(object):
 
         This is useful for notifying a thread is finished.
         """
-        def timeout_func():
+        def timeout_func(*user_data):
             target(*args, **kwargs)
-            return False
+            return GLib.SOURCE_REMOVE
         source = GLib.Timeout(0)
         source.set_callback(timeout_func)
         source.attach(self._loop.get_context())
