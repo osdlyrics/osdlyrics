@@ -41,6 +41,7 @@ class HttpPlayerProxy(BasePlayerProxy):
         self._server = server.HttpServer(('', 7119),
                                          self)
         self._server_watch = GLib.io_add_watch(self._server.fileno(),
+                                               GLib.PRIORITY_DEFAULT,
                                                GLib.IOCondition.IN,
                                                self._handle_req)
         self._players = {}

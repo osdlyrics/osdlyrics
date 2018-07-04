@@ -27,14 +27,12 @@ import dbus.mainloop.glib
 from dbus.mainloop.glib import DBusGMainLoop
 import dbus.service
 from gi.repository import GLib
-from gi.repository import GObject
 
 from .consts import DAEMON_BUS_NAME
 
 APP_BUS_PREFIX = 'org.osdlyrics.'
 
 
-GObject.threads_init()
 dbus.mainloop.glib.threads_init()
 
 
@@ -142,9 +140,7 @@ class App(object):
         def timeout_func(*user_data):
             target(*args, **kwargs)
             return GLib.SOURCE_REMOVE
-        source = GLib.Timeout(0)
-        source.set_callback(timeout_func)
-        source.attach(self._loop.get_context())
+        GLib.timeout_add(0, timeout_func)
 
     def quit(self):
         """Quits the main loop"""
