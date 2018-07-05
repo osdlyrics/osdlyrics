@@ -34,6 +34,7 @@ SEARCH_URL = '/?keyword=%s&field=all'
 RESULT_PATTERN = re.compile(r'<div class="newscont .*?href="/\?field=singer.*?>(.*?)</a>.*?href="/\?field=album.*?>(.*?)</a>.*?href="/\?field=song.*?>(.*?)</a>.*?href="/download/lrc/(.*?)">LRC', re.DOTALL)
 DOWNLOAD_URL_PREFIX = '/download/lrc/'
 
+
 class Lrc123Source(BaseLyricSourcePlugin):
     """ Lyric source from xiami.com
     """

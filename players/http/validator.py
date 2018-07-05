@@ -30,12 +30,14 @@ __all__ = (
     'validate_params',
     )
 
+
 class baseparam(object):
     def __init__(self, optional=False):
         self.optional = optional
 
     def validate(self, value):
         raise NotImplementedError()
+
 
 class param_int(baseparam):
     def __init__(self, max=None, min=None, optional=False):
@@ -54,19 +56,21 @@ class param_int(baseparam):
         except:
             return False, value
 
+
 class param_str(baseparam):
     def __init__(self, nonempty=False, optional=False):
         baseparam.__init__(self, optional)
         self._nonempty = nonempty
-        
+
     def validate(self, value):
         return True if not self._nonempty else isinstance(value, str), value
+
 
 class param_enum(baseparam):
     def __init__(self, valid_values, optional=False):
         baseparam.__init__(self, optional)
         self._valid_values = valid_values
-        
+
     def validate(self, value):
         if not value in self._valid_values:
             return False, ''
@@ -76,16 +80,17 @@ class param_enum(baseparam):
         except:
             return True, value
 
+
 class param_set(baseparam):
     def __init__(self, valid_values, optional=False):
         baseparam.__init__(self, optional)
         self._valid_values = valid_values
-        
+
     def validate(self, value):
         ret = set()
         for k in value.split(','):
             k = k.strip()
-            
+
             if not k in self._valid_values:
                 return False, ret
             try:
@@ -94,6 +99,7 @@ class param_set(baseparam):
             except:
                 ret.add(k)
         return True, ret
+
 
 def validate_params(param_def):
     def dec(func):

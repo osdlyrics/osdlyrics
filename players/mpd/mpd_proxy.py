@@ -51,8 +51,10 @@ PLAYER_NAME = 'Mpd'
 DEFAULT_HOST = 'localhost'
 DEFAULT_PORT = 6600
 
+
 class NoConnectionError(Exception):
     pass
+
 
 class CommandCallback(object):
     def __init__(self, command, callback):
@@ -62,6 +64,7 @@ class CommandCallback(object):
     def call(self, *args):
         if callable(self.callback):
             self.callback(*args)
+
 
 class Cmds(object):
     CONFIG = 'config'
@@ -83,6 +86,7 @@ class Cmds(object):
     SINGLE = 'single'
     STATUS = 'status'
     STOP = 'stop'
+
 
 class MpdProxy(BasePlayerProxy):
     def __init__(self):
@@ -257,6 +261,7 @@ class MpdProxy(BasePlayerProxy):
         if self._player:
             ret['player'] = self._player.debug_info()
         return ret
+
 
 class MpdPlayer(BasePlayer):
 
@@ -475,6 +480,7 @@ class MpdPlayer(BasePlayer):
             'position': self.get_position()
         })
         return ret
+
 
 if __name__ == '__main__':
     proxy = MpdProxy()

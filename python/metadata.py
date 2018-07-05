@@ -335,6 +335,7 @@ class Metadata(object):
         attr_value = ['  %s: %s' % (key, getattr(self, key)) for key in attrs]
         return 'metadata:\n' + '\n'.join(attr_value)
 
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()

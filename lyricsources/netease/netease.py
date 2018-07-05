@@ -18,6 +18,7 @@ NETEASE_LYRIC_URL = '/api/song/lyric'
 gettext.bindtextdomain('osdlyrics')
 gettext.textdomain('osdlyrics')
 
+
 class NeteaseSource(BaseLyricSourcePlugin):
     """ Lyric source from music.163.com
     """

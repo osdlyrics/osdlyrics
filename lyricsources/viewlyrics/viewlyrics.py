@@ -38,12 +38,14 @@ VIEWLYRICS_QUERY_FORM = '<?xml version=\'1.0\' encoding=\'utf-8\' ?><searchV1 ar
 VIEWLYRICS_AGENT = 'MiniLyrics'
 VIEWLYRICS_KEY = b'Mlv1clt4.0'
 
+
 def normalize_str(s):
     """ If s is a unicode string, only keep alphanumeric characters and remove
         diacritics
     """
     return ''.join(x for x in unicodedata.normalize('NFKD', s)
                    if x in string.ascii_letters + string.digits).lower()
+
 
 class ViewlyricsSource(BaseLyricSourcePlugin):
     def __init__(self):
@@ -69,6 +71,7 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
         # Prioritize results whose artist matches
         if metadata.artist and metadata.title:
             n_artist = normalize_str(artist)
+
             def res_has_same_artist(result):
                 return normalize_str(result._artist) == n_artist
             result.sort(key=res_has_same_artist, reverse=True)
@@ -81,26 +84,26 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
         query =  query.replace('%artist', artist)
         query = query.replace('%etc', ' client="MiniLyrics" RequestPage=\'%d\'' % page)  # Needs real RequestPage
         query = query.encode('utf-8')
-        
+
         queryhash = hashlib.md5()
         queryhash.update(query)
         queryhash.update(VIEWLYRICS_KEY)
-        
+
         masterquery = b'\2\0\4\0\0\0' + queryhash.digest() + query
-        
+
         url = VIEWLYRICS_HOST + VIEWLYRICS_SEARCH_URL
         status, content = http_download(url=url,
                                         method='POST',
                                         params=masterquery,
                                         proxy=get_proxy_settings(self.config_proxy))
-        
+
         if status < 200 or status >= 400:
                 raise http.client.HTTPException(status, '')
-        
+
         contentbytes = bytearray(content)
         codekey = contentbytes[1]
         deccontent = bytes(map(codekey.__xor__, contentbytes[22:]))
-        
+
         root = xet.fromstring(deccontent)  # tagName == 'return'
         pagesleft = int(next((v for k, v in root.items() if k.lower() == 'PageCount'.lower()), 0))
         result = [

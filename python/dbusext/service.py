@@ -56,12 +56,15 @@ class ObjectTypeCls(dbus.service.Object.__class__):
         property_table[cls.__module__ + '.' + cls.__name__] = property_dict
         super(ObjectTypeCls, cls).__init__(name, bases, dct)
 
+
 ObjectType = ObjectTypeCls('ObjectType', (dbus.service.Object, ), {})
+
 
 class Object(ObjectType):
     """ DBus object wrapper which provides DBus property support
     """
     # __metaclass__ = ObjectType
+
     def __init__(self, conn=None, object_path=None, bus_name=None):
         """
         Either conn or bus_name is required; object_path is also required.
@@ -135,7 +138,6 @@ class Object(ObjectType):
                 (not iface_name or prop.interface == iface_name):
             return getattr(self, prop_name)
         raise dbus.exceptions.DBusException('No property of %s.%s' % (iface_name, prop_name))
-
 
     @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
                          in_signature='ssv',
@@ -271,6 +273,7 @@ def property(type_signature,
                         fget=fget)
     return dec_handler
 
+
 def _property2element(prop):
     """
     Convert an osdlyrics.dbusext.service.Property object to
@@ -292,11 +295,13 @@ def _property2element(prop):
         elem.append(annotation)
     return elem
 
+
 def test():
     BUS_NAME = 'org.example.test'
     IFACE = 'org.example.test'
     PATH = '/org/example/test'
     DEFAULT_VALUE = 'default value of x'
+
     class TestObj(Object):
         def __init__(self, loop):
             Object.__init__(self, conn=dbus.SessionBus(), object_path=PATH)
@@ -432,6 +437,7 @@ def test():
     testobj = TestObjSub(loop)
     glib.timeout_add(100, test_timeout)
     loop.run()
+
 
 if __name__ == '__main__':
     test()

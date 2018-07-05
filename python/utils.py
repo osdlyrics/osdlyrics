@@ -48,6 +48,7 @@ if sys.version_info < (3, 0):
         reload(sys)
         sys.setdefaultencoding('utf-8')
 
+
 class ProxySettings(object):
     """
     """
@@ -60,6 +61,7 @@ class ProxySettings(object):
         self.port = port
         self.username = username
         self.password = password
+
 
 def get_config_path(filename='', expanduser=True):
     """
@@ -79,6 +81,7 @@ def get_config_path(filename='', expanduser=True):
     if expanduser:
         path = os.path.expanduser(path)
     return path
+
 
 def path2uri(path):
     # type: (Text) -> Text
@@ -136,6 +139,7 @@ def get_proxy_settings(config=None, conn=None):
     if proxy_type == 'system':
         return detect_system_proxy()
 
+
 def detect_system_proxy():
     r"""
     Detects and return system proxy settings.
@@ -157,6 +161,7 @@ def detect_system_proxy():
             return proxy
     return get_envar_proxy()
 
+
 def get_envar_proxy():
     r"""
     Return proxy settings from environment variable `http_proxy`
@@ -177,6 +182,7 @@ def get_envar_proxy():
                                  password=parts.password)
     return ProxySettings(protocol='no')
 
+
 def detect_desktop_shell():
     r"""
     Detect the currently running destop shell.
@@ -191,6 +197,7 @@ def detect_desktop_shell():
     if envar.startswith('ubuntu') or envar.startswith('unity'):
         return 'unity'
     return 'unknown'
+
 
 def get_gsettings_proxy():
     r"""
@@ -225,6 +232,7 @@ def get_gsettings_proxy():
                              username=username,
                              password=password)
     return ProxySettings(protocol='no')
+
 
 def get_kde_proxy():
     r"""
@@ -262,6 +270,7 @@ def get_kde_proxy():
                                          host=host,
                                          port=port)
     return ProxySettings('no')
+
 
 def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, proxy=None):
     # type: (Text, int, Text, Union[bytes, Dict[Text, Any]], Dict[Text, Any], int, Any) -> Tuple[int, bytes]
@@ -334,6 +343,7 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
     c.perform()
     return c.getinfo(pycurl.HTTP_CODE), buf.getvalue()
 
+
 def ensure_path(path, ignore_file_name=True):
     """ Create directories if necessary.
 
@@ -353,6 +363,7 @@ def ensure_path(path, ignore_file_name=True):
     if os.path.isdir(path):
         return
     os.makedirs(path)
+
 
 def find_file_in_dirs(filename, dirs, filter_func=None):
     """
@@ -374,6 +385,7 @@ def find_file_in_dirs(filename, dirs, filter_func=None):
             ret.append(path)
     return ret
 
+
 def cmd_exists(cmd):
     """
     Check if a command exists.
@@ -386,6 +398,7 @@ def cmd_exists(cmd):
                                  os.environ['PATH'].split(':'),
                                  is_exec_file)
     return len(cmdfiles) > 0
+
 
 def is_exec_file(filepath):
     """
@@ -402,6 +415,7 @@ def is_exec_file(filepath):
     if st.st_gid in gid:
         return (st.st_mode & stat.S_IXGRP) != 0
     return (st.st_mode & stat.S_IXOTH) != 0
+
 
 if __name__ == '__main__':
     import doctest

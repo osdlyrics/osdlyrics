@@ -20,6 +20,7 @@
 
 import dbus.exceptions
 
+
 class BaseError(dbus.exceptions.DBusException):
     """ Base class for raising an exception through D-Bus
     """
@@ -42,6 +43,7 @@ class BaseError(dbus.exceptions.DBusException):
             dbus_error_name = 'org.osdlyrics.Error.' + error_name
         kwargs['name'] = dbus_error_name
         dbus.exceptions.DBusException.__init__(self, *args, **kwargs)
+
 
 class PatternException(Exception):
     pass

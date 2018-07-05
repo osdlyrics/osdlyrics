@@ -42,6 +42,7 @@ PARAM_CAPS = param_set({'play': CAPS_PLAY,
                         'prev': CAPS_PREV,
                         'seek': CAPS_SEEK})
 
+
 def parse_query(query):
     """ Parse query strings in GET or POST to a dict
 
@@ -49,7 +50,7 @@ def parse_query(query):
     values as the query values. If a query name does not have a value, the
     value to the key is True. If more than one value assigned to the query name,
     any one may be assigned to the key.
-    
+
     Arguments:
     - `query`: A string like 'query1=value&query2=value'
     """
@@ -62,10 +63,11 @@ def parse_query(query):
             ret[k] = True
     return ret
 
+
 class RequestHandler(http.server.BaseHTTPRequestHandler):
     """ Handles HTTP request
     """
-    
+
     server_version = 'OsdLyricsHttp/1.0'
 
     def _send_content(self, content):
@@ -151,16 +153,16 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
             return self.server.player_proxy.get_player(name)
         except:
             raise BadRequestError('Invalid player id: %s' % name)
-        
+
 
 class HttpServer(http.server.HTTPServer):
     """
     Lyrics Http server
     """
-    
+
     def __init__(self, server_address, player_proxy):
         """
-        
+
         Arguments:
         - `server_address`:
         """
@@ -174,4 +176,3 @@ class HttpServer(http.server.HTTPServer):
     @property
     def player_proxy(self):
         return self._player_proxy
-        

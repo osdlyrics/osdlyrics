@@ -27,6 +27,7 @@ import urllib.request
 
 from .errors import PatternException
 
+
 def expand_file(pattern, metadata):
     """
     Expands the pattern to a file name according to the infomation of a music
@@ -122,6 +123,7 @@ def expand_file(pattern, metadata):
             break
     return ''.join(parts)
 
+
 def expand_path(pattern, metadata):
     """
     Expands the pattern to a directory path according to the infomation of a music
@@ -164,6 +166,7 @@ def expand_path(pattern, metadata):
         path = urllib.request.url2pathname(uri.path)
         return os.path.dirname(path)
     return os.path.expanduser(pattern)
+
 
 if __name__ == '__main__':
     import doctest

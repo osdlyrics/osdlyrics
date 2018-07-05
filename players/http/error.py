@@ -20,35 +20,44 @@
 from future import standard_library
 standard_library.install_aliases()
 import http.client
+
+
 class InvalidRequestException(Exception):
-    
+
     def __init__(self, message):
         self._message = message
 
     def __str__(self):
         return repr(self._message)
 
+
 class HttpError(Exception):
     """
     Error response
     """
+
     def __init__(self, code, message=''):
         self.code = code
         self.message = message
+
 
 class NotFoundError(HttpError):
     """
     HTTP Error 404
     """
+
     def __init__(self, message=''):
         HttpError.__init__(self, http.client.NOT_FOUND, message)
+
 
 class BadRequestError(HttpError):
     """
     HTTP Error 400
     """
+
     def __init__(self, message=''):
         HttpError.__init__(self, http.client.BAD_REQUEST, message)
+
 
 class PlayerNotFoundError(Exception):
     pass

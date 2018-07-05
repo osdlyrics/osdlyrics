@@ -64,6 +64,7 @@ SUPPORTED_SCHEMES = [
 DETECT_CHARSET_GUESS_MIN_LEN = 40
 DETECT_CHARSET_GUESS_MAX_LEN = 100
 
+
 class InvalidUriException(Exception):
     """ Exception of invalid uri.
     """
@@ -71,13 +72,16 @@ class InvalidUriException(Exception):
     def __init__(self, uri):
         Exception.__init__(self, "Invalid URI: %s" % uri)
 
+
 class CannotLoadLrcException(Exception):
     def __init__(self, uri):
         Exception.__init__(self, "Cannot load lrc file from %s" % uri)
 
+
 class CannotSaveLrcException(Exception):
     def __init__(self, uri):
         Exception.__init__(self, "Cannot save lrc file to %s" % uri)
+
 
 def metadata_description(metadata):
     if metadata.title is None:
@@ -132,6 +136,7 @@ def is_valid_uri(uri):
             return True
     return False
 
+
 def ensure_uri_scheme(uri):
     # type: (Text) -> Text
     """
@@ -145,6 +150,7 @@ def ensure_uri_scheme(uri):
         if not url_parts.scheme:
             uri = osdlyrics.utils.path2uri(uri)
     return uri
+
 
 def load_from_file(urlparts):
     """
@@ -161,6 +167,7 @@ def load_from_file(urlparts):
     except IOError as e:
         logging.info("Cannot open file %s to read: %s", path, e)
         return None
+
 
 def load_from_uri(uri):
     # type: (Text) -> Optional[Text]
@@ -180,6 +187,7 @@ def load_from_uri(uri):
         return None
     content = decode_by_charset(content).replace('\0', '')
     return content
+
 
 def save_to_file(urlparts, content, create):
     # type: (Any, bytes, bool) -> bool
@@ -212,6 +220,7 @@ def save_to_file(urlparts, content, create):
     file.write(content)
     return True
 
+
 def save_to_uri(uri, content, create=True):
     # type: (Text, bytes, bool) -> bool
     """
@@ -226,6 +235,7 @@ def save_to_uri(uri, content, create=True):
 
     url_parts = urllib.parse.urlparse(uri)
     return URI_SAVE_HANDLERS[url_parts.scheme](url_parts, content, create)
+
 
 def update_lrc_offset(content, offset):
     r"""
@@ -249,6 +259,7 @@ def update_lrc_offset(content, offset):
     return '%s%s%s' % (content[:search_result.start(2)],
                        offset,
                        content[search_result.end(2):])
+
 
 class LyricsService(dbus.service.Object):
 
@@ -413,14 +424,17 @@ class LyricsService(dbus.service.Object):
         logging.info('Setting current metadata: %s', metadata)
         self._metadata = metadata
 
+
 def doc_test():
     import doctest
     doctest.testmod()
+
 
 def test():
     app = App('Lyrics', False)
     lyrics_service = LyricsService(app.connection)
     app.run()
+
 
 if __name__ == '__main__':
     doc_test()

@@ -45,10 +45,11 @@ def query_param_from_metadata(metadata):
     }
     return param
 
+
 class LrcDb(object):
     """ Database to store location of LRC files that have been manually assigned
     """
-    
+
     TABLE_NAME = 'lyrics'
 
     METADATA_LIST = [METADATA_TITLE, METADATA_ARTIST, METADATA_ALBUM, METADATA_TRACKNUM]
@@ -75,7 +76,7 @@ UPDATE {0}
 """.format(TABLE_NAME)
 
     DELETE_LYRIC = 'DELETE FROM {0} WHERE '.format(TABLE_NAME)
-    
+
     FIND_LYRIC = 'SELECT lrcpath FROM {0} WHERE '.format(TABLE_NAME)
 
     QUERY_LOCATION = 'uri = ?'
@@ -84,7 +85,7 @@ UPDATE {0}
 
     def __init__(self, dbfile=None):
         """
-        
+
         Arguments:
         - `dbfile`: The sqlite db to open
         """
@@ -144,7 +145,7 @@ UPDATE {0}
         with the ``location`` attribute in metadata. If not found or ``location`` is
         not specified, try to find with respect to ``title``, ``artist``, ``album``
         and ``tracknum``
-        
+
         If found, return the uri of the LRC file. Otherwise return None. Note that
         this method may return an empty string, so use ``is None`` to figure out
         whether an uri is found
@@ -176,6 +177,7 @@ UPDATE {0}
     def _find_by_info(self, metadata):
         return self._find_by_condition(LrcDb.QUERY_INFO,
                                        query_param_from_metadata(metadata))
+
 
 def test():
     """
@@ -220,6 +222,7 @@ def test():
     """
     import doctest
     doctest.testmod()
+
 
 if __name__ == '__main__':
     test()

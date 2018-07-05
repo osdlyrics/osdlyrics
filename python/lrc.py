@@ -36,10 +36,12 @@ LINE_PATTERN = re.compile(r'(\[[^\[]*?\])')
 TIMESTAMP_PATTERN = re.compile(r'^\[(\d+(:\d+){0,2}(\.\d+)?)\]$')
 ATTR_PATTERN = re.compile(r'^\[([\w\d]+):(.*)\]$')
 
+
 class AttrToken(object):
     """
     Represents tags with the form of ``[key:value]``
     """
+
     def __init__(self, key, value):
         self.key = key
         self.value = value
@@ -47,15 +49,18 @@ class AttrToken(object):
     def __repr__(self):
         return '{%s: %s}' % (self.key, self.value)
 
+
 class StringToken(object):
     """
     Represents a line of lyric text
     """
+
     def __init__(self, text):
         self.text = text
 
     def __repr__(self):
         return '"%s"\n' % self.text
+
 
 class TimeToken(object):
     """
@@ -63,6 +68,7 @@ class TimeToken(object):
 
     The time attribute is the timestamp in milliseconds
     """
+
     def __init__(self, string):
         parts = string.split(':')
         parts.reverse()
@@ -76,11 +82,12 @@ class TimeToken(object):
     def __repr__(self):
         return '[%s]' % self.time
 
+
 def tokenize(content):
     """ Split the content of LRC file into tokens
 
     Returns a list of tokens
-    
+
     Arguments:
     - `content`: UTF8 string, the content to be tokenized
     """
@@ -92,7 +99,7 @@ def tokenize(content):
         if m:
             return AttrToken(m.group(1), m.group(2))
         return None
-    
+
     def tokenize_line(line):
         pos = 0
         tokens = []
@@ -110,12 +117,13 @@ def tokenize(content):
                 break
         tokens.append(StringToken(line[pos:]))
         return tokens
-    
+
     lines = content.splitlines()
     tokens = []
     for line in lines:
         tokens.extend(tokenize_line(line))
     return tokens
+
 
 def parse_lrc(content):
     """
@@ -149,7 +157,7 @@ def parse_lrc(content):
         lyric['id'] = dbus.types.UInt32(i)
         i = i + 1
     return attrs, lyrics
-            
+
 
 def test():
     TEST_CASE1 = \
@@ -161,6 +169,7 @@ def test():
 [1:03:56.66][03:14.77]
 おわり
 """
+
     def test_tokenizer():
         tokens = tokenize(TEST_CASE1)
         print(tokens)
@@ -173,6 +182,7 @@ def test():
 
     test_tokenizer()
     test_parser()
+
 
 if __name__ == '__main__':
     test()

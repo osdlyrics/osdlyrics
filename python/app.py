@@ -36,10 +36,12 @@ APP_BUS_PREFIX = 'org.osdlyrics.'
 gobject.threads_init()
 dbus.mainloop.glib.threads_init()
 
+
 class AlreadyRunningException(Exception):
     """ Raised when a process with given bus name exists.
     """
     pass
+
 
 class App(object):
     """ Basic class to create a component application for OSD Lyrics.

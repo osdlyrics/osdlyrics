@@ -43,6 +43,7 @@ TITLE_ATTR_PATTERN = re.compile(r'title="(.*?)"')
 gettext.bindtextdomain('osdlyrics')
 gettext.textdomain('osdlyrics')
 
+
 class XiamiSource(BaseLyricSourcePlugin):
     """ Lyric source from xiami.com
     """

@@ -20,13 +20,14 @@
 from builtins import object
 from datetime import datetime
 
+
 class Timer(object):
     """ A timer to account the elapsed playing.
     """
-    
+
     def __init__(self, accuracy=0):
         """
-        
+
         Arguments:
         - `accuracy`:The accuracy of the time provided by players.
           If the difference between the time provided by players and the time of

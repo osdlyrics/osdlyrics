@@ -99,6 +99,7 @@ if __name__ == '__main__':
     ${name}._app.run()
 """
 
+
 def input_name():
     prompt = 'Input the lyric source name with only lower-case alphabets and numbers:\n'
     while True:
@@ -108,6 +109,7 @@ def input_name():
         else:
             break
     return name
+
 
 def input_boolean(prompt, default_value):
     prompt += ' [Y/n]?' if default_value == True else ' [y/N]?'
@@ -119,11 +121,13 @@ def input_boolean(prompt, default_value):
     else:
         return default_value == True
 
+
 def create_file(template, path, name, params):
     content = string.Template(template).substitute(params)
     f = open(os.path.join(path, name), 'w')
     f.write(content)
     f.close()
+
 
 def main():
     name = input_name()
@@ -144,6 +148,7 @@ def main():
         if have_subdir:
             create_file(ROOTMAKEFILEAM, rootpath, 'Makefile.am', params)
     print('Done')
+
 
 if __name__ == '__main__':
     main()

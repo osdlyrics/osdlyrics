@@ -31,6 +31,7 @@ from .dbusext.service import Object as DBusObject, property as dbus_property
 from . import errors
 from . import timer
 
+
 class ConnectPlayerError(errors.BaseError):
     """
     Exception raised when BasePlayerProxy.do_connect_player() fails
@@ -146,6 +147,7 @@ class BasePlayerProxy(dbus.service.Object):
         """
         raise NotImplementedError()
 
+
 class PlayerInfo(object):
     """Information about a supported player
     """
@@ -186,6 +188,7 @@ class PlayerInfo(object):
         for k in keys:
             ret[k] = getattr(self, '_' + k)
         return ret
+
 
 CAPS_NEXT = 1 << 0
 CAPS_PREV = 1 << 1

@@ -155,6 +155,7 @@ class Config(object):
             for handler in self._signals.get(name, []):
                 handler(name)
 
+
 def test():
     def value_changed(name):
         typename = name.split('/')[1]
@@ -177,6 +178,7 @@ def test():
     for k, v in testcase.items():
         getattr(config, 'set_' + k)('test/' + k, v)
     loop.run()
+
 
 if __name__ == '__main__':
     test()

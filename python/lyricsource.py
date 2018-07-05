@@ -45,7 +45,6 @@ DOWNLOAD_CANCELLED = 1
 DOWNLOAD_FAILED = 2
 
 
-
 def onmainthread(func):
     def decfunc(self, app, *args, **kwargs):
         def timeout_cb():
@@ -58,6 +57,7 @@ def onmainthread(func):
 class SearchResult(object):
     """ Lyrics that match the metadata to be searched.
     """
+
     def __init__(self, sourceid, downloadinfo, title='', artist='', album='', comment=''):
         """
 
@@ -219,7 +219,6 @@ class BaseLyricSourcePlugin(DBusObject):
             del self._search_tasks[ticket]
             self.SearchComplete(ticket, SEARCH_CANCELLED, [])
 
-
     def do_download(self, downloadinfo):
         """
         Do the real download work by plugins. All plugins MUST implement this
@@ -280,7 +279,6 @@ class BaseLyricSourcePlugin(DBusObject):
     def SearchComplete(self, ticket, status, results):
         logging.debug('search complete: ticket: %d, status: %d', ticket, status)
         pass
-
 
     @dbus.service.signal(dbus_interface=LYRIC_SOURCE_PLUGIN_INTERFACE,
                          signature='iiay')
