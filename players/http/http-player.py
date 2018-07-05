@@ -179,7 +179,7 @@ class HttpPlayer(BasePlayer):
 
     def _add_cmd(self, cmd, params={}):
         self._cmds.append((int(time.time() * 10),
-                          {'cmd': cmd, 'params': params}))
+                           {'cmd': cmd, 'params': params}))
 
 
 if __name__ == '__main__':

@@ -172,7 +172,7 @@ class Metadata(object):
                      'album': 'xesam:album',
                      'arturl': 'mpris:artUrl',
                      'location': 'xesam:url',
-                      }
+                     }
         for k in ['title', 'album', 'arturl', 'location']:
             if getattr(self, k) is not None:
                 ret[mpris2map[k]] = dbus.String(getattr(self, k))

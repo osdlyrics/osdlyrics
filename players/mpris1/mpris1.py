@@ -47,7 +47,7 @@ MPRIS1_CAPS_MAP = {
     1 << 2: CAPS_PAUSE,
     1 << 3: CAPS_PLAY,
     1 << 4: CAPS_SEEK,
-    }
+}
 
 # The constants actually have the same values but that is the legacy of MPRIS1.
 MPRIS1_STATUS_MAP = {

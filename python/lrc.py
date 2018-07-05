@@ -26,7 +26,7 @@ __all__ = (
     'StringToken',
     'tokenize',
     'parse_lrc',
-    )
+)
 
 import re
 
@@ -161,7 +161,7 @@ def parse_lrc(content):
 
 def test():
     TEST_CASE1 = \
-"""[ti:焔の扉~hearty edition][ar:FictionJunction YUUKA]
+        """[ti:焔の扉~hearty edition][ar:FictionJunction YUUKA]
 [al:焔の扉]
 [02:45.59]その日まで
 [52.78]

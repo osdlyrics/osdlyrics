@@ -261,7 +261,7 @@ class Mpris2Player(DBusObject):
             'Playing': 'play',
             'Paused': 'pause',
             'Stopped': 'stop',
-            }
+        }
         if status in status_map:
             getattr(self._timer, status_map[status])()
 

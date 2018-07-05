@@ -140,7 +140,7 @@ def main():
     params = {
         'name': name,
         'capsname': name.capitalize()
-        }
+    }
     create_file(PYTHON, srcpath, name + '.py', params)
     create_file(SERVICE, srcpath, 'org.osdlyrics.LyricSourcePlugin.' + name + '.service.in', params)
     if have_am:

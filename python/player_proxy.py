@@ -406,7 +406,7 @@ class BasePlayer(DBusObject):
             STATUS_PAUSED: 'pause',
             STATUS_PLAYING: 'play',
             STATUS_STOPPED: 'stop',
-            }
+        }
         if self._timer:
             getattr(self._timer, status_map[status])()
 
@@ -541,7 +541,7 @@ class BasePlayer(DBusObject):
             STATUS_PLAYING: 'Playing',
             STATUS_PAUSED: 'Paused',
             STATUS_STOPPED: 'Stopped',
-            }
+        }
         return status_map[self._get_cached_status()]
 
     @PlaybackStatus.setter
@@ -555,7 +555,7 @@ class BasePlayer(DBusObject):
             REPEAT_NONE: 'None',
             REPEAT_ALL: 'Playlist',
             REPEAT_TRACK: 'Track',
-            }
+        }
         return status_map[self._get_cached_loop_status()]
 
     @LoopStatus.setter
@@ -568,7 +568,7 @@ class BasePlayer(DBusObject):
             'None': REPEAT_NONE,
             'Playlist': REPEAT_ALL,
             'Track': REPEAT_TRACK,
-            }
+        }
         if loop_status not in status_map:
             raise ValueError('Unknown loop status ' + loop_status)
         self.set_repeat(status_map[loop_status])
@@ -734,7 +734,7 @@ class BasePlayer(DBusObject):
                 CAPS_PLAY: 'CanPlay',
                 CAPS_PAUSE: 'CanPause',
                 CAPS_SEEK: 'CanSeek',
-                }
+            }
             for cap, method in caps_map.items():
                 if cap in orig_caps != cap in self._caps:
                     setattr(self, method, cap in self._caps)

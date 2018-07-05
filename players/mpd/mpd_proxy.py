@@ -172,8 +172,8 @@ class MpdProxy(BasePlayerProxy):
                 retval = getattr(self._client, 'fetch_' + cmd_item.command)()
                 cmd_item.call(retval)
             except Exception as e:
-               logging.exception(e)
-               self._on_disconnect()
+                logging.exception(e)
+                self._on_disconnect()
             return True
 
         # no pending data, socket might be closed

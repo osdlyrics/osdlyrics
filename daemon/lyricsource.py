@@ -102,7 +102,7 @@ class LyricSource(dbus.service.Object):
             'id': source_id,
             'search': {},
             'download': {},
-            }
+        }
         self._sources[source_id] = source
         proxy.connect_to_signal('SearchComplete',
                                 lambda t, s, r: self.search_complete_cb(source_id,
@@ -223,7 +223,7 @@ class LyricSource(dbus.service.Object):
             'sources': [str(id) for id in sources],
             'ticket': None,
             'failure': None,    # See comments in search_complete_cb()
-            }
+        }
         self._search_tasks[ticket] = task
         self._do_search(ticket)
         return ticket
@@ -253,7 +253,7 @@ class LyricSource(dbus.service.Object):
         self._download_tasks[ticket] = {
             'ticket': sourceticket,
             'source': source_id,
-            }
+        }
         self._set_source_download(source_id, sourceticket, ticket)
         return ticket
 

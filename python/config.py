@@ -172,7 +172,7 @@ def test():
                 'double': 123.54,
                 'string': 'Foobar',
                 'string_list': ['Foo', 'bar'],
-                 }
+                }
     for k in testcase:
         config.connect_change('test/' + k, value_changed)
     for k, v in testcase.items():

@@ -30,7 +30,7 @@ from osdlyrics.consts import METADATA_URI, METADATA_TITLE, METADATA_ALBUM, \
 
 __all__ = (
     'LrcDb',
-    )
+)
 
 
 def query_param_from_metadata(metadata):

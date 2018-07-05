@@ -38,7 +38,7 @@ __all__ = (
     'get_config_path',
     'http_download',
     'path2uri',
-    )
+)
 
 pycurl.global_init(pycurl.GLOBAL_DEFAULT)
 
@@ -135,7 +135,7 @@ def get_proxy_settings(config=None, conn=None):
         username = config.get_string('Download/proxy-username')
         passwd = config.get_string('Download/proxy-passwd')
         return ProxySettings(protocol=protocol, host=host, port=port,
-                            username=username, password=passwd)
+                             username=username, password=passwd)
     if proxy_type == 'system':
         return detect_system_proxy()
 

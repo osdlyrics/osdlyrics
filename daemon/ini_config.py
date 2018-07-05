@@ -41,7 +41,7 @@ class ValueNotExistError(osdlyrics.errors.BaseError):
     def __init__(self, key=''):
         super(ValueNotExistError, self).__init__(
             'Value of key %s does not exist' % key
-            )
+        )
 
 
 class IniConfig(dbus.service.Object):
@@ -68,7 +68,7 @@ class IniConfig(dbus.service.Object):
             raise MalformedKeyError(
                 '%s is an invalid key. Keys must be in the form '
                 'of "Section/Name"' % key
-                )
+            )
         if not parts[0] or not parts[1]:
             raise MalformedKeyError(
                 'Malformed key "%s". Section or name must not be empty' % key)

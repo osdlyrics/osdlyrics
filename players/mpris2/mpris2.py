@@ -126,7 +126,7 @@ class Mpris2Player(BasePlayer):
                     'LoopStatus': 'repeat_changed',
                     'Shuffle': 'shuffle_changed',
                     'Metadata': 'track_changed',
-                     }
+                    }
         # status_props = ['PlaybackStatus', 'LoopStatus', 'Shuffle']
         logging.debug('Status changed: %s', changed)
         for caps in caps_props:
@@ -216,7 +216,7 @@ class Mpris2Player(BasePlayer):
                      'CanPlay': CAPS_PLAY,
                      'CanPause': CAPS_PAUSE,
                      'CanSeek': CAPS_SEEK,
-            }
+                     }
         for k, v in caps_dict.items():
             if self._player_prop.Get(MPRIS2_PLAYER_INTERFACE, k):
                 caps.add(v)

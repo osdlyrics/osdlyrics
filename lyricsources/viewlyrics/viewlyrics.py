@@ -98,7 +98,7 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
                                         proxy=get_proxy_settings(self.config_proxy))
 
         if status < 200 or status >= 400:
-                raise http.client.HTTPException(status, '')
+            raise http.client.HTTPException(status, '')
 
         contentbytes = bytearray(content)
         codekey = contentbytes[1]

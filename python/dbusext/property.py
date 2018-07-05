@@ -201,7 +201,7 @@ DBUS_TYPE_MAP = {
     's': dbus.String,
     'o': dbus.ObjectPath,
     'g': dbus.Signature,
-    }
+}
 
 
 def wrap_dbus_type(signature, value):

@@ -27,7 +27,7 @@ import urllib.parse
 
 from osdlyrics.metadata import Metadata
 from osdlyrics.player_proxy import (CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
-    CAPS_PREV, CAPS_SEEK, STATUS_PAUSED, STATUS_PLAYING, STATUS_STOPPED)
+                                    CAPS_PREV, CAPS_SEEK, STATUS_PAUSED, STATUS_PLAYING, STATUS_STOPPED)
 
 from error import BadRequestError, HttpError, NotFoundError
 from validator import (param_enum, param_int, param_set, param_str,
@@ -167,8 +167,8 @@ class HttpServer(http.server.HTTPServer):
         - `server_address`:
         """
         http.server.HTTPServer.__init__(self,
-                                           server_address,
-                                           RequestHandler)
+                                        server_address,
+                                        RequestHandler)
         self._player_conter = 1
         self._connected_players = {}
         self._player_proxy = player_proxy

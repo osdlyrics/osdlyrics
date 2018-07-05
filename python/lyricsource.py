@@ -270,7 +270,7 @@ class BaseLyricSourcePlugin(DBusObject):
             self.DownloadComplete(ticket, DOWNLOAD_CANCELLED, '')
 
     @dbus_property(dbus_interface=LYRIC_SOURCE_PLUGIN_INTERFACE,
-                  type_signature='s')
+                   type_signature='s')
     def Name(self):
         return self._name
 
@@ -328,8 +328,8 @@ def test():
                                         album=metadata.album + str(i),
                                         sourceid=i,
                                         downloadinfo='\n'.join((metadata.title,
-                                                               metadata.artist,
-                                                               metadata.album)))
+                                                                metadata.artist,
+                                                                metadata.album)))
                            for i in range(10)]
                 return results
 
