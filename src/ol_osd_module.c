@@ -44,8 +44,8 @@ struct _OlOsdModule
   gint lrc_next_id;
   gint current_line;
   gint line_count;
+  gboolean force_refresh_on_set_played_time;
   OlLrc *lrc;
-  gboolean display;
   OlOsdWindow *window;
   OlOsdToolbar *toolbar;
   guint message_source;
@@ -108,7 +108,9 @@ static void ol_osd_module_update_next_lyric (OlOsdModule *osd,
                                              OlLrcIter *iter);
 static void ol_osd_module_init_osd (OlOsdModule *osd);
 static gboolean hide_message (OlOsdModule *osd);
-static void clear_lyrics (OlOsdModule *osd);
+static gboolean is_message_displayed (OlOsdModule *osd);
+static void reset_lyrics_state (OlOsdModule *osd);
+static void hide_lyrics (OlOsdModule *osd);
 
 /* OSD Window signal handlers */
 static void ol_osd_moved_handler (OlOsdWindow *osd, gpointer data);
@@ -507,7 +509,6 @@ ol_osd_module_init_osd (OlOsdModule *osd)
     g_object_ref (osd->toolbar);
     ol_osd_toolbar_set_player (osd->toolbar, osd->player);
   }
-  osd->display = FALSE;
   OlConfigProxy *config = ol_config_proxy_get_instance ();
   ol_assert (config != NULL);
   
@@ -537,9 +538,8 @@ ol_osd_module_new (struct OlDisplayModule *module,
   data->player = player;
   data->window = NULL;
   data->lrc = NULL;
-  data->lrc_id = -1;
-  data->lrc_next_id = -1;
-  data->current_line = 0;
+  reset_lyrics_state (data);
+  data->force_refresh_on_set_played_time = FALSE;
   data->message_source = 0;
   data->metadata = ol_metadata_new ();
   data->config_bindings = NULL;
@@ -574,7 +574,7 @@ ol_osd_module_free (struct OlDisplayModule *module)
     gtk_widget_destroy (GTK_WIDGET (priv->window));
     priv->window = NULL;
   }
-  if (priv->message_source > 0)
+  if (is_message_displayed (priv))
   {
     g_source_remove (priv->message_source);
     priv->message_source = 0;
@@ -613,8 +613,6 @@ _update_metadata (OlOsdModule *module)
   ol_log_func ();
   ol_assert (module != NULL);
   ol_player_get_metadata (module->player, module->metadata);
-  clear_lyrics (module);
-  hide_message (module);
 }
 
 static void
@@ -659,11 +657,14 @@ ol_osd_module_set_played_time (struct OlDisplayModule *module,
       if (percentage > 0.5 && priv->lrc_next_id == -1)
         ol_osd_module_update_next_lyric (priv, iter);
     }
-    else if (priv->lrc_id != -1)
+    else if (priv->lrc_id != -1 || priv->force_refresh_on_set_played_time)
     {
-      clear_lyrics (priv);
+      hide_lyrics (priv);
+      reset_lyrics_state (priv);
     }
     ol_lrc_iter_free (iter);
+
+    priv->force_refresh_on_set_played_time = FALSE;
   }
 }
 
@@ -687,19 +688,26 @@ ol_osd_module_set_lrc (struct OlDisplayModule *module, OlLrc *lrc_file)
   ol_assert (priv != NULL);
   if (priv->lrc)
     g_object_unref (priv->lrc);
-  priv->lrc = lrc_file;
   if (lrc_file)
     g_object_ref (lrc_file);
-  if (lrc_file != NULL && priv->message_source != 0)
+
+  if (is_message_displayed (priv))
   {
+    /* A message can only be displayed if no lyrics are currently assigned. */
+    ol_assert (priv->lrc == NULL);
     ol_osd_module_clear_message (module);
   }
-  if (lrc_file == NULL && priv->message_source == 0)
+  else if (lrc_file == NULL)
   {
-    clear_lyrics (priv);
+    hide_lyrics (priv);
   }
-  /* if (lrc_file != NULL) */
-  /*   module->display = TRUE; */
+  else
+  {
+    priv->force_refresh_on_set_played_time = TRUE;
+  }
+
+  priv->lrc = lrc_file;
+  reset_lyrics_state (priv);
 }
 
 static void
@@ -720,7 +728,7 @@ ol_osd_module_set_message (struct OlDisplayModule *module,
   ol_osd_window_set_current_percentage (priv->window, 1.0);
   ol_osd_window_set_lyric (priv->window, 0, message);
   ol_osd_window_set_lyric (priv->window, 1, NULL);
-  if (priv->message_source != 0)
+  if (is_message_displayed (priv))
     g_source_remove (priv->message_source);
   priv->message_source = g_timeout_add (duration_ms,
                                         (GSourceFunc) hide_message,
@@ -750,28 +758,36 @@ hide_message (OlOsdModule *osd)
 {
   ol_log_func ();
   ol_assert_ret (osd != NULL, FALSE);
-  if (osd->lrc != NULL)
-    return FALSE;
+  ol_assert_ret (osd->lrc == NULL, FALSE);
   ol_osd_window_set_lyric (osd->window, 0, NULL);
-  /* gtk_widget_hide (GTK_WIDGET (module->window)); */
   osd->message_source = 0;
   return FALSE;
 }
 
-static void
-clear_lyrics (OlOsdModule *osd)
+static gboolean
+is_message_displayed (OlOsdModule *osd)
 {
-  ol_log_func ();
-  if (osd->window != NULL && osd->message_source == 0)
-  {
-    osd->display = FALSE;
-    /* gtk_widget_hide (GTK_WIDGET (module->window)); */
-    ol_osd_window_set_lyric (osd->window, 0, NULL);
-    ol_osd_window_set_lyric (osd->window, 1, NULL);
-  }
+  ol_assert_ret (osd != NULL, FALSE);
+  return osd->message_source != 0;
+}
+
+static void
+reset_lyrics_state (OlOsdModule *osd)
+{
   osd->current_line = 0;
   osd->lrc_id = -1;
   osd->lrc_next_id = -1;
+}
+
+static void
+hide_lyrics (OlOsdModule *osd)
+{
+  ol_log_func ();
+  if (osd->window != NULL && !is_message_displayed (osd))
+  {
+    ol_osd_window_set_lyric (osd->window, 0, NULL);
+    ol_osd_window_set_lyric (osd->window, 1, NULL);
+  }
 }
 
 static void
@@ -781,7 +797,7 @@ ol_osd_module_clear_message (struct OlDisplayModule *module)
   ol_assert (module != NULL);
   OlOsdModule *priv = ol_display_module_get_data (module);
   ol_assert (priv != NULL);
-  if (priv->message_source != 0)
+  if (is_message_displayed (priv))
   {
     g_source_remove (priv->message_source);
     hide_message (priv);

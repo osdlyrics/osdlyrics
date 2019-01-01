@@ -129,6 +129,7 @@ static void _track_changed_cb (void);
 static void _status_changed_cb (void);
 static void _player_lost_cb (void);
 static void _player_connected_cb (void);
+static void _update_position (void);
 static void _start_position_timer (void);
 static void _stop_position_timer (void);
 static void _change_lrc (void);
@@ -164,6 +165,7 @@ _display_mode_changed (OlConfigProxy *config,
   {
     *display_module = ol_display_module_new (is_osd ? "OSD" : "scroll", player);
     ol_display_module_set_lrc (*display_module, current_lrc);
+    _update_position ();
   }
   else
   {
@@ -323,7 +325,6 @@ static void
 _track_changed_cb (void)
 {
   ol_log_func ();
-  CALL_DISPLAY_MODULES (ol_display_module_set_lrc, NULL);
   ol_player_get_metadata (player, current_metadata);
   _change_lrc ();
   OlConfigProxy *config = ol_config_proxy_get_instance ();
@@ -359,6 +360,7 @@ _change_lrc (void)
     g_object_unref (current_lrc);
   current_lrc = ol_lyrics_get_current_lyrics (lyrics_proxy);
   CALL_DISPLAY_MODULES (ol_display_module_set_lrc, current_lrc);
+  _update_position ();
   if (current_lrc == NULL &&
       !ol_is_string_empty (ol_metadata_get_title (current_metadata)))
     ol_app_download_lyric (current_metadata);
@@ -497,12 +499,21 @@ _player_connected_cb (void)
 }
 
 static gint
-_update_position (gpointer data)
+_position_timer_cb (gpointer data)
 {
+  _update_position ();
+  return TRUE;
+}
+
+static void
+_update_position (void)
+{
+  if (current_lrc == NULL)
+    return;
+
   guint64 time = 0;
   ol_player_get_position (player, &time);
   CALL_DISPLAY_MODULES (ol_display_module_set_played_time, time);
-  return TRUE;
 }
 
 OlPlayer*
@@ -887,7 +898,7 @@ _start_position_timer (void)
 {
   if (!position_timer)
     position_timer = g_timeout_add (REFRESH_INTERVAL,
-                                    _update_position,
+                                    _position_timer_cb,
                                     NULL);
 }
 
