@@ -51,7 +51,7 @@ class NeteaseSource(BaseLyricSourcePlugin):
                                 sourceid=self.id,
                                 downloadinfo=url)
 
-        parsed = json.loads(content)
+        parsed = json.loads(content.decode('utf-8'))
         result = list(map(map_func, parsed['result']['songs']))
 
         return result
@@ -63,9 +63,11 @@ class NeteaseSource(BaseLyricSourcePlugin):
         if status < 200 or status >= 400:
             raise httplib.HTTPException(status)
 
-        parsed = json.loads(content)
+        parsed = json.loads(content.decode('utf-8'))
+        if 'nolyric' in parsed:
+            raise ValueError('This item has no lyrics.')
         lyric = parsed['lrc']['lyric']
-        return lyric
+        return lyric.encode('utf-8')
 
 
 if __name__ == '__main__':
