@@ -77,7 +77,7 @@ class ${capsname}Source(BaseLyricSourcePlugin):
                              downloadinfo='http://foo.bar/download?id=1')]
 
     def do_download(self, downloadinfo):
-        # return a string
+        # type: (AnyStr) -> bytes
         # downloadinfo is what you set in SearchResult
         if not isinstance(downloadinfo, str) and \
                 not isinstance(downloadinfo, unicode):
