@@ -166,7 +166,7 @@ class IniConfig(dbus.service.Object):
                          in_signature='a{sv}',
                          out_signature='')
     def SetDefaultValues(self, values):
-        for k, v in list(values.items()):
+        for k, v in values.items():
             if isinstance(v, list):
                 v = join(v)
             self._set_value(k, v, False)
@@ -194,7 +194,7 @@ class IniConfig(dbus.service.Object):
             glib.source_remove(self._signal_timer)
             self._signal_timer = None
         changed = []
-        for key in list(self._changed_signals.keys()):
+        for key in self._changed_signals.keys():
             changed.append(key)
         self.ValueChanged(changed)
         self._changed_signals = {}

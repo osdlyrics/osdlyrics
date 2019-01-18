@@ -117,7 +117,7 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
         pagesleft = 0
         tagreturn = parseString(deccontent).getElementsByTagName('return')[0]
         if tagreturn:
-                pagesleftstr = self.alternative_gettagattribute(list(tagreturn.attributes.items()), 'PageCount') #tagreturn.attributes['PageCount'].value
+                pagesleftstr = self.alternative_gettagattribute(tagreturn.attributes.items(), 'PageCount') #tagreturn.attributes['PageCount'].value
                 if pagesleftstr == '':
                     pagesleft = 0
                 else:

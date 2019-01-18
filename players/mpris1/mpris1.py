@@ -128,7 +128,7 @@ class Mpris1Player(BasePlayer):
         self._player = None
         super(Mpris1Player, self).disconnect()
 
-    def __next__(self):
+    def next(self):
         self._player.Next()
 
     def prev(self):

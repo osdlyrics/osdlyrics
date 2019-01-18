@@ -27,8 +27,8 @@ import os
 import os.path
 import stat
 import sys
-import urllib.request, urllib.parse, urllib.error
 import urllib.parse
+import urllib.request
 
 import pycurl
 
@@ -124,12 +124,12 @@ if sys.version_info < (3, 0):
         r"""
         If value is a unicode, encode with utf-8. Otherwise return it directly.
         """
-        if isinstance(value, str):
+        if isinstance(value, unicode):
             return value.encode('utf8')
         return value
 
     def url2path(urlparts):
-        return urllib.request.url2pathname(urlparts.path.encode('ascii')).decode('utf8')
+        return urllib.url2pathname(urlparts.path.encode('ascii')).decode('utf8')
 else:
     ensure_unicode = ensure_utf8 = lambda s: s
     url2path = lambda urlparts: urllib.request.url2pathname(urlparts.path)
@@ -238,7 +238,7 @@ def get_gsettings_proxy():
     if settings.get_string('mode') != 'manual':
         return ProxySettings(protocol='no')
     protocol_map = { 'http': 'http', 'socks5': 'socks' }
-    for protocol, key in list(protocol_map.items()):
+    for protocol, key in protocol_map.items():
         settings = Gio.Settings('org.gnome.system.proxy.' + key)
         host = settings.get_string('host').strip()
         port = settings.get_int('port')
@@ -345,7 +345,7 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
 
     real_headers = {'User-Agent': 'OSD Lyrics'}
     real_headers.update(headers)
-    curl_headers = ['%s:%s' % (k, v) for k, v in list(real_headers.items())]
+    curl_headers = ['%s:%s' % (k, v) for k, v in real_headers.items()]
     c.setopt(pycurl.HTTPHEADER, curl_headers)
 
     if proxy is not None and proxy.protocol != 'no':

@@ -174,9 +174,9 @@ def test():
                  'string': 'Foobar',
                  'string_list': ['Foo', 'bar'],
                  }
-    for k in list(testcase.keys()):
+    for k in testcase:
         config.connect_change('test/' + k, value_changed)
-    for k, v in list(testcase.items()):
+    for k, v in testcase.items():
         getattr(config, 'set_' + k)('test/' + k, v)
     loop.run()
 

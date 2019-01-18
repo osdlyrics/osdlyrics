@@ -278,7 +278,7 @@ class LyricSource(dbus.service.Object):
         ret = [{'id': id, 'name': self._sources[id]['name'], 'enabled': True} for
                id in sources if id in self._sources]
         enabled = frozenset(sources)
-        for id, v in list(self._sources.items()):
+        for id, v in self._sources.items():
             if id not in enabled:
                 ret.append({'id': id, 'name': v['name'], 'enabled': False})
         return ret

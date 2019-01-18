@@ -24,7 +24,7 @@ from builtins import object
 import logging
 import sqlite3
 import os.path
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
 import osdlyrics.utils
 from osdlyrics.utils import ensure_unicode, ensure_utf8
 from osdlyrics.consts import METADATA_URI, METADATA_TITLE, METADATA_ALBUM, \

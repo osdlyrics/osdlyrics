@@ -39,7 +39,7 @@ INTROSPECT_ENCODING = 'unicode' if sys.version_info >= (3, 0) else 'us-ascii'
 class ObjectTypeCls(dbus.service.Object.__class__):
     def __init__(cls, name, bases, dct):
         property_dict = {}
-        for k, v in list(dct.items()):
+        for k, v in dct.items():
             if isinstance(v, Property):
                 property_dict.setdefault(v.interface, {})[v.__name__] = v
 
@@ -95,7 +95,7 @@ class Object(ObjectType):
     def _prop_changed_timeout_cb(self):
         self._prop_change_timer = None
         changed_props = {}
-        for k, v in list(self._changed_props.items()):
+        for k, v in self._changed_props.items():
             iface = getattr(self.__class__, k).interface
             changed_props.setdefault(iface, {'changed': {}, 'invalidated': []})
             if v:
@@ -103,7 +103,7 @@ class Object(ObjectType):
             else:
                 changed_props[iface]['invalidated'].append(k)
         self._changed_props = {}
-        for k, v in list(changed_props.items()):
+        for k, v in changed_props.items():
             self.PropertiesChanged(k, v['changed'], v['invalidated'])
         return False
 
@@ -362,7 +362,7 @@ def test():
                     logging.warning('GetAll: unexpected key %s', k)
                 elif v != expected_dict[k]:
                     logging.warning('GetAll: expected value of key %s is %s but %s got', k, expected_dict[k], v)
-            for k in expected_dict.keys():
+            for k in expected_dict:
                 if not k in value:
                     logging.warning('GetAll: missing key %s', k)
             logging.debug('GetAll finished')

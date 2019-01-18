@@ -55,7 +55,7 @@ def parse_query(query):
     """
     result = urllib.parse.parse_qs(query)
     ret = {}
-    for k, v in list(result.items()):
+    for k, v in result.items():
         if len(v) == 0:
             ret[k] = True
         else:

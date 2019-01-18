@@ -18,8 +18,6 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from __future__ import division
-from past.utils import old_div
 import logging
 
 import dbus
@@ -149,7 +147,7 @@ class Mpris2Player(BasePlayer):
     def connected(self):
         return self._connected
 
-    def __next__(self):
+    def next(self):
         self._player.Next()
 
     def prev(self):
@@ -218,7 +216,7 @@ class Mpris2Player(BasePlayer):
                       'CanPause': CAPS_PAUSE,
                       'CanSeek': CAPS_SEEK,
             }
-        for k, v in list(caps_dict.items()):
+        for k, v in caps_dict.items():
             if self._player_prop.Get(MPRIS2_PLAYER_INTERFACE, k):
                 caps.add(v)
         return caps
@@ -235,8 +233,8 @@ class Mpris2Player(BasePlayer):
         self._player.SetPosition(track_id, time_in_mili * 1000)
 
     def get_position(self):
-        return (old_div(self._player_prop.Get(MPRIS2_PLAYER_INTERFACE, 'Position'),
-                1000))
+        return (self._player_prop.Get(MPRIS2_PLAYER_INTERFACE, 'Position') //
+                1000)
 
 
 def run():
