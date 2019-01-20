@@ -237,8 +237,7 @@ class BasePlayer(DBusObject):
         - `proxy`: The BasePlayerProxy object that creates the player
         - `name`: The name of the player object
         """
-        self._object_path = (PLAYER_PROXY_OBJECT_PATH_PREFIX + proxy.name +
-                             '/' + name)
+        self._object_path = PLAYER_PROXY_OBJECT_PATH_PREFIX + proxy.name + '/' + name
         super(BasePlayer, self).__init__(conn=proxy.connection,
                                          object_path=self._object_path)
         self._name = name

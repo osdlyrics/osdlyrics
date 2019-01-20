@@ -47,7 +47,7 @@ $$(service_DATA): $$(service_in_files)
 CLEANFILES = \
 	org.osdlyrics.LyricSourcePlugin.${name}.service \
 	$$(NULL)
-"""
+"""  # noqa: W191
 
 SERVICE = r"""[D-BUS Service]
 Name=org.osdlyrics.LyricSourcePlugin.${name}
@@ -97,7 +97,7 @@ class ${capsname}Source(BaseLyricSourcePlugin):
 if __name__ == '__main__':
     ${name} = ${capsname}Source()
     ${name}._app.run()
-"""
+"""  # noqa: E101
 
 
 def input_name():
@@ -112,14 +112,14 @@ def input_name():
 
 
 def input_boolean(prompt, default_value):
-    prompt += ' [Y/n]?' if default_value == True else ' [y/N]?'
+    prompt += ' [Y/n]?' if default_value is True else ' [y/N]?'
     value = input(prompt)
     if value.lower() == 'y':
         return True
     elif value.lower() == 'n':
         return False
     else:
-        return default_value == True
+        return default_value is True
 
 
 def create_file(template, path, name, params):

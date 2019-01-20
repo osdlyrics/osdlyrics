@@ -205,7 +205,7 @@ def get_gsettings_proxy():
     """
     try:
         from gi.repository import Gio
-    except:
+    except ImportError:
         return None
     if not hasattr(Gio, 'Settings'):
         return None
@@ -240,7 +240,7 @@ def get_kde_proxy():
     """
     try:
         import PyKDE4.kdecore as kdecore
-    except:
+    except ImportError:
         return None
     config = kdecore.KConfig('kioslaverc', kdecore.KConfig.NoGlobals)
     if not config.hasGroup('Proxy Settings'):

@@ -62,7 +62,7 @@ class HttpPlayerProxy(BasePlayerProxy):
     def remove_player(self, name):
         try:
             del self._players[name]
-        except:
+        except KeyError:
             pass
 
     def get_player(self, name):

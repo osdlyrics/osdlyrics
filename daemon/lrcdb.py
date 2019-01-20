@@ -25,7 +25,7 @@ import logging
 import sqlite3
 import os.path
 import osdlyrics.utils
-from osdlyrics.consts import METADATA_URI, METADATA_TITLE, METADATA_ALBUM, \
+from osdlyrics.consts import METADATA_TITLE, METADATA_ALBUM, \
     METADATA_ARTIST, METADATA_TRACKNUM
 
 __all__ = (

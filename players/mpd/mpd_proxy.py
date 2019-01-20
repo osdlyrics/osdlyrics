@@ -333,7 +333,7 @@ class MpdPlayer(BasePlayer):
         logging.debug('status\n%s', status)
         changes = set()
         for prop, handler in self.STATUS_CHANGE_MAP.items():
-            if not prop in status:
+            if prop not in status:
                 value = None
             else:
                 func = handler[0]

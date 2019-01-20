@@ -53,7 +53,7 @@ class param_int(baseparam):
                 return True, v
             else:
                 return False, v
-        except:
+        except Exception:
             return False, value
 
 
@@ -72,12 +72,12 @@ class param_enum(baseparam):
         self._valid_values = valid_values
 
     def validate(self, value):
-        if not value in self._valid_values:
+        if value not in self._valid_values:
             return False, ''
         try:
             v = self._valid_values[value]
             return True, v
-        except:
+        except Exception:
             return True, value
 
 
@@ -91,12 +91,12 @@ class param_set(baseparam):
         for k in value.split(','):
             k = k.strip()
 
-            if not k in self._valid_values:
+            if k not in self._valid_values:
                 return False, ret
             try:
                 v = self._valid_values[k]
                 ret.add(v)
-            except:
+            except Exception:
                 ret.add(k)
         return True, ret
 
@@ -113,7 +113,7 @@ def validate_params(param_def):
                     v = value
                 valid_params[k] = v
             for k, v in param_def.items():
-                if not v.optional and not k in params:
+                if not v.optional and k not in params:
                     raise BadRequestError('missing "%s" in query' % k)
             return func(handler, valid_params, *args, **kargs)
         return dec_func

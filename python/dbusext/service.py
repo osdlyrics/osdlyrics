@@ -363,12 +363,12 @@ def test():
     def get_all_reply_handler(expected_dict):
         def handler(value):
             for k, v in value.items():
-                if not k in expected_dict:
+                if k not in expected_dict:
                     logging.warning('GetAll: unexpected key %s', k)
                 elif v != expected_dict[k]:
                     logging.warning('GetAll: expected value of key %s is %s but %s got', k, expected_dict[k], v)
             for k in expected_dict:
-                if not k in value:
+                if k not in value:
                     logging.warning('GetAll: missing key %s', k)
             logging.debug('GetAll finished')
         return handler
@@ -433,8 +433,8 @@ def test():
     loop = glib.MainLoop()
     dbus_mainloop = DBusGMainLoop()
     conn = dbus.SessionBus(mainloop=dbus_mainloop)
-    bus_name = dbus.service.BusName(BUS_NAME, conn)
-    testobj = TestObjSub(loop)
+    bus_name = dbus.service.BusName(BUS_NAME, conn)  # noqa: F841
+    testobj = TestObjSub(loop)  # noqa: F841
     glib.timeout_add(100, test_timeout)
     loop.run()
 

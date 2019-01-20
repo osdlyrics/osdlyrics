@@ -299,7 +299,7 @@ class Metadata(object):
             for dict_key in v:
                 if dict_key in dbusdict:
                     kargs[k] = dbusdict[dict_key]
-                    break;
+                    break
         # artist
         for k, v in string_list_dict.items():
             if k not in kargs and v in dbusdict:

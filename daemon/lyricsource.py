@@ -132,7 +132,7 @@ class LyricSource(dbus.service.Object):
             # set it to False when a search task succeeds, thus `not task['failure']`
             # will return True. The value is set to True only when it was not False,
             # so no search tasks from other sources succeed.
-            if status == STATUS_FAILURE and mytask['failure'] != False:
+            if status == STATUS_FAILURE and mytask['failure'] is not False:
                 mytask['failure'] = True
             if not mytask['sources'] or mytask['sources'][0] != source_id:
                 logging.warning('Error, no source exists or source id mismatch with current id')

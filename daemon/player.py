@@ -82,7 +82,7 @@ class PlayerSupport(dbus.service.Object):
                         break
                 if detected:
                     break
-            except:
+            except Exception:
                 pass
         if detected and self._detect_timer:
             glib.source_remove(self._detect_timer)
@@ -151,7 +151,7 @@ class PlayerSupport(dbus.service.Object):
             self._player_proxies[proxy_name] = dbus.Interface(
                 proxy, PLAYER_PROXY_INTERFACE)
         else:
-            if not proxy_name in self._player_proxies:
+            if proxy_name not in self._player_proxies:
                 return
             logging.info('Player proxy %s lost', proxy_name)
             proxy = self._player_proxies[proxy_name]
@@ -162,7 +162,7 @@ class PlayerSupport(dbus.service.Object):
             # Try to reactivate proxy
             try:
                 self.connection.activate_name_owner(bus_name)
-            except:
+            except Exception:
                 pass
 
     @dbus.service.method(dbus_interface=PLAYER_INTERFACE,
@@ -173,7 +173,7 @@ class PlayerSupport(dbus.service.Object):
         for proxy in self._player_proxies.values():
             try:
                 ret = ret + proxy.ListSupportedPlayers()
-            except:
+            except Exception:
                 pass
         return ret
 
@@ -185,7 +185,7 @@ class PlayerSupport(dbus.service.Object):
         for proxy in self._player_proxies.values():
             try:
                 ret = ret + proxy.ListActivatablePlayers()
-            except:
+            except Exception:
                 pass
         return ret
 
@@ -564,8 +564,8 @@ class Mpris2Player(DBusObject):
 
 def test():
     app = App('osdlyrics')
-    mpris2_name = dbus.service.BusName('org.mpris.osdlyrics', app.connection)
-    player_support = PlayerSupport(app.connection)
+    mpris2_name = dbus.service.BusName('org.mpris.osdlyrics', app.connection)  # noqa: F841
+    player_support = PlayerSupport(app.connection)  # noqa: F841
     app.run()
 
 

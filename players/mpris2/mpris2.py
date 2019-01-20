@@ -58,9 +58,11 @@ class ProxyObject(BasePlayerProxy):
         Arguments:
         - `names`: list of bus names
         """
-        return [player_info_from_name(name[len(MPRIS2_PREFIX):])
-                for name in names if name.startswith(MPRIS2_PREFIX) and
-                name != DAEMON_MPRIS2_NAME]
+        return [
+            player_info_from_name(name[len(MPRIS2_PREFIX):])
+            for name in names
+            if name.startswith(MPRIS2_PREFIX) and name != DAEMON_MPRIS2_NAME
+        ]
 
     def do_list_active_players(self):
         return self._get_player_from_bus_names(map(str, self.connection.list_names()))
@@ -101,7 +103,7 @@ class Mpris2Player(BasePlayer):
                 'Seeked', self._player_seeked)
             self._name_watch = self.connection.watch_name_owner(
                 mpris2_object_path, self._name_lost)
-        except:
+        except Exception:
             self.disconnect()
 
     def _name_lost(self, name):
@@ -174,7 +176,7 @@ class Mpris2Player(BasePlayer):
             else:
                 self._player_prop.Set(MPRIS2_PLAYER_INTERFACE, 'LoopStatus',
                                       'None')
-        except:
+        except Exception:
             pass
 
     def get_status(self):
@@ -195,14 +197,14 @@ class Mpris2Player(BasePlayer):
         try:
             return repeat_dict[self._player_prop.Get(MPRIS2_PLAYER_INTERFACE,
                                                      'LoopStatus')]
-        except:
+        except Exception:
             return REPEAT_NONE
 
     def get_shuffle(self):
         try:
             return bool(self._player_prop.Get(MPRIS2_PLAYER_INTERFACE,
                                               'Shuffle'))
-        except:
+        except Exception:
             return False
 
     def get_metadata(self):
@@ -234,8 +236,7 @@ class Mpris2Player(BasePlayer):
         self._player.SetPosition(track_id, time_in_mili * 1000)
 
     def get_position(self):
-        return (self._player_prop.Get(MPRIS2_PLAYER_INTERFACE, 'Position') //
-                1000)
+        return self._player_prop.Get(MPRIS2_PLAYER_INTERFACE, 'Position') // 1000
 
 
 def run():

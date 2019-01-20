@@ -107,9 +107,9 @@ def decode_by_charset(content):
     # case,chardet may fail to determine what the encoding it is. So we take
     # half of the content of it and try again.
     if not encoding and len(content) > DETECT_CHARSET_GUESS_MIN_LEN:
+        logging.warning('Failed to detect encoding, try to decode a part of it')
         content_half = len(content) // 2
         slice_end = min(max(DETECT_CHARSET_GUESS_MIN_LEN, content_half), DETECT_CHARSET_GUESS_MAX_LEN)
-        logging.warning('Failed to detect encoding, try to decode a part of it')
         encoding = chardet.detect(content[:slice_end])['encoding']
         logging.warning('guess encoding from part: ' + encoding)
     if not encoding:
@@ -387,7 +387,7 @@ class LyricsService(dbus.service.Object):
         for path_pat in path_patterns:
             try:
                 path = expand_path(path_pat, metadata)
-            except:
+            except Exception:
                 continue
             for file_pat in file_patterns:
                 try:
@@ -408,7 +408,7 @@ class LyricsService(dbus.service.Object):
         for path_pat in path_patterns:
             try:
                 path = expand_path(path_pat, metadata)
-            except:
+            except Exception:
                 continue
             for file_pat in file_patterns:
                 try:
@@ -432,7 +432,7 @@ def doc_test():
 
 def test():
     app = App('Lyrics', False)
-    lyrics_service = LyricsService(app.connection)
+    lyrics_service = LyricsService(app.connection)  # noqa: F841
     app.run()
 
 

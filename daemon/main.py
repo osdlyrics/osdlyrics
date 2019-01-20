@@ -72,7 +72,7 @@ class MainApp(App):
     def _activate_config(self, ):
         try:
             self.connection.activate_name_owner(CONFIG_BUS_NAME)
-        except:
+        except Exception:
             logging.error("Cannot activate config service")
 
     def _player_properties_changed(self, iface, changed, invalidated):

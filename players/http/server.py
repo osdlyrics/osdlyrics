@@ -151,7 +151,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
     def get_player(self, name):
         try:
             return self.server.player_proxy.get_player(name)
-        except:
+        except Exception:
             raise BadRequestError('Invalid player id: %s' % name)
 
 

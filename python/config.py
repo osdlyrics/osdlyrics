@@ -61,7 +61,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetBool(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -76,7 +76,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetInt(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -91,7 +91,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetBool(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -106,7 +106,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetString(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -121,7 +121,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetStringList(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e

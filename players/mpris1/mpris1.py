@@ -71,8 +71,11 @@ class ProxyObject(BasePlayerProxy):
         super(ProxyObject, self).__init__('Mpris1')
 
     def _get_player_from_bus_names(self, names):
-        return [player_info_from_name(name[len(MPRIS1_PREFIX):]) for name in names
-                if name.startswith(MPRIS1_PREFIX) and not name.startswith(MPRIS1_PREFIX + 'MediaPlayer2.')]
+        return [
+            player_info_from_name(name[len(MPRIS1_PREFIX):])
+            for name in names
+            if name.startswith(MPRIS1_PREFIX) and not name.startswith(MPRIS1_PREFIX + 'MediaPlayer2.')
+        ]
 
     def do_list_active_players(self):
         return self._get_player_from_bus_names(map(str, self.connection.list_names()))
