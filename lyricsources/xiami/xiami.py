@@ -24,7 +24,7 @@ import httplib
 import gettext
 import HTMLParser
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
-from osdlyrics.utils import ensure_utf8, http_download, get_proxy_settings
+from osdlyrics.utils import http_download, get_proxy_settings
 
 _ = gettext.gettext
 
@@ -56,14 +56,14 @@ class XiamiSource(BaseLyricSourcePlugin):
             keys.append(metadata.title)
         if metadata.artist:
             keys.append(metadata.artist)
-        urlkey = ensure_utf8('+'.join(keys)).replace(' ', '+')
+        urlkey = '+'.join(keys).replace(' ', '+')
         url = XIAMI_HOST + XIAMI_SEARCH_URL
         status, content = http_download(url=url,
                                         params={'key': urlkey},
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
             raise httplib.HTTPException(status, '')
-        match = XIAMI_SEARCH_PATTERN.findall(content)
+        match = XIAMI_SEARCH_PATTERN.findall(content.decode('utf8'))
         result = []
         if match:
             for title_elem, id, artist_elem, album_elem in match:

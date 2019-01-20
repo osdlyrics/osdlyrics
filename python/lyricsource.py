@@ -234,13 +234,13 @@ class BaseLyricSourcePlugin(DBusObject):
     def do_downloadsuccess(self, ticket, content):
         if ticket in self._download_tasks:
             del self._download_tasks[ticket]
-            self.DownloadComplete(ticket, DOWNLOAD_SUCCEED, str(content))
+            self.DownloadComplete(ticket, DOWNLOAD_SUCCEED, content)
 
     @onmainthread
     def do_downloadfailure(self, ticket, e):
         if ticket in self._download_tasks:
             del self._download_tasks[ticket]
-            self.DownloadComplete(ticket, DOWNLOAD_FAILED, str(e))
+            self.DownloadComplete(ticket, DOWNLOAD_FAILED, str(e).encode('utf-8'))
 
     @dbus.service.method(dbus_interface=LYRIC_SOURCE_PLUGIN_INTERFACE,
                          in_signature='v',

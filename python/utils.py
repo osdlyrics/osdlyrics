@@ -18,10 +18,10 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+import io
 import os
 import os.path
 import stat
-import StringIO
 import sys
 import urllib
 import urlparse
@@ -320,7 +320,7 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
     True
     """
     c = pycurl.Curl()
-    buf = StringIO.StringIO()
+    buf = io.BytesIO()
     c.setopt(pycurl.NOSIGNAL, 1)
     c.setopt(pycurl.DNS_USE_GLOBAL_CACHE, 0)
     c.setopt(pycurl.FOLLOWLOCATION, 1)

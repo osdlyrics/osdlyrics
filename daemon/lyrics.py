@@ -23,7 +23,6 @@ import os
 import os.path
 import re
 import urlparse
-import sys
 
 import dbus
 import dbus.service
@@ -89,14 +88,8 @@ def metadata_description(metadata):
         return '[Unknown]'
 
 
-# TODO: remove once we have fully migrated to Python 3
-if sys.version_info >= (3, 0):
-    UNICODE_TYPE = str
-else:
-    UNICODE_TYPE = unicode
-
-
 def decode_by_charset(content):
+    # type: (bytes) -> Text
     r"""
     Detect the charset encoding of a string and decodes to unicode strings.
 
@@ -105,8 +98,6 @@ def decode_by_charset(content):
     >>> decode_by_charset(u'\u4e2d\u6587'.encode('HZ-GB-2312'))
     u'\u4e2d\u6587'
     """
-    if isinstance(content, UNICODE_TYPE):
-        return content
     encoding = chardet.detect(content)['encoding']
     # Sometimes, the content is well encoded but the last few bytes. This is
     # common in the files downloaded by old versions of OSD Lyrics. In this
@@ -190,12 +181,10 @@ def load_from_file(urlparts):
     else:
         path = urlparts.path
     try:
-        lrcfile = open(path)
+        return open(path, 'rb').read()
     except IOError as e:
         logging.info("Cannot open file %s to read: %s" % (path, e))
         return None
-    content = lrcfile.read()
-    return content
 
 def load_from_uri(uri):
     """
@@ -205,14 +194,14 @@ def load_from_uri(uri):
     """
     URI_LOAD_HANDLERS = {
         'file': load_from_file,
-        'none': lambda uri: '',
+        'none': lambda uri: b'',
         }
 
     url_parts = urlparse.urlparse(osdlyrics.utils.ensure_utf8(uri))
     content = URI_LOAD_HANDLERS[url_parts.scheme](url_parts)
     if content is None:
         return None
-    content = decode_by_charset(content).replace(u'\x00', '')
+    content = decode_by_charset(content).replace('\0', '')
     return content
 
 def save_to_file(urlparts, content, create):
@@ -238,7 +227,7 @@ def save_to_file(urlparts, content, create):
                 logging.warning("Cannot create directories for %s: %s", path, e)
                 return False
     try:
-        file = open(path, 'w')
+        file = open(path, 'wb')
     except IOError as e:
         logging.info("Cannot open file %s to write: %s", path, e)
         return False
@@ -367,7 +356,7 @@ class LyricsService(dbus.service.Object):
         # Remove any existing file association and save the new lyrics content
         # to the configured patterns.
         self._db.delete(metadata)
-        uri = self._save_to_patterns(metadata, content.rstrip('\0'))
+        uri = self._save_to_patterns(metadata, content.rstrip(b'\0'))
         if uri and metadata_equal(metadata, self._metadata):
             self.CurrentLyricsChanged()
         return uri
@@ -394,7 +383,7 @@ class LyricsService(dbus.service.Object):
         content = load_from_uri(uri)
         if content is None:
             raise CannotLoadLrcException(uri)
-        content = update_lrc_offset(content, offset_ms)
+        content = update_lrc_offset(content, offset_ms).encode('utf-8')
         if not save_to_uri(uri, content, True):
             raise CannotSaveLrcException(uri)
 

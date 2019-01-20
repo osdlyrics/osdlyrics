@@ -2,7 +2,7 @@ import httplib
 import gettext
 import json
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
-from osdlyrics.utils import ensure_utf8, http_download, get_proxy_settings
+from osdlyrics.utils import http_download, get_proxy_settings
 
 _ = gettext.gettext
 
@@ -27,13 +27,13 @@ class NeteaseSource(BaseLyricSourcePlugin):
             keys.append(metadata.title)
         if metadata.artist:
             keys.append(metadata.artist)
-        urlkey = ensure_utf8('+'.join(keys)).replace(' ', '+')
         url = NETEASE_HOST + NETEASE_SEARCH_URL
+        urlkey = '+'.join(keys).replace(' ', '+')
         params = 's=%s&type=1' % urlkey
 
         status, content = http_download(url=url,
                                         method='POST',
-                                        params=params,
+                                        params=params.encode('utf-8'),
                                         proxy=get_proxy_settings(self.config_proxy))
 
         if status < 200 or status >= 400:
