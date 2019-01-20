@@ -128,7 +128,7 @@ class Mpris1Player(BasePlayer):
         self._player = None
         super(Mpris1Player, self).disconnect()
 
-    def next(self):
+    def __next__(self):
         self._player.Next()
 
     def prev(self):
@@ -179,7 +179,7 @@ class Mpris1Player(BasePlayer):
     def get_caps(self):
         caps = set()
         mpris1_caps = self._player.GetCaps()
-        for bit, cap in MPRIS1_CAPS_MAP.iteritems():
+        for bit, cap in MPRIS1_CAPS_MAP.items():
             if mpris1_caps & bit:
                 caps.add(cap)
         return caps

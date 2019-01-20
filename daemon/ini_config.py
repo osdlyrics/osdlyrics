@@ -18,7 +18,10 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import ConfigParser
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+import configparser
 
 import dbus
 import dbus.service
@@ -49,7 +52,7 @@ class IniConfig(dbus.service.Object):
         super(IniConfig, self).__init__(conn=conn,
                                         object_path=CONFIG_OBJECT_PATH)
         self._conn = conn
-        self._confparser = ConfigParser.RawConfigParser()
+        self._confparser = configparser.RawConfigParser()
         osdlyrics.utils.ensure_path(filename)
         self._confparser.read(filename)
         self._filename = filename
@@ -163,7 +166,7 @@ class IniConfig(dbus.service.Object):
                          in_signature='a{sv}',
                          out_signature='')
     def SetDefaultValues(self, values):
-        for k, v in values.items():
+        for k, v in list(values.items()):
             if isinstance(v, list):
                 v = join(v)
             self._set_value(k, v, False)
@@ -191,7 +194,7 @@ class IniConfig(dbus.service.Object):
             glib.source_remove(self._signal_timer)
             self._signal_timer = None
         changed = []
-        for key in self._changed_signals.keys():
+        for key in list(self._changed_signals.keys()):
             changed.append(key)
         self.ValueChanged(changed)
         self._changed_signals = {}

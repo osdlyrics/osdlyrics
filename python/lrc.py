@@ -18,6 +18,8 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
 #/
 
+from __future__ import print_function
+from builtins import object
 __all__ = (
     'AttrToken',
     'TimeToken',
@@ -161,13 +163,13 @@ def test():
 """
     def test_tokenizer():
         tokens = tokenize(TEST_CASE1)
-        print tokens
+        print(tokens)
 
     def test_parser():
         attr, lyrics = parse_lrc(TEST_CASE1)
-        print attr
+        print(attr)
         for line in lyrics:
-            print '%s: %s -> %s' % (line['id'], line['timestamp'], line['text'])
+            print('%s: %s -> %s' % (line['id'], line['timestamp'], line['text']))
 
     test_tokenizer()
     test_parser()

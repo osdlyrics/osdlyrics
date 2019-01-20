@@ -1,4 +1,8 @@
-import httplib
+from future import standard_library
+standard_library.install_aliases()
+from builtins import map
+from builtins import str
+import http.client
 import gettext
 import json
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
@@ -37,7 +41,7 @@ class NeteaseSource(BaseLyricSourcePlugin):
                                         proxy=get_proxy_settings(self.config_proxy))
 
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status, '')
+            raise http.client.HTTPException(status, '')
 
         def map_func(song):
             if len(song['artists']) > 0:
@@ -61,7 +65,7 @@ class NeteaseSource(BaseLyricSourcePlugin):
         status, content = http_download(url=downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status)
+            raise http.client.HTTPException(status)
 
         parsed = json.loads(content.decode('utf-8'))
         if 'nolyric' in parsed:

@@ -18,13 +18,17 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import object
 import io
 import os
 import os.path
 import stat
 import sys
-import urllib
-import urlparse
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 
 import pycurl
 
@@ -101,9 +105,9 @@ def path2uri(path):
         path = os.path.expanduser(path)
     if not path.startswith('/'):
         return path
-    if isinstance(path, unicode):
+    if isinstance(path, str):
         path = path.encode('utf8')
-    return 'file://' + urllib.pathname2url(path)
+    return 'file://' + urllib.request.pathname2url(path)
 
 
 # TODO: remove once we fully migrate to Python 3
@@ -120,12 +124,12 @@ if sys.version_info < (3, 0):
         r"""
         If value is a unicode, encode with utf-8. Otherwise return it directly.
         """
-        if isinstance(value, unicode):
+        if isinstance(value, str):
             return value.encode('utf8')
         return value
 
     def url2path(urlparts):
-        return urllib.url2pathname(urlparts.path.encode('ascii')).decode('utf8')
+        return urllib.request.url2pathname(urlparts.path.encode('ascii')).decode('utf8')
 else:
     ensure_unicode = ensure_utf8 = lambda s: s
     url2path = lambda urlparts: urllib.request.url2pathname(urlparts.path)
@@ -193,7 +197,7 @@ def get_envar_proxy():
         if proxy is not None:
             if proxy.find('://') < 0:
                 proxy = 'http://' + proxy
-            parts = urlparse.urlparse(proxy)
+            parts = urllib.parse.urlparse(proxy)
             if not parts.scheme in ['http', 'socks4', 'socks5', '']:
                 continue
             return ProxySettings(protocol=parts.scheme if parts.scheme != '' else 'http',
@@ -234,7 +238,7 @@ def get_gsettings_proxy():
     if settings.get_string('mode') != 'manual':
         return ProxySettings(protocol='no')
     protocol_map = { 'http': 'http', 'socks5': 'socks' }
-    for protocol, key in protocol_map.items():
+    for protocol, key in list(protocol_map.items()):
         settings = Gio.Settings('org.gnome.system.proxy.' + key)
         host = settings.get_string('host').strip()
         port = settings.get_int('port')
@@ -277,7 +281,7 @@ def get_kde_proxy():
                 value = value.replace(' ', ':')
                 if value.find('://') < 0:
                     value = 'http://' + value
-                parts = urlparse.urlparse(value)
+                parts = urllib.parse.urlparse(value)
                 host = parts.hostname
                 try:
                     port = parts.port
@@ -327,7 +331,7 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
     c.setopt(pycurl.MAXREDIRS, 5)
     c.setopt(pycurl.WRITEFUNCTION, buf.write)
     if method == 'GET' and len(params) > 0:
-        params = urllib.urlencode(params)
+        params = urllib.parse.urlencode(params)
         url = url + ('/' if '/' not in url else '') + ('?' if '?' not in url else '&') + params
     elif method == 'POST':
         c.setopt(pycurl.POST, 1)
@@ -341,7 +345,7 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
 
     real_headers = {'User-Agent': 'OSD Lyrics'}
     real_headers.update(headers)
-    curl_headers = ['%s:%s' % (k, v) for k, v in real_headers.items()]
+    curl_headers = ['%s:%s' % (k, v) for k, v in list(real_headers.items())]
     c.setopt(pycurl.HTTPHEADER, curl_headers)
 
     if proxy is not None and proxy.protocol != 'no':

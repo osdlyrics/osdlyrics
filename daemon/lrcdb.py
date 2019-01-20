@@ -18,10 +18,13 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import logging
 import sqlite3
 import os.path
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import osdlyrics.utils
 from osdlyrics.utils import ensure_unicode, ensure_utf8
 from osdlyrics.consts import METADATA_URI, METADATA_TITLE, METADATA_ALBUM, \
@@ -47,7 +50,7 @@ def normalize_location(location):
     u'file:///%E6%96%87%E4%BB%B6/%E8%B7%AF%E5%BE%84'
     """
     if location and location[0] == '/':
-        location = 'file://' + urllib.pathname2url(ensure_utf8(location))
+        location = 'file://' + urllib.request.pathname2url(ensure_utf8(location))
     location = ensure_unicode(location)
     return location
 

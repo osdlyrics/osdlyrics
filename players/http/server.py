@@ -18,10 +18,12 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import BaseHTTPServer
+from future import standard_library
+standard_library.install_aliases()
+import http.server
 import json
 import logging
-import urlparse
+import urllib.parse
 
 from osdlyrics.metadata import Metadata
 from osdlyrics.player_proxy import (CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
@@ -51,16 +53,16 @@ def parse_query(query):
     Arguments:
     - `query`: A string like 'query1=value&query2=value'
     """
-    result = urlparse.parse_qs(query)
+    result = urllib.parse.parse_qs(query)
     ret = {}
-    for k, v in result.items():
+    for k, v in list(result.items()):
         if len(v) == 0:
             ret[k] = True
         else:
             ret[k] = v[0]
     return ret
 
-class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class RequestHandler(http.server.BaseHTTPRequestHandler):
     """ Handles HTTP request
     """
     
@@ -75,7 +77,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_error(error.code, error.message)
 
     def _processquery(self, params):
-        url = urlparse.urlparse(self.path)
+        url = urllib.parse.urlparse(self.path)
         cmd = url.path[1:]
         if hasattr(self, 'do_' + cmd):
             try:
@@ -87,7 +89,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self._send_error(NotFoundError('Invalid request: %s' % cmd))
 
     def do_GET(self):
-        url = urlparse.urlparse(self.path)
+        url = urllib.parse.urlparse(self.path)
         params = parse_query(url.query)
         self._processquery(params)
 
@@ -151,7 +153,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             raise BadRequestError('Invalid player id: %s' % name)
         
 
-class HttpServer(BaseHTTPServer.HTTPServer):
+class HttpServer(http.server.HTTPServer):
     """
     Lyrics Http server
     """
@@ -162,7 +164,7 @@ class HttpServer(BaseHTTPServer.HTTPServer):
         Arguments:
         - `server_address`:
         """
-        BaseHTTPServer.HTTPServer.__init__(self,
+        http.server.HTTPServer.__init__(self,
                                            server_address,
                                            RequestHandler)
         self._player_conter = 1

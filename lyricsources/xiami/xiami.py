@@ -18,11 +18,14 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 import re
-import httplib
+import http.client
 # import urlparse
 import gettext
-import HTMLParser
+import html.parser
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
 from osdlyrics.utils import http_download, get_proxy_settings
 
@@ -62,7 +65,7 @@ class XiamiSource(BaseLyricSourcePlugin):
                                         params={'key': urlkey},
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status, '')
+            raise http.client.HTTPException(status, '')
         match = XIAMI_SEARCH_PATTERN.findall(content.decode('utf8'))
         result = []
         if match:
@@ -111,9 +114,9 @@ class XiamiSource(BaseLyricSourcePlugin):
         status, content = http_download(downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status)
+            raise http.client.HTTPException(status)
         if content:
-            content = HTMLParser.HTMLParser().unescape(content.decode('utf-8'))
+            content = html.parser.HTMLParser().unescape(content.decode('utf-8'))
         return content.encode('utf-8')
 
 

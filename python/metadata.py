@@ -18,6 +18,9 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from __future__ import division
+from builtins import object
+from past.utils import old_div
 import logging
 import re
 
@@ -100,9 +103,9 @@ class Metadata(object):
         if self.tracknum >= 0:
             ret['tracknumber'] = dbus.String(self.tracknum)
         if self.length >= 0:
-            ret['time'] = dbus.UInt32(self.length / 1000)
+            ret['time'] = dbus.UInt32(old_div(self.length, 1000))
             ret['mtime'] = dbus.UInt32(self.length)
-        for k, v in self._extra.items():
+        for k, v in list(self._extra.items()):
             if k in Metadata.MPRIS1_KEYS and k not in ret:
                 ret[k] = v
         return ret
@@ -163,7 +166,7 @@ class Metadata(object):
             ret['mpris:length'] = dbus.Int64(self.length)
         if self.tracknum >= 0:
             ret['xesam:trackNumber'] = dbus.Int32(self.tracknum)
-        for k, v in self._extra.items():
+        for k, v in list(self._extra.items()):
             if k in Metadata.MPRIS2_KEYS and k not in ret:
                 ret[k] = v
         return ret
@@ -180,10 +183,10 @@ class Metadata(object):
                        }
         string_list_dict = {'artist': 'xesam:artist'}
         kargs = {}
-        for k, v in string_dict.items():
+        for k, v in list(string_dict.items()):
             if v in mpris2_dict:
                 kargs[k] = mpris2_dict[v]
-        for k, v in string_list_dict.items():
+        for k, v in list(string_list_dict.items()):
             if v in mpris2_dict:
                 kargs[k] = ', '.join(mpris2_dict[v])
         if 'xesam:trackNumber' in mpris2_dict:
@@ -276,13 +279,13 @@ class Metadata(object):
         string_list_dict = {'artist': 'xesam:artist',
                             }
         kargs = {}
-        for k, v in string_dict.items():
+        for k, v in list(string_dict.items()):
             for dict_key in v:
                 if dict_key in dbusdict:
                     kargs[k] = dbusdict[dict_key]
                     break;
         # artist
-        for k, v in string_list_dict.items():
+        for k, v in list(string_list_dict.items()):
             if k not in kargs and v in dbusdict:
                 kargs[k] = ', '.join(dbusdict[v])
         # tracknumber

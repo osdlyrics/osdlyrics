@@ -18,6 +18,12 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import chr
+from builtins import str
+from builtins import range
+from builtins import object
 import logging
 import threading
 
@@ -326,7 +332,7 @@ def test():
                                         downloadinfo='\n'.join((metadata.title,
                                                                metadata.artist,
                                                                metadata.album)))
-                           for i in xrange(10)]
+                           for i in range(10)]
                 return results
 
             raise Exception('Title must not be empty')

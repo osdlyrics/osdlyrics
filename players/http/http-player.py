@@ -70,7 +70,7 @@ class HttpPlayerProxy(BasePlayerProxy):
 
     def do_list_active_players(self):
         ret = []
-        for v in self._players.values():
+        for v in list(self._players.values()):
             ret.append(PlayerInfo(v.name))
         return ret
 
@@ -86,7 +86,7 @@ class HttpPlayerProxy(BasePlayerProxy):
         return None
 
     def _check_connection(self):
-        for player in self._players.values():
+        for player in list(self._players.values()):
             player.check_connection()
         return True
 
@@ -171,7 +171,7 @@ class HttpPlayer(BasePlayer):
     def prev(self):
         self._add_cmd('prev')
 
-    def next(self):
+    def __next__(self):
         self._add_cmd('next')
 
     def stop(self):

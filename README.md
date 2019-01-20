@@ -34,8 +34,9 @@ On Ubuntu, the following packages need to be installed to compile OSD Lyrics:
 
 ### Runtime Dependencies
 
-- Python:
-    - Python 2: python (>= 2.6)
+- Python (either one):
+    - Python 2: python (>= 2.6), python-future
+    - Python 3: python3 (>= 3.4), python3-future
 - Supported players:
     - MPRIS2
     - MPRIS

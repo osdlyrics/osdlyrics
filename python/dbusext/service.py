@@ -39,7 +39,7 @@ INTROSPECT_ENCODING = 'unicode' if sys.version_info >= (3, 0) else 'us-ascii'
 class ObjectTypeCls(dbus.service.Object.__class__):
     def __init__(cls, name, bases, dct):
         property_dict = {}
-        for k, v in dct.items():
+        for k, v in list(dct.items()):
             if isinstance(v, Property):
                 property_dict.setdefault(v.interface, {})[v.__name__] = v
 
@@ -48,7 +48,7 @@ class ObjectTypeCls(dbus.service.Object.__class__):
         for base in bases:
             if hasattr(base, '_dbus_property_table'):
                 modulename = base.__module__ + '.' + base.__name__
-                for interface, props in base._dbus_property_table[modulename].items():
+                for interface, props in list(base._dbus_property_table[modulename].items()):
                     clsprops = property_dict.setdefault(interface, {})
                     clsprops.update(props)
 
@@ -95,7 +95,7 @@ class Object(ObjectType):
     def _prop_changed_timeout_cb(self):
         self._prop_change_timer = None
         changed_props = {}
-        for k, v in self._changed_props.items():
+        for k, v in list(self._changed_props.items()):
             iface = getattr(self.__class__, k).interface
             changed_props.setdefault(iface, {'changed': {}, 'invalidated': []})
             if v:
@@ -103,7 +103,7 @@ class Object(ObjectType):
             else:
                 changed_props[iface]['invalidated'].append(k)
         self._changed_props = {}
-        for k, v in changed_props.items():
+        for k, v in list(changed_props.items()):
             self.PropertiesChanged(k, v['changed'], v['invalidated'])
         return False
 
@@ -168,12 +168,12 @@ class Object(ObjectType):
         property_dict = self._dbus_property_table[self.__class__.__module__ + '.' + self.__class__.__name__]
 
         if iface_name != '' and iface_name in property_dict:
-            for prop_name, prop in property_dict[iface_name].iteritems():
+            for prop_name, prop in property_dict[iface_name].items():
                 if prop.readable:
                     ret[prop_name] = prop.__get__(self)
         elif iface_name == '':
-            for prop_list in property_dict.itervalues():
-                for prop_name, prop in prop_list.iteritems():
+            for prop_list in property_dict.values():
+                for prop_name, prop in prop_list.items():
                     if prop.readable:
                         ret[prop_name] = prop.__get__(self)
         return ret
@@ -200,14 +200,14 @@ class Object(ObjectType):
         for iface in iface_list:
             iface_name = iface.get('name')
             if iface_name in property_dict:
-                for prop_name, prop in property_dict[iface_name].iteritems():
+                for prop_name, prop in property_dict[iface_name].items():
                     iface.append(_property2element(prop))
                 appended_iface.add(iface_name)
-        for iface_name, prop_list in property_dict.iteritems():
+        for iface_name, prop_list in property_dict.items():
             if iface_name in appended_iface:
                 continue
             iface = xet.Element('interface', name=iface_name)
-            for prop in prop_list.itervalues():
+            for prop in prop_list.values():
                 iface.append(_property2element(prop))
             node.append(iface)
         return '<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"\n "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">\n' + \
@@ -357,12 +357,12 @@ def test():
 
     def get_all_reply_handler(expected_dict):
         def handler(value):
-            for k, v in value.iteritems():
+            for k, v in value.items():
                 if not k in expected_dict:
                     logging.warning('GetAll: unexpected key %s', k)
                 elif v != expected_dict[k]:
                     logging.warning('GetAll: expected value of key %s is %s but %s got', k, expected_dict[k], v)
-            for k in expected_dict.iterkeys():
+            for k in expected_dict.keys():
                 if not k in value:
                     logging.warning('GetAll: missing key %s', k)
             logging.debug('GetAll finished')

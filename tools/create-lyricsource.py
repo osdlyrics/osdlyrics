@@ -18,6 +18,8 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from __future__ import print_function
+from builtins import input
 import re
 import os
 import os.path
@@ -93,7 +95,7 @@ if __name__ == '__main__':
 def input_name():
     prompt = 'Input the lyric source name with only lower-case alphabets and numbers:\n'
     while True:
-        name = raw_input(prompt).strip().lower()
+        name = input(prompt).strip().lower()
         if not re.match(r'[a-z][a-z0-9]*$', name):
             prompt = 'Invalid name. Name must contain only lower-case alphabets and numbers.\nName:'
         else:
@@ -102,7 +104,7 @@ def input_name():
 
 def input_boolean(prompt, default_value):
     prompt += ' [Y/n]?' if default_value == True else ' [y/N]'
-    value = raw_input(prompt)
+    value = input(prompt)
     if value.lower() == 'y':
         return True
     elif value.lower() == 'n':
@@ -134,7 +136,7 @@ def main():
         create_file(MAKEFILEAM, srcpath, 'Makefile.am', params)
         if have_subdir:
             create_file(ROOTMAKEFILEAM, rootpath, 'Makefile.am', params)
-    print 'Done'
+    print('Done')
 
 if __name__ == '__main__':
     main()

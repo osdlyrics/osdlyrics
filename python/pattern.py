@@ -18,8 +18,11 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 import os.path
-import urlparse
+import urllib.parse
 
 from .errors import PatternException
 from .utils import url2path
@@ -88,7 +91,7 @@ def expand_file(pattern, metadata):
                     location = metadata.location
                     if not location:
                         raise PatternException('Location not found in metadata')
-                    uri = urlparse.urlparse(location)
+                    uri = urllib.parse.urlparse(location)
                     if uri.scheme != '' and not uri.scheme in ['file']:
                         raise PatternException('Unsupported file scheme %s' % uri.scheme)
                     if uri.scheme == '':
@@ -151,7 +154,7 @@ def expand_path(pattern, metadata):
         location = metadata.location
         if not location:
             raise PatternException('Location not found in metadata')
-        uri = urlparse.urlparse(location)
+        uri = urllib.parse.urlparse(location)
         if not uri.scheme in ['file']:
             raise PatternException('Unsupported file scheme %s' % uri.scheme)
         path = url2path(uri)

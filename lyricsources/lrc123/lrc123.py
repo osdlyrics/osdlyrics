@@ -18,7 +18,9 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import httplib
+from future import standard_library
+standard_library.install_aliases()
+import http.client
 import logging
 import re
 
@@ -59,7 +61,7 @@ class Lrc123Source(BaseLyricSourcePlugin):
             return []
 
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status)
+            raise http.client.HTTPException(status)
         match = RESULT_PATTERN.findall(content)
         result = []
         if match:
@@ -80,7 +82,7 @@ class Lrc123Source(BaseLyricSourcePlugin):
         status, content = http_download(url=HOST+downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status, '')
+            raise http.client.HTTPException(status, '')
         return content
 
 

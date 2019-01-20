@@ -20,7 +20,10 @@
 
 """MPD support for OSD Lyrics. Requires MPD >= 0.16 and mpd-python >= 0.3
 """
+from __future__ import division
 
+from past.utils import old_div
+from builtins import object
 import logging
 import os
 import select
@@ -54,7 +57,7 @@ DEFAULT_PORT = 6600
 class NoConnectionError(Exception):
     pass
 
-class CommandCallback:
+class CommandCallback(object):
     def __init__(self, command, callback):
         self.command = command
         self.callback = callback
@@ -63,7 +66,7 @@ class CommandCallback:
         if callable(self.callback):
             self.callback(*args)
 
-class Cmds:
+class Cmds(object):
     CONFIG = 'config'
     CURRENTSONG = 'currentsong'
     IDLE = 'idle'
@@ -328,7 +331,7 @@ class MpdPlayer(BasePlayer):
     def _handle_status(self, status):
         logging.debug('status\n%s', status)
         changes = set()
-        for prop, handler in self.STATUS_CHANGE_MAP.items():
+        for prop, handler in list(self.STATUS_CHANGE_MAP.items()):
             if not prop in status:
                 value = None
             else:
@@ -460,11 +463,11 @@ class MpdPlayer(BasePlayer):
     def prev(self):
         self._send_cmd(Cmds.PREVIOUS)
 
-    def next(self):
+    def __next__(self):
         self._send_cmd(Cmds.NEXT)
 
     def set_position(self, pos):
-        self._send_cmd(Cmds.SEEK, self._songid, int(pos / 1000))
+        self._send_cmd(Cmds.SEEK, self._songid, int(old_div(pos, 1000)))
 
     def debug_info(self):
         ret = dbus.Dictionary(signature='sv')

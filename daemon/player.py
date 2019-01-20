@@ -18,6 +18,8 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from __future__ import division
+from past.utils import old_div
 import logging
 
 import dbus.service
@@ -72,7 +74,7 @@ class PlayerSupport(dbus.service.Object):
         connect to the player and remove the timer.
         """
         detected = False
-        for proxy in self._player_proxies.values():
+        for proxy in list(self._player_proxies.values()):
             try:
                 active_players = proxy.ListActivePlayers()
                 for player_info in active_players:
@@ -169,7 +171,7 @@ class PlayerSupport(dbus.service.Object):
                          out_signature='aa{sv}')
     def ListSupportedPlayers(self):
         ret = []
-        for proxy in self._player_proxies.values():
+        for proxy in list(self._player_proxies.values()):
             try:
                 ret = ret + proxy.ListSupportedPlayers()
             except:
@@ -181,7 +183,7 @@ class PlayerSupport(dbus.service.Object):
                          out_signature='aa{sv}')
     def ListActivatablePlayers(self):
         ret = []
-        for proxy in self._player_proxies.values():
+        for proxy in list(self._player_proxies.values()):
             try:
                 ret = ret + proxy.ListActivatablePlayers()
             except:
@@ -265,7 +267,7 @@ class Mpris2Player(DBusObject):
             getattr(self._timer, status_map[status])()
 
     def _seeked_cb(self, position):
-        self._timer.time = position / 1000
+        self._timer.time = old_div(position, 1000)
         self.Seeked(position)
 
     def _properties_changed_cb(self, iface, changed, invalidated):
@@ -283,7 +285,7 @@ class Mpris2Player(DBusObject):
                                    'CanPause',
                                    'CanSeek',
                                    ])
-        for k, v in changed.iteritems():
+        for k, v in changed.items():
             if k in accepted_properties:
                 setattr(self, k, v)
 

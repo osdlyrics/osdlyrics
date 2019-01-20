@@ -18,9 +18,14 @@
 # along with OSD Lyrics. If not, see <https://www.gnu.org/licenses/>.
 #
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import chr
+from builtins import map
+from builtins import filter
 import string
 import unicodedata
-import httplib
+import http.client
 import hashlib
 from xml.dom.minidom import parseString
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
@@ -69,7 +74,7 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
         def res_is_lrc(result):
             url = result._downloadinfo
             return url.rfind('lrc') == len(url) - 3
-        result = filter(res_is_lrc, result)
+        result = list(filter(res_is_lrc, result))
 
         # Prioritize results whose artist matches
         if metadata.artist and metadata.title:
@@ -100,9 +105,9 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
                                         proxy=get_proxy_settings(self.config_proxy))
         
         if status < 200 or status >= 400:
-                raise httplib.HTTPException(status, '')
+                raise http.client.HTTPException(status, '')
         
-        contentbytes = map(ord, content)
+        contentbytes = list(map(ord, content))
         codekey = contentbytes[1]
         deccontent = ''
         for char in contentbytes[22:]:
@@ -112,7 +117,7 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
         pagesleft = 0
         tagreturn = parseString(deccontent).getElementsByTagName('return')[0]
         if tagreturn:
-                pagesleftstr = self.alternative_gettagattribute(tagreturn.attributes.items(), 'PageCount') #tagreturn.attributes['PageCount'].value
+                pagesleftstr = self.alternative_gettagattribute(list(tagreturn.attributes.items()), 'PageCount') #tagreturn.attributes['PageCount'].value
                 if pagesleftstr == '':
                     pagesleft = 0
                 else:
@@ -145,7 +150,7 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
         status, content = http_download(url=downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status, '')
+            raise http.client.HTTPException(status, '')
         return content
 
 

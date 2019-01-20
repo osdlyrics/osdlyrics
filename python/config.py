@@ -18,6 +18,7 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from builtins import object
 import logging
 
 import dbus
@@ -173,9 +174,9 @@ def test():
                  'string': 'Foobar',
                  'string_list': ['Foo', 'bar'],
                  }
-    for k in testcase.keys():
+    for k in list(testcase.keys()):
         config.connect_change('test/' + k, value_changed)
-    for k, v in testcase.items():
+    for k, v in list(testcase.items()):
         getattr(config, 'set_' + k)('test/' + k, v)
     loop.run()
 
