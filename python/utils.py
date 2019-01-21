@@ -41,10 +41,11 @@ __all__ = (
 
 pycurl.global_init(pycurl.GLOBAL_DEFAULT)
 
-# make sure the default encoding is utf-8
-if sys.getdefaultencoding() != 'utf-8':
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
+if sys.version_info < (3, 0):
+    # make sure the default encoding is utf-8
+    if sys.getdefaultencoding() != 'utf-8':
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
 
 class ProxySettings(object):
     """
