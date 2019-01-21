@@ -40,7 +40,6 @@ __all__ = (
     'get_config_path',
     'http_download',
     'path2uri',
-    'url2path',
     )
 
 pycurl.global_init(pycurl.GLOBAL_DEFAULT)
@@ -127,12 +126,8 @@ if sys.version_info < (3, 0):
         if isinstance(value, unicode):
             return value.encode('utf8')
         return value
-
-    def url2path(urlparts):
-        return urllib.url2pathname(urlparts.path.encode('ascii')).decode('utf8')
 else:
     ensure_unicode = ensure_utf8 = lambda s: s
-    url2path = lambda urlparts: urllib.request.url2pathname(urlparts.path)
 
 
 def get_proxy_settings(config=None, conn=None):
