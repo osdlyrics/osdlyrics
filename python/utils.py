@@ -264,6 +264,7 @@ def get_kde_proxy():
     return ProxySettings('no')
 
 def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, proxy=None):
+    # type: (Text, int, Text, Union[bytes, Dict[Text, Any]], Dict[Text, Any], int, Any) -> Tuple[int, bytes]
     r"""
     Helper function to download files from website
 
@@ -277,10 +278,10 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
      - `port`: (optional) The port.
      - `method`: (optional) The HTTP method to download contents. Available values
                  are `'POST'` or `'GET'`. The default value is `'GET'`.
-     - `params`: (optional) The parameters of the request. It is a dict. If `method`
-                 is `'GET'`, `params` will be encoded and append to the url as the
-                 param part. If `method` is `'POST'`, `params` will be added to
-                 request headers as post data.
+     - `params`: (optional) The parameters of the request. It is either a dict or bytes.
+                 If it is a dict, it will be utf8-urlencoded. If `method` is `'GET'`,
+                 `params` will be append to the url as the param part. If `method` is
+                 `'POST'`, `params` will be added to request body as post data.
      - `headers`: (optional) A dict of HTTP headers.
      - `proxy`: (optional) A ProxySettings object to sepcify the proxy to use.
 
@@ -297,8 +298,9 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
     c.setopt(pycurl.FOLLOWLOCATION, 1)
     c.setopt(pycurl.MAXREDIRS, 5)
     c.setopt(pycurl.WRITEFUNCTION, buf.write)
-    if method == 'GET' and params:
+    if isinstance(params, dict):
         params = urllib.parse.urlencode(params)
+    if method == 'GET' and params:
         url = url + ('/' if '/' not in url else '') + ('?' if '?' not in url else '&') + params
     elif method == 'POST':
         c.setopt(pycurl.POST, 1)
