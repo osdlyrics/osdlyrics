@@ -67,12 +67,12 @@ class LyricSource(dbus.service.Object):
         self._config = osdlyrics.config.Config(conn)
 
     def _detect_sources(self):
-        for bus_name in self.connection.list_names():
+        for bus_name in map(str, self.connection.list_names()):
             try:
                 self._connect_source(bus_name, False)
             except Exception as e:
                 logging.warning('Fail to connect source %s: %s' % (bus_name, e))
-        for bus_name in self.connection.list_activatable_names():
+        for bus_name in map(str, self.connection.list_activatable_names()):
             try:
                 self._connect_source(bus_name, True)
             except Exception as e:

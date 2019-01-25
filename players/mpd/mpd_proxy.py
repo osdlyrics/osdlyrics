@@ -20,7 +20,7 @@
 
 """MPD support for OSD Lyrics. Requires MPD >= 0.16 and mpd-python >= 0.3
 """
-
+from __future__ import unicode_literals
 from builtins import object
 import logging
 import os

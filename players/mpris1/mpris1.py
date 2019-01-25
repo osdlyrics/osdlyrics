@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+from builtins import str
 
 from contextlib import contextmanager
 import logging
@@ -74,13 +75,13 @@ class ProxyObject(BasePlayerProxy):
                 if name.startswith(MPRIS1_PREFIX) and not name.startswith(MPRIS1_PREFIX + 'MediaPlayer2.')]
 
     def do_list_active_players(self):
-        return self._get_player_from_bus_names(self.connection.list_names())
+        return self._get_player_from_bus_names(map(str, self.connection.list_names()))
 
     def do_list_supported_players(self):
         return self.do_list_activatable_players()
 
     def do_list_activatable_players(self):
-        players = self._get_player_from_bus_names(self.connection.list_activatable_names())
+        players = self._get_player_from_bus_names(map(str, self.connection.list_activatable_names()))
         return players
 
     def do_connect_player(self, player_name):

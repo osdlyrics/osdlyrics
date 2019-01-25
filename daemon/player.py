@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+from builtins import str
 
 import logging
 
@@ -105,10 +106,10 @@ class PlayerSupport(dbus.service.Object):
         """
         Activates all player proxy services
         """
-        active_names = self.connection.list_names()
+        active_names = map(str, self.connection.list_names())
         for bus_name in active_names:
             self._connect_proxy(bus_name, False)
-        activatable_names = self.connection.list_activatable_names()
+        activatable_names = map(str, self.connection.list_activatable_names())
         for bus_name in activatable_names:
             self._connect_proxy(bus_name, True)
 
