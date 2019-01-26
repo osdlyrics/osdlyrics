@@ -74,7 +74,7 @@ class Metadata(object):
         - `arturl`: (string) The URI of the picture of the cover of the album
         - `tracknum`: (int) The number of the track
         - `location`: (string) The URI of the file
-        - `length`: (int) The duration of the track
+        - `length`: (int) The duration of the track in milliseconds.
         - `extra`: (dict) A dict that is intend to store additional properties
                    provided by MPRIS1 or MPRIS2 DBus dicts. The MPRIS1-related
                    values will be set in the dict returned by `to_mpris1`. The
@@ -304,7 +304,7 @@ class Metadata(object):
         if 'mtime' in dbusdict:
             kargs['length'] = dbusdict['mtime']
         elif 'mpris:length' in dbusdict:
-            kargs['length'] = int(dbusdict['mpris:length'])
+            kargs['length'] = dbusdict['mpris:length'] // 1000
         elif 'time' in dbusdict:
             kargs['length'] = dbusdict['time'] * 1000
         ret = Metadata(**kargs)

@@ -322,6 +322,7 @@ def test():
                 results = [SearchResult(title=metadata.title + str(i),
                                         artist=metadata.artist + str(i),
                                         album=metadata.album + str(i),
+                                        sourceid=i,
                                         downloadinfo='\n'.join((metadata.title,
                                                                metadata.artist,
                                                                metadata.album)))
