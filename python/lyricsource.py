@@ -117,12 +117,12 @@ class BaseTaskThread(threading.Thread):
         - `kwargs`: A dictionary of keyword arguments for the target invocation.
           Defaults to `{}`.
         """
+        threading.Thread.__init__(self)
         self._onfinish = onfinish
         self._onerror = onerror
         self._args = args
         self._kwargs = kwargs
         self._target = target
-        threading.Thread.__init__(self)
 
     def run(self):
         """ Runs the task thread. Do NOT override this method. Override

@@ -24,6 +24,8 @@ import re
 
 import dbus
 
+from .consts import METADATA_ALBUM, METADATA_ARTIST, METADATA_TITLE
+
 
 class Metadata(object):
     """
@@ -88,6 +90,23 @@ class Metadata(object):
         self.location = location
         self.length = length
         self._extra = extra
+
+    def __eq__(self, other):
+        """
+        Two metadatas are equal if:
+        - The locations are not empty and are equal, or
+        - The titles, artists and albums are equal.
+
+        See also: src/ol_metadata.c:ol_metadata_equal, thougn they aren't consistent.
+        """
+        if self is other:
+            return True
+        if self.location == other.location and self.location != '':
+            return True
+        for key in [METADATA_TITLE, METADATA_ARTIST, METADATA_ALBUM]:
+            if getattr(self, key) != getattr(other, key):
+                return False
+        return True
 
     def to_mpris1(self):
         """

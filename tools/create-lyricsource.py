@@ -110,7 +110,7 @@ def input_name():
     return name
 
 def input_boolean(prompt, default_value):
-    prompt += ' [Y/n]?' if default_value == True else ' [y/N]'
+    prompt += ' [Y/n]?' if default_value == True else ' [y/N]?'
     value = input(prompt)
     if value.lower() == 'y':
         return True

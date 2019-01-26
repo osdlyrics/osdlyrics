@@ -94,7 +94,7 @@ class App(object):
                           help=('A well-known bus name on DBus. Exit when the'
                                 ' name disappears. If set to empty string,'
                                 ' this player proxy will not exit.'))
-        (options, args) = parser.parse_args()
+        options, args = parser.parse_args()
         if self._watch_daemon:
             self._watch_daemon_bus(options.watch_daemon)
 

@@ -38,17 +38,11 @@ def query_param_from_metadata(metadata):
     Generate query dict from metadata
     """
     param = {
-        METADATA_TITLE: metadata.title if metadata.title is not None else '',
-        METADATA_ARTIST: metadata.artist if metadata.artist is not None else '',
-        METADATA_ALBUM: metadata.album if metadata.album is not None else '',
-        }
-    try:
-        tracknum = int(metadata.tracknum)
-        if tracknum < 0:
-            tracknum = 0
-    except:
-        tracknum = 0
-    param[METADATA_TRACKNUM] = tracknum
+        METADATA_TITLE: metadata.title or '',
+        METADATA_ARTIST: metadata.artist or '',
+        METADATA_ALBUM: metadata.album or '',
+        METADATA_TRACKNUM: max(metadata.tracknum, 0),
+    }
     return param
 
 class LrcDb(object):
@@ -114,23 +108,15 @@ UPDATE {0}
         """ Assigns a uri of lyrics to tracks represented by metadata
         """
         c = self._conn.cursor()
-        if metadata.location:
-            location = metadata.location
-        else:
-            location = ''
+        location = metadata.location or ''
         if self._find_by_location(metadata):
             logging.debug('Assign lyric file %s to track of location %s' % (uri, location))
             c.execute(LrcDb.UPDATE_LYRIC, (uri, location,))
         else:
-            title = metadata.title if metadata.title is not None else ''
-            artist = metadata.artist if metadata.artist is not None else ''
-            album = metadata.album if metadata.album is not None else ''
-            try:
-                tracknum = int(metadata.tracknum)
-                if tracknum < 0:
-                    tracknum = 0
-            except:
-                tracknum = 0
+            title = metadata.title or ''
+            artist = metadata.artist or ''
+            album = metadata.album or ''
+            tracknum = max(metadata.tracknum, 0)
             logging.debug('Assign lyrics file %s to track %s. %s - %s in album %s @ %s' % (uri, tracknum, artist, title, album, location))
             c.execute(LrcDb.ASSIGN_LYRIC, (title, artist, album, tracknum, location, uri))
         self._conn.commit()

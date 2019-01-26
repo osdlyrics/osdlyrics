@@ -34,7 +34,6 @@ import chardet
 import osdlyrics
 from osdlyrics.app import App
 import osdlyrics.config
-from osdlyrics.consts import METADATA_ALBUM, METADATA_ARTIST, METADATA_TITLE
 import osdlyrics.lrc
 from osdlyrics.metadata import Metadata
 from osdlyrics.pattern import expand_file, expand_path
@@ -81,13 +80,11 @@ class CannotSaveLrcException(Exception):
         Exception.__init__(self, "Cannot save lrc file to %s" % uri)
 
 def metadata_description(metadata):
-    if metadata.title is not None:
-        if metadata.artist is not None:
-            return '%s(%s)' % (metadata.title, metadata.artist)
-        else:
-            return '%s' % metadata.title
-    else:
+    if metadata.title is None:
         return '[Unknown]'
+    if metadata.artist is None:
+        return metadata.title
+    return '%s(%s)' % (metadata.title, metadata.artist)
 
 
 def decode_by_charset(content):
@@ -129,24 +126,6 @@ def decode_by_charset(content):
         encoding = 'utf-8'
     return content.decode(encoding, 'replace')
 
-def metadata_equal(lhs, rhs):
-    """
-    Tell if two metadatas are equal.
-
-    Two metadatas are equal if:
-    - The locations are not empty and are equal, or
-    - The titles, artists and albums are equal.
-    """
-    try:
-        if lhs.location == rhs.location and lhs.location != '':
-            return True
-    except:
-        pass
-    keys = [METADATA_TITLE, METADATA_ARTIST, METADATA_ALBUM]
-    for key in keys:
-        if getattr(lhs, key) != getattr(rhs, key):
-            return False
-    return True
 
 def is_valid_uri(uri):
     """
@@ -298,7 +277,7 @@ class LyricsService(dbus.service.Object):
 
     def assign_lrc_uri(self, metadata, uri):
         self._db.assign(metadata, uri)
-        if metadata_equal(metadata, self._metadata):
+        if metadata == self._metadata:
             self.CurrentLyricsChanged()
 
     @dbus.service.method(dbus_interface=LYRICS_INTERFACE,
@@ -357,23 +336,21 @@ class LyricsService(dbus.service.Object):
                          out_signature='s',
                          byte_arrays=True)
     def SetLyricContent(self, metadata, content):
-        if isinstance(metadata, dict):
-            metadata = Metadata.from_dict(metadata)
+        metadata = Metadata.from_dict(metadata)
         # Remove any existing file association and save the new lyrics content
         # to the configured patterns.
         self._db.delete(metadata)
         uri = self._save_to_patterns(metadata, content.rstrip(b'\0'))
-        if uri and metadata_equal(metadata, self._metadata):
+        if uri and metadata == self._metadata:
             self.CurrentLyricsChanged()
         return uri
 
     @dbus.service.method(dbus_interface=LYRICS_INTERFACE,
                          in_signature='a{sv}s',
                          out_signature='')
-    def AssignLyricFile(self, metadata, filepath):
-        if (isinstance(metadata, dict)):
-            metadata = Metadata.from_dict(metadata)
-        self.assign_lrc_uri(metadata, osdlyrics.utils.path2uri(filepath))
+    def AssignLyricFile(self, metadata, uri):
+        metadata = Metadata.from_dict(metadata)
+        self.assign_lrc_uri(metadata, uri)
 
     @dbus.service.signal(dbus_interface=LYRICS_INTERFACE,
                          signature='')

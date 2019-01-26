@@ -116,8 +116,7 @@ class LyricSource(dbus.service.Object):
         logging.info('Search complete from %s, ticket: %s, status: %s, result: %s' %
                      (source_id, ticket, status, len(results)))
         source = self._sources[source_id]
-        myticket = source['search'][ticket]
-        del source['search'][ticket]
+        myticket = source['search'].pop(ticket)
         if myticket not in self._search_tasks:
             return
         if status == STATUS_SUCCESS:
@@ -147,8 +146,7 @@ class LyricSource(dbus.service.Object):
         logging.info('Download complete from %s, ticket: %s, status: %s, content length: %s' %
                      (source_id, ticket, status, len(content)))
         source = self._sources[source_id]
-        myticket = source['download'][ticket]
-        del source['download'][ticket]
+        myticket = source['download'].pop(ticket)
         if myticket not in self._download_tasks:
             return
         self.DownloadComplete(myticket, status, content)
@@ -181,7 +179,7 @@ class LyricSource(dbus.service.Object):
     def _do_search(self, ticket):
         task = self._search_tasks[ticket]
         nextsource = None
-        while len(task['sources']) > 0:
+        while task['sources']:
             if task['sources'][0] in self._sources:
                 nextsource = task['sources'][0]
                 break
@@ -274,11 +272,10 @@ class LyricSource(dbus.service.Object):
                          in_signature='',
                          out_signature='aa{sv}')
     def ListSources(self):
-        sources = self._config.get_string_list('Download/download-engine')
-        ret = [{'id': id, 'name': self._sources[id]['name'], 'enabled': True} for
-               id in sources if id in self._sources]
-        enabled = frozenset(sources)
-        for id, v in self._sources.items():
-            if id not in enabled:
-                ret.append({'id': id, 'name': v['name'], 'enabled': False})
-        return ret
+        enabled = self._config.get_string_list('Download/download-engine')
+        sources = [
+            {'id': id, 'name': v['name'], 'enabled': id in enabled}
+            for id, v in self._sources.items()
+        ]
+        order = {id: i for i, id in enumerate(enabled)}
+        return sorted(sources, key=lambda it: (-it['enabled'], order.get(it['id'], 1 << 31)))

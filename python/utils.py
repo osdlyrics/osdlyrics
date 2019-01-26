@@ -99,9 +99,8 @@ def path2uri(path):
     >>> path2uri('/\u8def\u5f84/\u6587\u4ef6')
     'file:///%E8%B7%AF%E5%BE%84/%E6%96%87%E4%BB%B6'
     """
-    if path.startswith('~'):
-        path = os.path.expanduser(path)
-    if not path.startswith('/'):
+    path = os.path.expanduser(path)
+    if not os.path.isabs(path):
         return path
     return 'file://' + urllib.request.pathname2url(path)
 
@@ -123,10 +122,10 @@ def get_proxy_settings(config=None, conn=None):
         raise ValueError('Either config or conn must be specified')
     if config is None:
         config = config.Config(conn)
-    proxy_type = config.get_string('Download/proxy')
-    if proxy_type.lower() == 'no':
+    proxy_type = config.get_string('Download/proxy').lower()
+    if proxy_type == 'no':
         return ProxySettings(protocol='no')
-    if proxy_type.lower() == 'manual':
+    if proxy_type == 'manual':
         protocol = config.get_string('Download/proxy-type')
         host = config.get_string('Download/proxy-host')
         port = config.get_int('Download/proxy-port')
@@ -134,7 +133,7 @@ def get_proxy_settings(config=None, conn=None):
         passwd = config.get_string('Download/proxy-passwd')
         return ProxySettings(protocol=protocol, host=host, port=port,
                             username=username, password=passwd)
-    if proxy_type.lower() == 'system':
+    if proxy_type == 'system':
         return detect_system_proxy()
 
 def detect_system_proxy():
@@ -165,15 +164,15 @@ def get_envar_proxy():
     envars = ['http_proxy', 'HTTP_PROXY']
     proxies = [os.environ.get(v) for v in envars]
     for proxy in proxies:
-        if proxy is not None:
-            if proxy.find('://') < 0:
+        if proxy:
+            if '://' not in proxy:
                 proxy = 'http://' + proxy
             parts = urllib.parse.urlparse(proxy)
             if not parts.scheme in ['http', 'socks4', 'socks5', '']:
                 continue
-            return ProxySettings(protocol=parts.scheme if parts.scheme != '' else 'http',
+            return ProxySettings(protocol=parts.scheme or 'http',
                                  host=parts.hostname,
-                                 port=parts.port if parts.port is not None else 8080,
+                                 port=parts.port or 8080,
                                  username=parts.username,
                                  password=parts.password)
     return ProxySettings(protocol='no')
@@ -247,19 +246,16 @@ def get_kde_proxy():
     elif proxy_type in [1, 4]:
         for key in ['httpProxy', 'socksProxy']:
             value = str(group.readEntry(key))
-            if value.strip() != '':
+            if value.strip():
                 # KDE 4.8 uses whitespace to seperate port and hostname
                 value = value.replace(' ', ':')
-                if value.find('://') < 0:
+                if '://' not in value:
                     value = 'http://' + value
                 parts = urllib.parse.urlparse(value)
                 host = parts.hostname
-                try:
-                    port = parts.port
-                except:
-                    port = None
+                port = parts.port
                 if host is not None and host.strip() != '' and \
-                        port is not None and port > 0 and port < 65536:
+                        port is not None and 0 < port < 65536:
                     protocolmap = {'httpProxy': 'http',
                                    'socksProxy': 'socks5'}
                     return ProxySettings(protocolmap[key],
@@ -291,7 +287,7 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
     >>> code, content = http_download('http://www.python.org/')
     >>> code
     200
-    >>> content.find('Python') >= 0
+    >>> b'Python' in content
     True
     """
     c = pycurl.Curl()
@@ -301,16 +297,16 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
     c.setopt(pycurl.FOLLOWLOCATION, 1)
     c.setopt(pycurl.MAXREDIRS, 5)
     c.setopt(pycurl.WRITEFUNCTION, buf.write)
-    if method == 'GET' and len(params) > 0:
+    if method == 'GET' and params:
         params = urllib.parse.urlencode(params)
         url = url + ('/' if '/' not in url else '') + ('?' if '?' not in url else '&') + params
     elif method == 'POST':
         c.setopt(pycurl.POST, 1)
-        if len(params) > 0:
+        if params:
             c.setopt(pycurl.POSTFIELDS, params)
             c.setopt(pycurl.POSTFIELDSIZE, len(params))
     c.setopt(pycurl.URL, url)
-    if port > 0 and port < 65536:
+    if 0 < port < 65536:
         c.setopt(pycurl.PORT, port)
 
     real_headers = {'User-Agent': 'OSD Lyrics'}

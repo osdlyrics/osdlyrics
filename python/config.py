@@ -152,9 +152,8 @@ class Config(object):
 
     def _value_changed_cb(self, name_list):
         for name in name_list:
-            if name in self._signals:
-               for handler in self._signals[name]:
-                   handler(name)
+            for handler in self._signals.get(name, []):
+                handler(name)
 
 def test():
     def value_changed(name):

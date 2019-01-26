@@ -69,10 +69,7 @@ class HttpPlayerProxy(BasePlayerProxy):
         return self._players[name]
 
     def do_list_active_players(self):
-        ret = []
-        for v in list(self._players.values()):
-            ret.append(PlayerInfo(v.name))
-        return ret
+        return [PlayerInfo(v.name) for v in self._players.values()]
 
     def do_list_supported_players(self):
         return []

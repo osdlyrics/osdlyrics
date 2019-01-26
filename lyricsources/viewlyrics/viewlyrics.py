@@ -21,12 +21,12 @@ from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
 from builtins import bytes
-from builtins import filter
 import string
 import unicodedata
 import http.client
 import hashlib
-from xml.dom.minidom import parseString
+import xml.etree.ElementTree as xet
+
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
 from osdlyrics.utils import http_download, get_proxy_settings
 
@@ -34,7 +34,7 @@ VIEWLYRICS_HOST = 'search.crintsoft.com'
 VIEWLYRICS_SEARCH_URL = '/searchlyrics.htm'
 VIEWLYRICS_BASE_LRC_URL = 'http://viewlyrics.com/'
 
-VIEWLYRICS_QUERY_FORM = '<?xml version=\'1.0\' encoding=\'utf-8\' ?><searchV1 artist=\"%artist\" title=\"%title\"%etc />'
+VIEWLYRICS_QUERY_FORM = '<?xml version=\'1.0\' encoding=\'utf-8\' ?><searchV1 artist="%artist" title="%title"%etc />'
 VIEWLYRICS_AGENT = 'MiniLyrics'
 VIEWLYRICS_KEY = b'Mlv1clt4.0'
 
@@ -51,15 +51,9 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
 
     def do_search(self, metadata):
         # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
-        if metadata.title:
-            title =  metadata.title
-        else:
-            title =  ''
-        if metadata.artist:
-            artist = metadata.artist
-        else:
-            artist = ''
-        
+        title = metadata.title or ''
+        artist = metadata.artist or ''
+
         result = []
         page = 0
         pagesleft = 1
@@ -70,10 +64,7 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
 
         # Remove non-lrc (plain text) results, they cannot be displayed by
         # OSDLyrics for now
-        def res_is_lrc(result):
-            url = result._downloadinfo
-            return url.rfind('lrc') == len(url) - 3
-        result = list(filter(res_is_lrc, result))
+        result = [r for r in result if r._downloadinfo.endswith('.lrc')]
 
         # Prioritize results whose artist matches
         if metadata.artist and metadata.title:
@@ -88,7 +79,7 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
         query = VIEWLYRICS_QUERY_FORM
         query =  query.replace('%title', title)
         query =  query.replace('%artist', artist)
-        query =  query.replace('%etc', ' client=\"MiniLyrics\" RequestPage=\'%d\'' % page) #Needs real RequestPage
+        query = query.replace('%etc', ' client="MiniLyrics" RequestPage=\'%d\'' % page)  # Needs real RequestPage
         query = query.encode('utf-8')
         
         queryhash = hashlib.md5()
@@ -110,36 +101,19 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
         codekey = contentbytes[1]
         deccontent = bytes(map(codekey.__xor__, contentbytes[22:]))
         
-        result = []
-        pagesleft = 0
-        tagreturn = parseString(deccontent).getElementsByTagName('return')[0]
-        if tagreturn:
-                pagesleftstr = self.alternative_gettagattribute(tagreturn.attributes.items(), 'PageCount') #tagreturn.attributes['PageCount'].value
-                if pagesleftstr == '':
-                    pagesleft = 0
-                else:
-                    pagesleft = int(pagesleftstr)
-                tagsfileinfo = tagreturn.getElementsByTagName('fileinfo')
-                if tagsfileinfo:
-                    for onefileinfo in tagsfileinfo:
-                        if onefileinfo.hasAttribute('link'):
-                            title = onefileinfo.getAttribute('title')
-                            artist = onefileinfo.getAttribute('artist')
-                            album = onefileinfo.getAttribute('album')
-                            url = VIEWLYRICS_BASE_LRC_URL + onefileinfo.getAttribute('link')
-                            result.append(SearchResult(title=title,
-                                                       artist=artist,
-                                                       album=album,
-                                                       sourceid=self.id,
-                                                       downloadinfo=url))
+        root = xet.fromstring(deccontent)  # tagName == 'return'
+        pagesleft = int(next((v for k, v in root.items() if k.lower() == 'PageCount'.lower()), 0))
+        result = [
+            SearchResult(
+                title=entry.get('title', ''),
+                artist=entry.get('artist', ''),
+                album=entry.get('album', ''),
+                sourceid=self.id,
+                downloadinfo=VIEWLYRICS_BASE_LRC_URL + entry.get('link'),
+            )
+            for entry in root.findall('fileinfo[@link]')
+        ]
         return result, (pagesleft - page)
-
-    def alternative_gettagattribute(self, attrs, key):
-        key = key.lower()
-        for attrName, attrValue in attrs:
-            if attrName.lower() == key:
-                return attrValue
-        return ''
 
     def do_download(self, downloadinfo):
         # type: (Any) -> bytes

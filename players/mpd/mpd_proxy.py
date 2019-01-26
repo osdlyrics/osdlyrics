@@ -25,6 +25,7 @@ from builtins import object
 import logging
 import os
 import select
+import sys
 
 import dbus
 import dbus.service
@@ -32,8 +33,10 @@ import glib
 import gobject
 try:
     import mpd
-except ImportError:
-    mpd = None
+    assert hasattr(mpd.MPDClient(), 'send_idle')
+except (ImportError, AssertionError):
+    logging.error('python-mpd >= 0.3 is required.')
+    sys.exit(1)
 
 from osdlyrics.consts import PLAYER_PROXY_INTERFACE
 from osdlyrics.metadata import Metadata
@@ -43,10 +46,6 @@ from osdlyrics.player_proxy import (
     STATUS_PLAYING, STATUS_STOPPED)
 from osdlyrics.timer import Timer
 from osdlyrics.utils import cmd_exists
-
-if mpd is None or not hasattr(mpd.MPDClient(), 'send_idle'):
-    logging.error('python-mpd >= 0.3 is required.')
-    exit(1)
 
 PLAYER_NAME = 'Mpd'
 DEFAULT_HOST = 'localhost'

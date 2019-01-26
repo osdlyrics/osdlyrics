@@ -193,9 +193,7 @@ class IniConfig(dbus.service.Object):
         if self._signal_timer is not None:
             glib.source_remove(self._signal_timer)
             self._signal_timer = None
-        changed = []
-        for key in self._changed_signals.keys():
-            changed.append(key)
+        changed = list(self._changed_signals.keys())
         self.ValueChanged(changed)
         self._changed_signals = {}
 
