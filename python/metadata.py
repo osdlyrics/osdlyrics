@@ -24,7 +24,6 @@ import re
 
 import dbus
 
-from . import utils
 
 class Metadata(object):
     """
@@ -97,7 +96,7 @@ class Metadata(object):
         ret = dbus.Dictionary(signature='sv')
         for k in ['title', 'artist', 'album', 'arturl', 'location']:
             if getattr(self, k) is not None:
-                ret[k] = dbus.String(utils.ensure_unicode(getattr(self, k)))
+                ret[k] = dbus.String(getattr(self, k))
         if self.tracknum >= 0:
             ret['tracknumber'] = dbus.String(self.tracknum)
         if self.length >= 0:
@@ -157,7 +156,7 @@ class Metadata(object):
                       }
         for k in ['title', 'album', 'arturl', 'location']:
             if getattr(self, k) is not None:
-                ret[mpris2map[k]] = dbus.String(utils.ensure_unicode(getattr(self, k)))
+                ret[mpris2map[k]] = dbus.String(getattr(self, k))
         if self.artist is not None:
             ret['xesam:artist'] = [dbus.String(v.strip()) for v in self.artist.split(',')]
         if self.length >= 0:

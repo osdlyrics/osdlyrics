@@ -24,9 +24,7 @@ from builtins import object
 import logging
 import sqlite3
 import os.path
-import urllib.request
 import osdlyrics.utils
-from osdlyrics.utils import ensure_unicode, ensure_utf8
 from osdlyrics.consts import METADATA_URI, METADATA_TITLE, METADATA_ALBUM, \
     METADATA_ARTIST, METADATA_TRACKNUM
 
@@ -34,34 +32,15 @@ __all__ = (
     'LrcDb',
     )
 
-def normalize_location(location):
-    """
-    Normalize location of metadata to URI form
-
-    >>> normalize_location('/path/to/file')
-    u'file:///path/to/file'
-    >>> normalize_location(u'/path/to/file')
-    u'file:///path/to/file'
-    >>> normalize_location('file:///path/to/file')
-    u'file:///path/to/file'
-    >>> normalize_location('/\xe6\x96\x87\xe4\xbb\xb6/\xe8\xb7\xaf\xe5\xbe\x84')
-    u'file:///%E6%96%87%E4%BB%B6/%E8%B7%AF%E5%BE%84'
-    >>> normalize_location(u'/\u6587\u4ef6/\u8def\u5f84')
-    u'file:///%E6%96%87%E4%BB%B6/%E8%B7%AF%E5%BE%84'
-    """
-    if location and location[0] == '/':
-        location = 'file://' + urllib.request.pathname2url(ensure_utf8(location))
-    location = ensure_unicode(location)
-    return location
 
 def query_param_from_metadata(metadata):
     """
     Generate query dict from metadata
     """
     param = {
-        METADATA_TITLE: ensure_unicode(metadata.title) if metadata.title is not None else '',
-        METADATA_ARTIST: ensure_unicode(metadata.artist) if metadata.artist is not None else '',
-        METADATA_ALBUM: ensure_unicode(metadata.album) if metadata.album is not None else '',
+        METADATA_TITLE: metadata.title if metadata.title is not None else '',
+        METADATA_ARTIST: metadata.artist if metadata.artist is not None else '',
+        METADATA_ALBUM: metadata.album if metadata.album is not None else '',
         }
     try:
         tracknum = int(metadata.tracknum)
@@ -131,21 +110,21 @@ UPDATE {0}
         c.close()
 
     def assign(self, metadata, uri):
+        # type: (osdlyrics.metadata.Metadata, Text) -> None
         """ Assigns a uri of lyrics to tracks represented by metadata
         """
-        uri = ensure_unicode(uri)
         c = self._conn.cursor()
         if metadata.location:
-            location = normalize_location(metadata.location)
+            location = metadata.location
         else:
             location = ''
         if self._find_by_location(metadata):
             logging.debug('Assign lyric file %s to track of location %s' % (uri, location))
             c.execute(LrcDb.UPDATE_LYRIC, (uri, location,))
         else:
-            title = ensure_unicode(metadata.title) if metadata.title is not None else ''
-            artist = ensure_unicode(metadata.artist) if metadata.artist is not None else ''
-            album = ensure_unicode(metadata.album) if metadata.album is not None else ''
+            title = metadata.title if metadata.title is not None else ''
+            artist = metadata.artist if metadata.artist is not None else ''
+            album = metadata.album if metadata.album is not None else ''
             try:
                 tracknum = int(metadata.tracknum)
                 if tracknum < 0:
@@ -165,8 +144,7 @@ UPDATE {0}
         c = self._conn.cursor()
 
         if metadata.location:
-            location = normalize_location(metadata.location)
-            c.execute(LrcDb.DELETE_LYRIC + LrcDb.QUERY_LOCATION, (location,))
+            c.execute(LrcDb.DELETE_LYRIC + LrcDb.QUERY_LOCATION, (metadata.location,))
 
         c.execute(LrcDb.DELETE_LYRIC + LrcDb.QUERY_INFO, query_param_from_metadata(metadata))
 
@@ -207,8 +185,7 @@ UPDATE {0}
     def _find_by_location(self, metadata):
         if not metadata.location:
             return None
-        location = normalize_location(metadata.location)
-        return self._find_by_condition(LrcDb.QUERY_LOCATION, (location,))
+        return self._find_by_condition(LrcDb.QUERY_LOCATION, (metadata.location,))
 
     def _find_by_info(self, metadata):
         return self._find_by_condition(LrcDb.QUERY_INFO,

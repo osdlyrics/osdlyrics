@@ -160,6 +160,7 @@ def is_valid_uri(uri):
     return False
 
 def ensure_uri_scheme(uri):
+    # type: (Text) -> Text
     """
     Converts a file path to an URI with scheme of "file:", leaving other URI not
     changed
@@ -189,6 +190,7 @@ def load_from_file(urlparts):
         return None
 
 def load_from_uri(uri):
+    # type: (Text) -> Optional[Text]
     """
     Load the content of LRC file from given URI
 
@@ -199,7 +201,7 @@ def load_from_uri(uri):
         'none': lambda uri: b'',
         }
 
-    url_parts = urllib.parse.urlparse(osdlyrics.utils.ensure_utf8(uri))
+    url_parts = urllib.parse.urlparse(uri)
     content = URI_LOAD_HANDLERS[url_parts.scheme](url_parts)
     if content is None:
         return None
@@ -207,6 +209,7 @@ def load_from_uri(uri):
     return content
 
 def save_to_file(urlparts, content, create):
+    # type: (Any, bytes, bool) -> bool
     """
     Save the content of file to urlparse.ParseResult
 
@@ -233,10 +236,11 @@ def save_to_file(urlparts, content, create):
     except IOError as e:
         logging.info("Cannot open file %s to write: %s", path, e)
         return False
-    file.write(osdlyrics.utils.ensure_utf8(content))
+    file.write(content)
     return True
 
 def save_to_uri(uri, content, create=True):
+    # type: (Text, bytes, bool) -> bool
     """
     Save the content of LRC file to given URI.
 
@@ -247,7 +251,7 @@ def save_to_uri(uri, content, create=True):
         'none': lambda urlparts, content, create: True,
         }
 
-    url_parts = urllib.parse.urlparse(osdlyrics.utils.ensure_utf8(uri))
+    url_parts = urllib.parse.urlparse(uri)
     return URI_SAVE_HANDLERS[url_parts.scheme](url_parts, content, create)
 
 def update_lrc_offset(content, offset):

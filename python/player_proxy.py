@@ -30,7 +30,6 @@ from .consts import (MPRIS2_PLAYER_INTERFACE, PLAYER_PROXY_INTERFACE,
 from .dbusext.service import Object as DBusObject, property as dbus_property
 from . import errors
 from . import timer
-from . import utils
 
 class ConnectPlayerError(errors.BaseError):
     """
@@ -185,7 +184,7 @@ class PlayerInfo(object):
         keys = ['name', 'appname', 'binname', 'cmd', 'icon']
         ret = {}
         for k in keys:
-            ret[k] = utils.ensure_unicode(getattr(self, '_' + k))
+            ret[k] = getattr(self, '_' + k)
         return ret
 
 CAPS_NEXT = 1 << 0
