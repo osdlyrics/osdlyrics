@@ -128,7 +128,7 @@ class Mpris2Player(BasePlayer):
                      'Metadata': 'track_changed',
                      }
         # status_props = ['PlaybackStatus', 'LoopStatus', 'Shuffle']
-        logging.debug('Status changed: %s' % changed)
+        logging.debug('Status changed: %s', changed)
         for caps in caps_props:
             if caps in changed:
                 self.caps_changed()
@@ -185,7 +185,7 @@ class Mpris2Player(BasePlayer):
             return playback_dict[self._player_prop.Get(MPRIS2_PLAYER_INTERFACE,
                                                        'PlaybackStatus')]
         except Exception as e:
-            logging.error('Failed to get status: %s' % e)
+            logging.error('Failed to get status: %s', e)
             return STATUS_PLAYING
 
     def get_repeat(self):

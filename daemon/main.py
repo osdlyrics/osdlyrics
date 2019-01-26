@@ -107,7 +107,7 @@ class DaemonObject(dbus.service.Object):
                          in_signature='s',
                          out_signature='')
     def Hello(self, client_bus_name):
-        logging.info('A new client connected: %s' % client_bus_name)
+        logging.info('A new client connected: %s', client_bus_name)
         if is_valid_client_bus_name(client_bus_name):
             if client_bus_name not in self._watch_clients:
                 self._watch_clients[client_bus_name] = \
@@ -132,7 +132,7 @@ class DaemonObject(dbus.service.Object):
 
     def _client_owner_changed(self, name, owner):
         if owner == '':
-            logging.info('Client %s disconnected' % name)
+            logging.info('Client %s disconnected', name)
             if name in self._watch_clients:
                 self._watch_clients[name].cancel()
                 del self._watch_clients[name]

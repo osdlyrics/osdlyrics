@@ -158,8 +158,7 @@ class Config(object):
 def test():
     def value_changed(name):
         typename = name.split('/')[1]
-        logging.debug('%s has been changed to %s' % (name,
-                                                     getattr(config, 'get_' + typename)(name)))
+        logging.debug('%s has been changed to %s', name, getattr(config, 'get_' + typename)(name))
 
     import glib
     from dbus.mainloop.glib import DBusGMainLoop

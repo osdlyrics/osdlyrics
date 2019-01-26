@@ -98,7 +98,7 @@ class PlayerSupport(dbus.service.Object):
             try:
                 self.connection.activate_name_owner(bus_name)
             except Exception as e:
-                logging.warning('Cannot activate proxy %s: %s' % (bus_name, e))
+                logging.warning('Cannot activate proxy %s: %s', bus_name, e)
         self.connection.watch_name_owner(bus_name,
                                          lambda name: self._proxy_name_changed(proxy_name, len(name) == 0))
 
@@ -143,7 +143,7 @@ class PlayerSupport(dbus.service.Object):
     def _proxy_name_changed(self, proxy_name, lost):
         bus_name = PLAYER_PROXY_BUS_NAME_PREFIX + proxy_name
         if not lost:
-            logging.info('Get player proxy %s' % proxy_name)
+            logging.info('Get player proxy %s', proxy_name)
             proxy = self.connection.get_object(
                 bus_name, PLAYER_PROXY_OBJECT_PATH_PREFIX + proxy_name)
             proxy.connect_to_signal('PlayerLost',
@@ -153,7 +153,7 @@ class PlayerSupport(dbus.service.Object):
         else:
             if not proxy_name in self._player_proxies:
                 return
-            logging.info('Player proxy %s lost' % proxy_name)
+            logging.info('Player proxy %s lost', proxy_name)
             proxy = self._player_proxies[proxy_name]
             # If current player is provided by the proxy, it is lost.
             if self._active_player and self._active_player['proxy'] == proxy:

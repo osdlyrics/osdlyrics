@@ -165,7 +165,7 @@ def load_from_file(urlparts):
     try:
         return open(path, 'rb').read()
     except IOError as e:
-        logging.info("Cannot open file %s to read: %s" % (path, e))
+        logging.info("Cannot open file %s to read: %s", path, e)
         return None
 
 def load_from_uri(uri):
@@ -309,14 +309,12 @@ class LyricsService(dbus.service.Object):
         if uri:
             lrc = load_from_uri(uri)
             if lrc is not None:
-                logging.info("LRC for track %s not found in db but found by pattern: %s" % (metadata_description(metadata), uri))
+                logging.info("LRC for track %s not found in db but found by pattern: %s", metadata_description(metadata), uri)
         if lrc is None:
-            logging.info("LRC for track %s not found" %
-                         metadata_description(metadata))
+            logging.info("LRC for track %s not found", metadata_description(metadata))
             return False, '', ''
         else:
-            logging.info("LRC for track %s found: %s" %
-                         (metadata_description(metadata), uri))
+            logging.info("LRC for track %s found: %s", metadata_description(metadata), uri)
             return True, uri, lrc
 
     @dbus.service.method(dbus_interface=LYRICS_INTERFACE,
@@ -418,7 +416,7 @@ class LyricsService(dbus.service.Object):
         return None
 
     def set_current_metadata(self, metadata):
-        logging.info('Setting current metadata: %s' % metadata)
+        logging.info('Setting current metadata: %s', metadata)
         self._metadata = metadata
 
 def doc_test():

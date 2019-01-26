@@ -92,10 +92,10 @@ class BasePlayerProxy(dbus.service.Object):
         if player and player.connected:
             player.set_disconnect_cb(self._player_lost_cb)
             self._connected_players[player_name] = player
-            logging.info('Connected to %s' % player.object_path)
+            logging.info('Connected to %s', player.object_path)
             return player.object_path
         else:
-            raise ConnectPlayerError('%s cannot be connected' % player_name)
+            raise ConnectPlayerError('%s cannot be connected', player_name)
 
     @dbus.service.signal(dbus_interface=PLAYER_PROXY_INTERFACE,
                          signature='s')

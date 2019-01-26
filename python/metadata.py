@@ -313,7 +313,7 @@ class Metadata(object):
                 kargs['tracknum'] = tracknumber
             else:
                 if not re.match(r'\d+(/\d+)?', tracknumber):
-                    logging.warning('Malfromed tracknumber: %s' % tracknumber)
+                    logging.warning('Malfromed tracknumber: %s', tracknumber)
                 else:
                     kargs['tracknum'] = int(dbusdict['tracknumber'].split('/')[0])
         if 'tracknum' not in kargs and 'xesam:trackNumber' in dbusdict:

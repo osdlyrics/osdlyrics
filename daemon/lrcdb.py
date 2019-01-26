@@ -110,14 +110,14 @@ UPDATE {0}
         c = self._conn.cursor()
         location = metadata.location or ''
         if self._find_by_location(metadata):
-            logging.debug('Assign lyric file %s to track of location %s' % (uri, location))
+            logging.debug('Assign lyric file %s to track of location %s', uri, location)
             c.execute(LrcDb.UPDATE_LYRIC, (uri, location,))
         else:
             title = metadata.title or ''
             artist = metadata.artist or ''
             album = metadata.album or ''
             tracknum = max(metadata.tracknum, 0)
-            logging.debug('Assign lyrics file %s to track %s. %s - %s in album %s @ %s' % (uri, tracknum, artist, title, album, location))
+            logging.debug('Assign lyrics file %s to track %s. %s - %s in album %s @ %s', uri, tracknum, artist, title, album, location)
             c.execute(LrcDb.ASSIGN_LYRIC, (title, artist, album, tracknum, location, uri))
         self._conn.commit()
         c.close()
@@ -159,11 +159,11 @@ UPDATE {0}
 
     def _find_by_condition(self, where_clause, parameters=None):
         query = LrcDb.FIND_LYRIC + where_clause
-        logging.debug('Find by condition, query = %s, params = %s' % (query, parameters))
+        logging.debug('Find by condition, query = %s, params = %s', query, parameters)
         c = self._conn.cursor()
         c.execute(query, parameters)
         r = c.fetchone()
-        logging.debug('Fetch result: %s' % r)
+        logging.debug('Fetch result: %s', r)
         if r:
             return r[0]
         return None

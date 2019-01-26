@@ -194,7 +194,7 @@ class BaseLyricSourcePlugin(DBusObject):
     def do_searchfailure(self, ticket, e):
         if ticket in self._search_tasks:
             del self._search_tasks[ticket]
-            logging.info('Search fail, %s' % e)
+            logging.info('Search fail, %s', e)
             self.SearchComplete(ticket, SEARCH_FAILED, [])
 
     @dbus.service.method(dbus_interface=LYRIC_SOURCE_PLUGIN_INTERFACE,
@@ -278,14 +278,14 @@ class BaseLyricSourcePlugin(DBusObject):
     @dbus.service.signal(dbus_interface=LYRIC_SOURCE_PLUGIN_INTERFACE,
                          signature='iiaa{sv}')
     def SearchComplete(self, ticket, status, results):
-        logging.debug('search complete: ticket: %d, status: %d' % (ticket, status))
+        logging.debug('search complete: ticket: %d, status: %d', ticket, status)
         pass
 
 
     @dbus.service.signal(dbus_interface=LYRIC_SOURCE_PLUGIN_INTERFACE,
                          signature='iiay')
     def DownloadComplete(self, ticket, status, result):
-        logging.debug('download complete: ticket: %d, status: %d' % (ticket, status), '' if status == DOWNLOAD_SUCCEED else ', result: %s' % result)
+        logging.debug('download complete: ticket: %d, status: %d%s', ticket, status, '' if status == DOWNLOAD_SUCCEED else ', result: %s' % result)
         pass
 
     def run(self):
@@ -324,7 +324,7 @@ def test():
 
         def do_search(self, metadata):
             if metadata.title:
-                logging.info('title: %s' % metadata.title)
+                logging.info('title: %s', metadata.title)
                 results = [SearchResult(title=metadata.title + str(i),
                                         artist=metadata.artist + str(i),
                                         album=metadata.album + str(i),
