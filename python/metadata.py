@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-
+from __future__ import unicode_literals
 from builtins import object
 import logging
 import re
@@ -123,30 +123,30 @@ class Metadata(object):
         ...                       'custom value': 'yoooooo',
         ...                       })
         >>> dict = mt.to_mpris2()
-        >>> print dict['xesam:title']
+        >>> print(dict['xesam:title'])
         Title
-        >>> print dict['xesam:artist']
-        [dbus.String(u'Artist1'), dbus.String(u'Artist2'), dbus.String(u'Artist3')]
-        >>> print dict['xesam:url']
+        >>> print(dict['xesam:artist'])
+        [dbus.String('Artist1'), dbus.String('Artist2'), dbus.String('Artist3')]
+        >>> print(dict['xesam:url'])
         file:///path/to/file
-        >>> print dict['mpris:artUrl']
+        >>> print(dict['mpris:artUrl'])
         file:///art/url
-        >>> print dict['mpris:length']
+        >>> print(dict['mpris:length'])
         123
-        >>> print dict['xesam:trackNumber']
+        >>> print(dict['xesam:trackNumber'])
         456
-        >>> print dict['xesam:userRating']
+        >>> print(dict['xesam:userRating'])
         1.0
         >>> 'custom value' in dict
         False
         >>> mt2 = Metadata.from_dict(dict)
-        >>> print mt2.title
+        >>> print(mt2.title)
         Title
-        >>> print mt2.artist
+        >>> print(mt2.artist)
         Artist1, Artist2, Artist3
-        >>> print mt2.album
+        >>> print(mt2.album)
         Album
-        >>> print mt2.location
+        >>> print(mt2.location)
         file:///path/to/file
         """
         ret = dbus.Dictionary(signature='sv')
@@ -206,7 +206,7 @@ class Metadata(object):
         >>> title = 'Title'
         >>> artist = 'Artist'
         >>> arturl = 'file:///art/url'
-        >>> location = 'file///location'
+        >>> location = 'file:///location'
         >>> tracknumber = 42
         >>> md1 = Metadata.from_dict({'title': title,
         ...                           'artist': artist,

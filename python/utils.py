@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-
+from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
 from builtins import str
@@ -97,7 +97,7 @@ def path2uri(path):
     'file:///path/to/file'
     >>> path2uri('invalid/path')
     'invalid/path'
-    >>> path2uri('/\xe8\xb7\xaf\xe5\xbe\x84/\xe6\x96\x87\xe4\xbb\xb6')
+    >>> path2uri('/\u8def\u5f84/\u6587\u4ef6')
     'file:///%E8%B7%AF%E5%BE%84/%E6%96%87%E4%BB%B6'
     """
     if path.startswith('~'):

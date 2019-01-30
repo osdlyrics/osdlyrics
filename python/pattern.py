@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-
+from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
 from builtins import str
@@ -46,16 +46,18 @@ def expand_file(pattern, metadata):
     If the pattern cannot be expand, raise an PatternException. Otherwise
     return the expended pattern.
 
-    >>> metadata = {'artist': 'Foo',
+    >>> from osdlyrics.metadata import Metadata
+    >>> from_dict = Metadata.from_dict
+    >>> metadata = from_dict({'artist': 'Foo',
     ... 'title': 'Bar',
     ... 'tracknumber': '1',
     ... 'album': 'Album',
-    ... 'location': 'file:///%E6%AD%8C%E6%9B%B2/%E7%9A%84/%E5%9C%B0%E5%9D%80.mp3'}
+    ... 'location': 'file:///%E6%AD%8C%E6%9B%B2/%E7%9A%84/%E5%9C%B0%E5%9D%80.mp3'})
     >>> expand_file('%p - %t', metadata)
     'Foo - Bar'
     >>> expand_file('foobar', metadata)
     'foobar'
-    >>> print expand_file('name is %f :)', metadata)
+    >>> print(expand_file('name is %f :)', metadata))
     name is 地址 :)
     >>> expand_file('%something else', metadata)
     '%something else'
@@ -65,10 +67,10 @@ def expand_file(pattern, metadata):
     '%%'
     >>> expand_file('%n - %a:%p,%t', metadata)
     '1 - Album:Foo,Bar'
-    >>> expand_file('%t', {})
+    >>> expand_file('%t', from_dict({}))
     Traceback (most recent call last):
         ...
-    PatternException: 'title not in metadata'
+    osdlyrics.errors.PatternException: title not in metadata
     """
     keys = {'t': 'title',
             'p': 'artist',
@@ -139,16 +141,18 @@ def expand_path(pattern, metadata):
     return the expended pattern.
 
 
-    >>> expand_path('%', {'location': 'file:///tmp/a.lrc'})
+    >>> from osdlyrics.metadata import Metadata
+    >>> from_dict = Metadata.from_dict
+    >>> expand_path('%', from_dict({'location': 'file:///tmp/a.lrc'}))
     '/tmp'
-    >>> expand_path('%foo', {'location': 'file:///tmp/a.lrc'})
+    >>> expand_path('%foo', from_dict({'location': 'file:///tmp/a.lrc'}))
     '%foo'
-    >>> expand_path('/bar', {})
+    >>> expand_path('/bar', from_dict({}))
     '/bar'
-    >>> expand_path('%', {'Title': 'hello'})
+    >>> expand_path('%', from_dict({'Title': 'hello'}))
     Traceback (most recent call last):
         ...
-    PatternException: 'Location not found in metadata'
+    osdlyrics.errors.PatternException: Location not found in metadata
     """
     if pattern == '%':
         location = metadata.location

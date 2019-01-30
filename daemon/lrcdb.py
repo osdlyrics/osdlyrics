@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-
+from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
 from builtins import object
@@ -221,46 +221,39 @@ def test():
     >>> db = LrcDb('/tmp/asdf')
     >>> db.assign(Metadata.from_dict({'title': 'Tiger',
     ...                               'artist': 'Soldier',
-    ...                               'location': '/tmp/asdf'}),
+    ...                               'location': 'file:///tmp/asdf'}),
     ...           'file:///tmp/a.lrc')
-    >>> db.find(Metadata.from_dict({'location': '/tmp/asdf'}))
-    u'file:///tmp/a.lrc'
-    >>> db.find(Metadata.from_dict({'location': '/tmp/asdfg'}))
+    >>> db.find(Metadata.from_dict({'location': 'file:///tmp/asdf'}))
+    'file:///tmp/a.lrc'
+    >>> db.find(Metadata.from_dict({'location': 'file:///tmp/asdfg'}))
     >>> db.find(Metadata.from_dict({'title': 'Tiger',
-    ...                             'location': '/tmp/asdf'}))
-    u'file:///tmp/a.lrc'
+    ...                             'location': 'file:///tmp/asdf'}))
+    'file:///tmp/a.lrc'
     >>> db.find(Metadata.from_dict({'title': 'Tiger', }))
     >>> db.find(Metadata.from_dict({'title': 'Tiger',
     ...                             'artist': 'Soldier'}))
-    u'file:///tmp/a.lrc'
+    'file:///tmp/a.lrc'
     >>> db.assign(Metadata.from_dict({'title': 'ttTiger',
     ...                               'artist': 'ssSoldier',
-    ...                               'location': '/tmp/asdf'}),
+    ...                               'location': 'file:///tmp/asdf'}),
     ...           'file:///tmp/b.lrc')
     >>> db.find(Metadata.from_dict({'artist': 'Soldier', }))
     >>> db.find(Metadata.from_dict({'title': 'Tiger',
     ...                                      'artist': 'Soldier', }))
-    u'file:///tmp/b.lrc'
-    >>> db.find(Metadata.from_dict({dbus.String(u'title'): dbus.String(u'Tiger'),
-    ...                             dbus.String(u'artist'): dbus.String(u'Soldier'), }))
-    u'file:///tmp/b.lrc'
-    >>> metadata_uni = Metadata.from_dict({u'title': u'\u6807\u9898', u'artist': u'\u6b4c\u624b', })
-    >>> db.assign(metadata_uni, u'\u8def\u5f84')
-    >>> metadata_utf8 = Metadata.from_dict({'title': '\xe6\xa0\x87\xe9\xa2\x98', 'artist': '\xe6\xad\x8c\xe6\x89\x8b', })
-    >>> db.find(metadata_utf8)
-    u'\u8def\u5f84'
-    >>> db.assign(metadata_utf8, '\xe8\xb7\xaf\xe5\xbe\x84')
+    'file:///tmp/b.lrc'
+    >>> db.find(Metadata.from_dict({dbus.String('title'): dbus.String('Tiger'),
+    ...                             dbus.String('artist'): dbus.String('Soldier'), }))
+    'file:///tmp/b.lrc'
+    >>> metadata_uni = Metadata.from_dict({'title': '\u6807\u9898', 'artist': '\u6b4c\u624b', })
+    >>> db.assign(metadata_uni, '\u8def\u5f84')
     >>> db.find(metadata_uni)
-    u'\u8def\u5f84'
-    >>> db.assign(metadata_utf8, '\xe8\xb7\xaf\xe5\xbe\x841')
-    >>> db.find(metadata_uni)
-    u'\u8def\u5f841'
+    '\u8def\u5f84'
     >>> db.find(Metadata.from_dict({'title': 'Tiger', 'artist': 'Soldiers', }))
     >>> db.find(Metadata())
-    >>> db.delete(Metadata.from_dict({'location': '/tmp/asdf'}))
+    >>> db.delete(Metadata.from_dict({'location': 'file:///tmp/asdf'}))
     >>> db.find(Metadata.from_dict({'title': 'Tiger',
     ...                             'artist': 'Soldier',
-    ...                             'location': '/tmp/asdf'}))
+    ...                             'location': 'file:///tmp/asdf'}))
     """
     import doctest
     doctest.testmod()
