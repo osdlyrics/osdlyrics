@@ -103,6 +103,8 @@ def expand_file(pattern, metadata):
                     value = getattr(metadata, keys[tag])
                     if not value:
                         raise PatternException('%s not in metadata' % keys[tag])
+                    if not isinstance(value, str):
+                        value = str(value)
                     has_tag = True
                     parts.append(value)
             if has_tag:
