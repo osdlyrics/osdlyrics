@@ -21,7 +21,6 @@
 """MPD support for OSD Lyrics. Requires MPD >= 0.16 and mpd-python >= 0.3
 """
 
-import __builtin__
 import logging
 import os
 import select
@@ -287,11 +286,11 @@ class MpdPlayer(BasePlayer):
     }
 
     STATUS_CHANGE_MAP = {
-        'songid': ('int', 'track'),
-        'playlist': ('int', 'track'),
-        'repeat': ('int', 'repeat'),
-        'single': ('int', 'repeat'),
-        'random': ('int', 'shuffle'),
+        'songid': (int, 'track'),
+        'playlist': (int, 'track'),
+        'repeat': (int, 'repeat'),
+        'single': (int, 'repeat'),
+        'random': (int, 'shuffle'),
         'state': ('_parse_status', 'status'),
     }
 
@@ -333,10 +332,9 @@ class MpdPlayer(BasePlayer):
             if not prop in status:
                 value = None
             else:
-                funcname = handler[0]
-                func = getattr(__builtin__, funcname) \
-                    if not funcname.startswith('_') \
-                    else getattr(self, funcname)
+                func = handler[0]
+                if not callable(func):
+                    func = getattr(self, func)
                 value = func(status[prop])
             if value != getattr(self, '_' + prop):
                 logging.debug('prop %s changed to %s', prop, value)
@@ -380,7 +378,8 @@ class MpdPlayer(BasePlayer):
             args['tracknum'] = int(metadata['track'].split('/')[0])
         self._metadata = Metadata(**args)
 
-    def _parse_status(self, value):
+    @staticmethod
+    def _parse_status(value):
         status_map = {
             'play': STATUS_PLAYING,
             'pause': STATUS_PAUSED,
