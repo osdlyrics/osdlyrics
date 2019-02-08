@@ -301,7 +301,7 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
     If `'User-Agent'` is not set in `headers`, it will be set to `'OSD Lyrics'`.
 
     Arguments:
-     - `url`: The url of the content
+     - `url`: The url of the content. Must be a bytes or an ascii-encodable unicode.
      - `port`: (optional) The port.
      - `method`: (optional) The HTTP method to download contents. Available values
                  are `'POST'` or `'GET'`. The default value is `'GET'`.
@@ -333,7 +333,6 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
         if len(params) > 0:
             c.setopt(pycurl.POSTFIELDS, params)
             c.setopt(pycurl.POSTFIELDSIZE, len(params))
-    url = ensure_utf8(url)
     c.setopt(pycurl.URL, url)
     if port > 0 and port < 65536:
         c.setopt(pycurl.PORT, port)
