@@ -56,11 +56,10 @@ PYTHON = r"""# -*- coding: utf-8 -*-
 
 class ${capsname}Source(BaseLyricSourcePlugin):
     def __init__(self):
-        
         BaseLyricSourcePlugin.__init__(self, id='${name}', name='${name}')
 
     def do_search(self, metadata):
-        # return list of SearchResult
+        # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
         # you can make use of utils.http_download
         #
         # example:
@@ -77,17 +76,14 @@ class ${capsname}Source(BaseLyricSourcePlugin):
                              downloadinfo='http://foo.bar/download?id=1')]
 
     def do_download(self, downloadinfo):
-        # return a string
+        # type: (Any) -> bytes
         # downloadinfo is what you set in SearchResult
-        if not isinstance(downloadinfo, str) and \
-                not isinstance(downloadinfo, unicode):
-            raise TypeError('Expect the downloadinfo as a string of url, but got type ',
-                            type(downloadinfo))
         status, content = http_download(url=downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
             raise httplib.HTTPException(status, '')
         return content
+
 
 if __name__ == '__main__':
     ${name} = ${capsname}Source()

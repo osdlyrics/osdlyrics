@@ -331,10 +331,7 @@ def test():
             raise Exception('Title must not be empty')
 
         def do_download(self, downloadinfo):
-            if isinstance(downloadinfo, str) or isinstance(downloadinfo, unicode):
-                return downloadinfo
-            else:
-                raise Exception('downloadinfo should be a string')
+            return b'dummy-downloaded-content'
 
     search_tickets = {}
     download_tickets = {}

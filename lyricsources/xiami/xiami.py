@@ -45,14 +45,12 @@ class XiamiSource(BaseLyricSourcePlugin):
     """
 
     def __init__(self):
-        """
-        """
-
         BaseLyricSourcePlugin.__init__(self, id='xiami', name=_('Xiami'))
         self._search = {}
         self._download = {}
 
     def do_search(self, metadata):
+        # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
         keys = []
         if metadata.title:
             keys.append(metadata.title)
@@ -108,10 +106,7 @@ class XiamiSource(BaseLyricSourcePlugin):
             return None
 
     def do_download(self, downloadinfo):
-        if not isinstance(downloadinfo, str) and \
-                not isinstance(downloadinfo, unicode):
-            raise TypeError('Expect the downloadinfo as a string of url, but got type ',
-                            type(downloadinfo))
+        # type: (Any) -> bytes
         # parts = urlparse.urlparse(downloadinfo)
         status, content = http_download(downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
@@ -120,6 +115,7 @@ class XiamiSource(BaseLyricSourcePlugin):
         if content:
             content = HTMLParser.HTMLParser().unescape(content.decode('utf-8'))
         return content.encode('utf-8')
+
 
 if __name__ == '__main__':
     xiami = XiamiSource()

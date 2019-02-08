@@ -18,12 +18,10 @@ class NeteaseSource(BaseLyricSourcePlugin):
     """
 
     def __init__(self):
-        """
-        """
-
         BaseLyricSourcePlugin.__init__(self, id='netease', name=_('Netease'))
 
     def do_search(self, metadata):
+        # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
         keys = []
         if metadata.title:
             keys.append(metadata.title)
@@ -59,11 +57,7 @@ class NeteaseSource(BaseLyricSourcePlugin):
         return result
 
     def do_download(self, downloadinfo):
-        if not isinstance(downloadinfo, str) and \
-                not isinstance(downloadinfo, unicode):
-            raise TypeError('Expect the downloadinfo as a string of url, but got type ',
-                            type(downloadinfo))
-
+        # type: (Any) -> bytes
         status, content = http_download(url=downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
@@ -72,6 +66,7 @@ class NeteaseSource(BaseLyricSourcePlugin):
         parsed = json.loads(content)
         lyric = parsed['lrc']['lyric']
         return lyric
+
 
 if __name__ == '__main__':
     netease = NeteaseSource()

@@ -46,10 +46,10 @@ def normalize_str(s):
 
 class ViewlyricsSource(BaseLyricSourcePlugin):
     def __init__(self):
-        
         BaseLyricSourcePlugin.__init__(self, id='viewlyrics', name='ViewLyrics')
 
     def do_search(self, metadata):
+        # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
         if metadata.title:
             title =  metadata.title
         else:
@@ -142,17 +142,14 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
         return ''
 
     def do_download(self, downloadinfo):
-        # return a string
+        # type: (Any) -> bytes
         # downloadinfo is what you set in SearchResult
-        if not isinstance(downloadinfo, str) and \
-                not isinstance(downloadinfo, unicode):
-            raise TypeError('Expect the downloadinfo as a string of url, but got type ',
-                            type(downloadinfo))
         status, content = http_download(url=downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
             raise httplib.HTTPException(status, '')
         return content
+
 
 if __name__ == '__main__':
     viewlyrics = ViewlyricsSource()
