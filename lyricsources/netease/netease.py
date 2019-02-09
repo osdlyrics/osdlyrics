@@ -1,13 +1,14 @@
 from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
-from builtins import map
-from builtins import str
-import http.client
+from builtins import map, str
+
 import gettext
+import http.client
 import json
+
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
-from osdlyrics.utils import http_download, get_proxy_settings
+from osdlyrics.utils import get_proxy_settings, http_download
 
 _ = gettext.gettext
 

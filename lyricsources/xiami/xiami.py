@@ -21,13 +21,15 @@
 from future import standard_library
 standard_library.install_aliases()
 from builtins import str
-import re
-import http.client
+
 # import urlparse
 import gettext
 import html.parser
+import http.client
+import re
+
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
-from osdlyrics.utils import http_download, get_proxy_settings
+from osdlyrics.utils import get_proxy_settings, http_download
 
 _ = gettext.gettext
 

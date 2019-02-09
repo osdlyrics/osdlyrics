@@ -19,6 +19,7 @@
 #
 
 from builtins import object
+
 from optparse import OptionParser
 
 import dbus

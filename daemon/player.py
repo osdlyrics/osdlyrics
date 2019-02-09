@@ -26,7 +26,7 @@ import glib
 
 import osdlyrics
 from osdlyrics.app import App
-from osdlyrics.consts import (MPRIS2_PLAYER_INTERFACE, MPRIS2_OBJECT_PATH,
+from osdlyrics.consts import (MPRIS2_OBJECT_PATH, MPRIS2_PLAYER_INTERFACE,
                               PLAYER_PROXY_INTERFACE,
                               PLAYER_PROXY_OBJECT_PATH_PREFIX)
 from osdlyrics.dbusext.service import (Object as DBusObject,

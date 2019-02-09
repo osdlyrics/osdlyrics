@@ -21,14 +21,15 @@ from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
 from builtins import bytes
+
+import hashlib
+import http.client
 import string
 import unicodedata
-import http.client
-import hashlib
 import xml.etree.ElementTree as xet
 
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
-from osdlyrics.utils import http_download, get_proxy_settings
+from osdlyrics.utils import get_proxy_settings, http_download
 
 VIEWLYRICS_HOST = 'search.crintsoft.com'
 VIEWLYRICS_SEARCH_URL = '/searchlyrics.htm'

@@ -21,12 +21,14 @@ from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
 from builtins import object
+
 import logging
-import sqlite3
 import os.path
+import sqlite3
+
+from osdlyrics.consts import (METADATA_ALBUM, METADATA_ARTIST, METADATA_TITLE,
+                              METADATA_TRACKNUM)
 import osdlyrics.utils
-from osdlyrics.consts import METADATA_TITLE, METADATA_ALBUM, \
-    METADATA_ARTIST, METADATA_TRACKNUM
 
 __all__ = (
     'LrcDb',

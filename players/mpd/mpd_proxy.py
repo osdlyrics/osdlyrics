@@ -22,6 +22,7 @@
 """
 from __future__ import unicode_literals
 from builtins import object
+
 import logging
 import os
 import select
@@ -40,10 +41,11 @@ except (ImportError, AssertionError):
 
 from osdlyrics.consts import PLAYER_PROXY_INTERFACE
 from osdlyrics.metadata import Metadata
-from osdlyrics.player_proxy import (
-    BasePlayer, BasePlayerProxy, PlayerInfo, CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
-    CAPS_PREV, CAPS_SEEK, REPEAT_ALL, REPEAT_NONE, REPEAT_TRACK, STATUS_PAUSED,
-    STATUS_PLAYING, STATUS_STOPPED)
+from osdlyrics.player_proxy import (CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
+                                    CAPS_PREV, CAPS_SEEK, REPEAT_ALL,
+                                    REPEAT_NONE, REPEAT_TRACK, STATUS_PAUSED,
+                                    STATUS_PLAYING, STATUS_STOPPED, BasePlayer,
+                                    BasePlayerProxy, PlayerInfo)
 from osdlyrics.timer import Timer
 from osdlyrics.utils import cmd_exists
 

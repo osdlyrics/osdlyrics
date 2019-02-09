@@ -25,8 +25,8 @@ import time
 import glib
 
 from osdlyrics.metadata import Metadata
-from osdlyrics.player_proxy import (BasePlayer, BasePlayerProxy, PlayerInfo,
-                                    STATUS_PAUSED, STATUS_STOPPED)
+from osdlyrics.player_proxy import (STATUS_PAUSED, STATUS_STOPPED, BasePlayer,
+                                    BasePlayerProxy, PlayerInfo)
 import osdlyrics.timer
 
 import server

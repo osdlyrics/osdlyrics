@@ -28,10 +28,11 @@ import dbus.types
 from osdlyrics.consts import (DAEMON_MPRIS2_NAME, MPRIS2_OBJECT_PATH,
                               MPRIS2_PLAYER_INTERFACE, MPRIS2_PREFIX)
 from osdlyrics.metadata import Metadata
-from osdlyrics.player_proxy import (
-    BasePlayer, BasePlayerProxy, PlayerInfo, CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
-    CAPS_PREV, CAPS_SEEK, REPEAT_ALL, REPEAT_NONE, REPEAT_TRACK, STATUS_PAUSED,
-    STATUS_PLAYING, STATUS_STOPPED)
+from osdlyrics.player_proxy import (CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
+                                    CAPS_PREV, CAPS_SEEK, REPEAT_ALL,
+                                    REPEAT_NONE, REPEAT_TRACK, STATUS_PAUSED,
+                                    STATUS_PLAYING, STATUS_STOPPED, BasePlayer,
+                                    BasePlayerProxy, PlayerInfo)
 
 
 def player_info_from_name(name):

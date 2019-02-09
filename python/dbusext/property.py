@@ -18,8 +18,8 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from builtins import str
-from builtins import object
+from builtins import object, str
+
 import dbus.exceptions
 
 

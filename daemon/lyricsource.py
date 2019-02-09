@@ -19,8 +19,10 @@
 #
 
 from builtins import str
-import dbus
+
 import logging
+
+import dbus
 
 import osdlyrics.config
 from osdlyrics.consts import (LYRIC_SOURCE_PLUGIN_INTERFACE,

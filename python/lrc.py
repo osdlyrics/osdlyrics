@@ -20,6 +20,11 @@
 
 from __future__ import print_function
 from builtins import object
+
+import re
+
+import dbus.types
+
 __all__ = (
     'AttrToken',
     'TimeToken',
@@ -28,9 +33,6 @@ __all__ = (
     'parse_lrc',
 )
 
-import re
-
-import dbus.types
 
 LINE_PATTERN = re.compile(r'(\[[^\[]*?\])')
 TIMESTAMP_PATTERN = re.compile(r'^\[(\d+(:\d+){0,2}(\.\d+)?)\]$')

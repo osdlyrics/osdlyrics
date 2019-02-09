@@ -20,9 +20,10 @@
 
 from __future__ import print_function
 from builtins import input
-import re
+
 import os
 import os.path
+import re
 import string
 
 ROOTMAKEFILEAM = r"""SUBDIRS = src

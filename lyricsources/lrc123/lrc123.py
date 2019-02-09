@@ -20,6 +20,7 @@
 
 from future import standard_library
 standard_library.install_aliases()
+
 import http.client
 import logging
 import re
@@ -27,7 +28,7 @@ import re
 import pycurl
 
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
-from osdlyrics.utils import http_download, get_proxy_settings
+from osdlyrics.utils import get_proxy_settings, http_download
 
 HOST = 'www.lrc123.com'
 SEARCH_URL = '/?keyword=%s&field=all'

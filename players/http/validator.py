@@ -19,6 +19,7 @@
 #
 
 from builtins import object
+
 from error import BadRequestError
 
 __all__ = (

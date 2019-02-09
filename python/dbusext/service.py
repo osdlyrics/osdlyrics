@@ -19,8 +19,8 @@
 #
 
 import logging
-import xml.etree.ElementTree as xet
 import sys
+import xml.etree.ElementTree as xet
 
 import dbus
 import dbus.exceptions
@@ -28,7 +28,6 @@ import dbus.service
 import glib
 
 from .property import Property
-
 
 # Use the default encoding in ElementTree.tostring under Python 2, but prefer
 # Unicode under Python 3 to obtain a 'str', not 'bytes' instance.
