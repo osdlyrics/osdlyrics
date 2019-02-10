@@ -188,7 +188,7 @@ class LyricSource(dbus.service.Object):
                 task['sources'].pop(0)
         if nextsource is None:
             status = STATUS_SUCCESS if not task['failure'] else STATUS_FAILURE
-            self.SearchComplete(ticket, STATUS_SUCCESS, [])
+            self.SearchComplete(ticket, status, [])
         else:
             newticket = self._get_source_proxy(nextsource).Search(task['metadata'])
             self._set_source_search(nextsource, newticket, ticket)
