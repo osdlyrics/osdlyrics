@@ -41,10 +41,7 @@ except (ImportError, AssertionError):
 
 from osdlyrics.consts import PLAYER_PROXY_INTERFACE
 from osdlyrics.metadata import Metadata
-from osdlyrics.player_proxy import (CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
-                                    CAPS_PREV, CAPS_SEEK, REPEAT_ALL,
-                                    REPEAT_NONE, REPEAT_TRACK, STATUS_PAUSED,
-                                    STATUS_PLAYING, STATUS_STOPPED, BasePlayer,
+from osdlyrics.player_proxy import (CAPS, REPEAT, STATUS, BasePlayer,
                                     BasePlayerProxy, PlayerInfo)
 from osdlyrics.timer import Timer
 from osdlyrics.utils import cmd_exists
@@ -354,13 +351,13 @@ class MpdPlayer(BasePlayer):
                 self._send_cmd(Cmds.CURRENTSONG, sync=True)
 
         if 'status' in changes:
-            if self._state == STATUS_PAUSED:
+            if self._state == STATUS.PAUSED:
                 self._elapsed.pause()
-            elif self._state == STATUS_PLAYING:
+            elif self._state == STATUS.PLAYING:
                 self._elapsed.play()
             else:
                 self._elapsed.stop()
-        if self._state == STATUS_STOPPED:
+        if self._state == STATUS.STOPPED:
             elapsed = 0
         else:
             elapsed = float(status['elapsed']) * 1000
@@ -387,9 +384,9 @@ class MpdPlayer(BasePlayer):
     @staticmethod
     def _parse_status(value):
         status_map = {
-            'play': STATUS_PLAYING,
-            'pause': STATUS_PAUSED,
-            'stop': STATUS_STOPPED,
+            'play': STATUS.PLAYING,
+            'pause': STATUS.PAUSED,
+            'stop': STATUS.STOPPED,
         }
         if value not in status_map:
             raise RuntimeError('Unknown status ' + value)
@@ -422,20 +419,20 @@ class MpdPlayer(BasePlayer):
         return self._elapsed.time
 
     def get_caps(self):
-        return set([CAPS_PLAY, CAPS_PAUSE, CAPS_NEXT, CAPS_PREV, CAPS_SEEK])
+        return set([CAPS.PLAY, CAPS.PAUSE, CAPS.NEXT, CAPS.PREV, CAPS.SEEK])
 
     def get_repeat(self):
         if not self._repeat:
-            return REPEAT_NONE
+            return REPEAT.NONE
         if not self._single:
-            return REPEAT_ALL
-        return REPEAT_TRACK
+            return REPEAT.ALL
+        return REPEAT.TRACK
 
     def set_repeat(self, mode):
         repeat_mode_map = {
-            REPEAT_NONE: (0, 0),
-            REPEAT_TRACK: (1, 1),
-            REPEAT_ALL: (1, 0),
+            REPEAT.NONE: (0, 0),
+            REPEAT.TRACK: (1, 1),
+            REPEAT.ALL: (1, 0),
         }
         if mode not in repeat_mode_map:
             raise ValueError('Unknown repeat mode: %s', mode)
@@ -452,9 +449,9 @@ class MpdPlayer(BasePlayer):
         self._send_cmd(Cmds.RANDOM, self._random)
 
     def play(self):
-        if self._state == STATUS_PAUSED:
+        if self._state == STATUS.PAUSED:
             self._send_cmd(Cmds.PAUSE, 0)
-        elif self._state == STATUS_STOPPED:
+        elif self._state == STATUS.STOPPED:
             self._send_cmd(Cmds.PLAY)
 
     def pause(self):

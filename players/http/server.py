@@ -27,22 +27,20 @@ import logging
 import urllib.parse
 
 from osdlyrics.metadata import Metadata
-from osdlyrics.player_proxy import (CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
-                                    CAPS_PREV, CAPS_SEEK, STATUS_PAUSED,
-                                    STATUS_PLAYING, STATUS_STOPPED)
+from osdlyrics.player_proxy import CAPS, STATUS
 
 from error import BadRequestError, HttpError, NotFoundError
 from validator import (param_enum, param_int, param_set, param_str,
                        validate_params)
 
-PARAM_STATUS = param_enum({'playing': STATUS_PLAYING,
-                           'paused': STATUS_PAUSED,
-                           'stopped': STATUS_STOPPED})
-PARAM_CAPS = param_set({'play': CAPS_PLAY,
-                        'pause': CAPS_PAUSE,
-                        'next': CAPS_NEXT,
-                        'prev': CAPS_PREV,
-                        'seek': CAPS_SEEK})
+PARAM_STATUS = param_enum({'playing': STATUS.PLAYING,
+                           'paused': STATUS.PAUSED,
+                           'stopped': STATUS.STOPPED})
+PARAM_CAPS = param_set({'play': CAPS.PLAY,
+                        'pause': CAPS.PAUSE,
+                        'next': CAPS.NEXT,
+                        'prev': CAPS.PREV,
+                        'seek': CAPS.SEEK})
 
 
 def parse_query(query):

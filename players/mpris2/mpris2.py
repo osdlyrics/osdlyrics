@@ -28,11 +28,17 @@ import dbus.types
 from osdlyrics.consts import (DAEMON_MPRIS2_NAME, MPRIS2_OBJECT_PATH,
                               MPRIS2_PLAYER_INTERFACE, MPRIS2_PREFIX)
 from osdlyrics.metadata import Metadata
-from osdlyrics.player_proxy import (CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
-                                    CAPS_PREV, CAPS_SEEK, REPEAT_ALL,
-                                    REPEAT_NONE, REPEAT_TRACK, STATUS_PAUSED,
-                                    STATUS_PLAYING, STATUS_STOPPED, BasePlayer,
+from osdlyrics.player_proxy import (CAPS, REPEAT, STATUS, BasePlayer,
                                     BasePlayerProxy, PlayerInfo)
+
+# These constants map flags/enums from MPRIS2-specific values to OSDLyrics values.
+CAPS_MAP = {
+    'CanGoNext': CAPS.NEXT,
+    'CanGoPrevious': CAPS.PREV,
+    'CanPlay': CAPS.PLAY,
+    'CanPause': CAPS.PAUSE,
+    'CanSeek': CAPS.SEEK,
+}
 
 
 class ProxyObject(BasePlayerProxy):
@@ -161,10 +167,10 @@ class Mpris2Player(BasePlayer):
 
     def set_repeat(self, repeat):
         try:
-            if repeat == REPEAT_TRACK:
+            if repeat == REPEAT.TRACK:
                 self._player_prop.Set(MPRIS2_PLAYER_INTERFACE, 'LoopStatus',
                                       'Track')
-            elif repeat == REPEAT_ALL:
+            elif repeat == REPEAT.ALL:
                 self._player_prop.Set(MPRIS2_PLAYER_INTERFACE, 'LoopStatus',
                                       'Playlist')
             else:
@@ -174,25 +180,25 @@ class Mpris2Player(BasePlayer):
             pass
 
     def get_status(self):
-        playback_dict = {'Playing': STATUS_PLAYING,
-                         'Paused': STATUS_PAUSED,
-                         'Stopped': STATUS_STOPPED}
+        playback_dict = {'Playing': STATUS.PLAYING,
+                         'Paused': STATUS.PAUSED,
+                         'Stopped': STATUS.STOPPED}
         try:
             return playback_dict[self._player_prop.Get(MPRIS2_PLAYER_INTERFACE,
                                                        'PlaybackStatus')]
         except Exception as e:
             logging.error('Failed to get status: %s', e)
-            return STATUS_PLAYING
+            return STATUS.PLAYING
 
     def get_repeat(self):
-        repeat_dict = {'None': REPEAT_NONE,
-                       'Track': REPEAT_TRACK,
-                       'Playlist': REPEAT_ALL}
+        repeat_dict = {'None': REPEAT.NONE,
+                       'Track': REPEAT.TRACK,
+                       'Playlist': REPEAT.ALL}
         try:
             return repeat_dict[self._player_prop.Get(MPRIS2_PLAYER_INTERFACE,
                                                      'LoopStatus')]
         except Exception:
-            return REPEAT_NONE
+            return REPEAT.NONE
 
     def get_shuffle(self):
         try:
@@ -207,15 +213,9 @@ class Mpris2Player(BasePlayer):
 
     def get_caps(self):
         caps = set()
-        caps_dict = {'CanGoNext': CAPS_NEXT,
-                     'CanGoPrevious': CAPS_PREV,
-                     'CanPlay': CAPS_PLAY,
-                     'CanPause': CAPS_PAUSE,
-                     'CanSeek': CAPS_SEEK,
-                     }
-        for k, v in caps_dict.items():
+        for k, cap in CAPS_MAP.items():
             if self._player_prop.Get(MPRIS2_PLAYER_INTERFACE, k):
-                caps.add(v)
+                caps.add(cap)
         return caps
 
     def set_volume(self, volume):

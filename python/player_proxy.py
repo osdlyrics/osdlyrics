@@ -32,6 +32,27 @@ from .consts import (MPRIS2_PLAYER_INTERFACE, PLAYER_PROXY_INTERFACE,
 from .dbusext.service import Object as DBusObject, property as dbus_property
 
 
+class CAPS(object):
+    NEXT = 1 << 0
+    PREV = 1 << 1
+    PAUSE = 1 << 2
+    PLAY = 1 << 3
+    SEEK = 1 << 4
+    PROVIDE_METADATA = 1 << 5
+
+
+class REPEAT(object):
+    NONE = 0
+    TRACK = 1
+    ALL = 2
+
+
+class STATUS(object):
+    PLAYING = 0
+    PAUSED = 1
+    STOPPED = 2
+
+
 class ConnectPlayerError(errors.BaseError):
     """
     Exception raised when BasePlayerProxy.do_connect_player() fails
@@ -193,22 +214,6 @@ class PlayerInfo(object):
         return ret
 
 
-CAPS_NEXT = 1 << 0
-CAPS_PREV = 1 << 1
-CAPS_PAUSE = 1 << 2
-CAPS_PLAY = 1 << 3
-CAPS_SEEK = 1 << 4
-CAPS_PROVIDE_METADATA = 1 << 5
-
-STATUS_PLAYING = 0
-STATUS_PAUSED = 1
-STATUS_STOPPED = 2
-
-REPEAT_NONE = 0
-REPEAT_TRACK = 1
-REPEAT_ALL = 2
-
-
 class BasePlayer(DBusObject):
     """ Base class of a player
 
@@ -277,8 +282,8 @@ class BasePlayer(DBusObject):
         """
         Return the playing status.
 
-        The return value should be one of STATUS_PLAYING, STATUS_PAUSED, and
-        STATUS_STOPPED
+        The return value should be one of STATUS.PLAYING, STATUS.PAUSED, and
+        STATUS.STOPPED
 
         Derived classes that supports playing status should reimplement this.
         """
@@ -304,8 +309,8 @@ class BasePlayer(DBusObject):
         """
         Return capablities of the players.
 
-        The return value should be a set of CAPS_PLAY, CAPS_PAUSE, CAPS_NEXT,
-        CAPS_PREV, CAPS_SEEK
+        The return value should be a set of CAPS.PLAY, CAPS.PAUSE, CAPS.NEXT,
+        CAPS.PREV, CAPS.SEEK
         """
         raise NotImplementedError()
 
@@ -313,18 +318,18 @@ class BasePlayer(DBusObject):
         """
         Gets the repeat mode of the player
 
-        Returns one of REPEAT_NONE, REPEAT_TRACK, or REPEAT_ALL
+        Returns one of REPEAT.NONE, REPEAT.TRACK, or REPEAT.ALL
 
-        The default implementation returns REPEAT_NONE
+        The default implementation returns REPEAT.NONE
         """
-        return REPEAT_NONE
+        return REPEAT.NONE
 
     def set_repeat(self, mode):
         """
         Sets the repeat mode of the player
 
         Arguments:
-        - `mode`: REPEAT_NONE, REPEAT_TRACK, or REPEAT_ALL
+        - `mode`: REPEAT.NONE, REPEAT.TRACK, or REPEAT.ALL
         """
         raise NotImplementedError()
 
@@ -405,9 +410,9 @@ class BasePlayer(DBusObject):
 
     def _setup_timer_status(self, status):
         status_map = {
-            STATUS_PAUSED: 'pause',
-            STATUS_PLAYING: 'play',
-            STATUS_STOPPED: 'stop',
+            STATUS.PAUSED: 'pause',
+            STATUS.PLAYING: 'play',
+            STATUS.STOPPED: 'stop',
         }
         if self._timer:
             getattr(self._timer, status_map[status])()
@@ -423,7 +428,7 @@ class BasePlayer(DBusObject):
         """
         if self._timer is None:
             self._setup_timer()
-            if self._get_cached_status() != STATUS_STOPPED:
+            if self._get_cached_status() != STATUS.STOPPED:
                 self._timer.time = self.get_position()
         return self._timer.time
 
@@ -524,7 +529,7 @@ class BasePlayer(DBusObject):
             self.play_pause()
         else:
             status = self._get_cached_status()
-            if status == STATUS_PLAYING:
+            if status == STATUS.PLAYING:
                 self.pause()
             else:
                 self.play()
@@ -540,9 +545,9 @@ class BasePlayer(DBusObject):
                    writeable=False)
     def PlaybackStatus(self):
         status_map = {
-            STATUS_PLAYING: 'Playing',
-            STATUS_PAUSED: 'Paused',
-            STATUS_STOPPED: 'Stopped',
+            STATUS.PLAYING: 'Playing',
+            STATUS.PAUSED: 'Paused',
+            STATUS.STOPPED: 'Stopped',
         }
         return status_map[self._get_cached_status()]
 
@@ -554,9 +559,9 @@ class BasePlayer(DBusObject):
                    type_signature='s')
     def LoopStatus(self):
         status_map = {
-            REPEAT_NONE: 'None',
-            REPEAT_ALL: 'Playlist',
-            REPEAT_TRACK: 'Track',
+            REPEAT.NONE: 'None',
+            REPEAT.ALL: 'Playlist',
+            REPEAT.TRACK: 'Track',
         }
         return status_map[self._get_cached_loop_status()]
 
@@ -567,9 +572,9 @@ class BasePlayer(DBusObject):
     @LoopStatus.dbus_setter
     def LoopStatus(self, loop_status):
         status_map = {
-            'None': REPEAT_NONE,
-            'Playlist': REPEAT_ALL,
-            'Track': REPEAT_TRACK,
+            'None': REPEAT.NONE,
+            'Playlist': REPEAT.ALL,
+            'Track': REPEAT.TRACK,
         }
         if loop_status not in status_map:
             raise ValueError('Unknown loop status ' + loop_status)
@@ -639,7 +644,7 @@ class BasePlayer(DBusObject):
                    type_signature='b',
                    writeable=False)
     def CanGoNext(self):
-        return CAPS_NEXT in self._get_cached_caps()
+        return CAPS.NEXT in self._get_cached_caps()
 
     @CanGoNext.setter
     def CanGoNext(self, value):
@@ -649,7 +654,7 @@ class BasePlayer(DBusObject):
                    type_signature='b',
                    writeable=False)
     def CanGoPrevious(self):
-        return CAPS_PREV in self._get_cached_caps()
+        return CAPS.PREV in self._get_cached_caps()
 
     @CanGoPrevious.setter
     def CanGoPrevious(self, value):
@@ -659,7 +664,7 @@ class BasePlayer(DBusObject):
                    type_signature='b',
                    writeable=False)
     def CanPlay(self):
-        return CAPS_PLAY in self._get_cached_caps()
+        return CAPS.PLAY in self._get_cached_caps()
 
     @CanPlay.setter
     def CanPlay(self, value):
@@ -669,7 +674,7 @@ class BasePlayer(DBusObject):
                    type_signature='b',
                    writeable=False)
     def CanPause(self):
-        return CAPS_PAUSE in self._get_cached_caps()
+        return CAPS.PAUSE in self._get_cached_caps()
 
     @CanPause.setter
     def CanPause(self, value):
@@ -679,7 +684,7 @@ class BasePlayer(DBusObject):
                    type_signature='b',
                    writeable=False)
     def CanSeek(self):
-        return CAPS_SEEK in self._get_cached_caps()
+        return CAPS.SEEK in self._get_cached_caps()
 
     @CanSeek.setter
     def CanSeek(self, value):
@@ -731,11 +736,11 @@ class BasePlayer(DBusObject):
         self._caps = self.get_caps()
         if orig_caps is not None:
             caps_map = {
-                CAPS_NEXT: 'CanGoNext',
-                CAPS_PREV: 'CanGoPrevious',
-                CAPS_PLAY: 'CanPlay',
-                CAPS_PAUSE: 'CanPause',
-                CAPS_SEEK: 'CanSeek',
+                CAPS.NEXT: 'CanGoNext',
+                CAPS.PREV: 'CanGoPrevious',
+                CAPS.PLAY: 'CanPlay',
+                CAPS.PAUSE: 'CanPause',
+                CAPS.SEEK: 'CanSeek',
             }
             for cap, method in caps_map.items():
                 if cap in orig_caps != cap in self._caps:
