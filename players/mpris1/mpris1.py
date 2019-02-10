@@ -58,10 +58,6 @@ MPRIS1_STATUS_MAP = {
 }
 
 
-def player_info_from_name(name):
-    return PlayerInfo(name, icon=name)
-
-
 class ProxyObject(BasePlayerProxy):
     """ The DBus object for MPRIS1 player proxy
     """
@@ -73,7 +69,7 @@ class ProxyObject(BasePlayerProxy):
 
     def _get_player_from_bus_names(self, names):
         return [
-            player_info_from_name(name[len(MPRIS1_PREFIX):])
+            PlayerInfo.from_name(name[len(MPRIS1_PREFIX):])
             for name in names
             if name.startswith(MPRIS1_PREFIX) and not name.startswith(MPRIS1_PREFIX + 'MediaPlayer2.')
         ]

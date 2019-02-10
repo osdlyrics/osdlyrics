@@ -159,6 +159,10 @@ class PlayerInfo(object):
         self._cmd = cmd
         self._icon = icon
 
+    @classmethod
+    def from_name(cls, name):
+        return cls(name, icon=name)
+
     @property
     def name(self):
         return self._name

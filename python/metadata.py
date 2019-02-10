@@ -123,7 +123,7 @@ class Metadata(object):
             ret['time'] = dbus.UInt32(self.length // 1000)
             ret['mtime'] = dbus.UInt32(self.length)
         for k, v in self._extra.items():
-            if k in Metadata.MPRIS1_KEYS and k not in ret:
+            if k in self.MPRIS1_KEYS and k not in ret:
                 ret[k] = v
         return ret
 
@@ -184,12 +184,12 @@ class Metadata(object):
         if self.tracknum >= 0:
             ret['xesam:trackNumber'] = dbus.Int32(self.tracknum)
         for k, v in self._extra.items():
-            if k in Metadata.MPRIS2_KEYS and k not in ret:
+            if k in self.MPRIS2_KEYS and k not in ret:
                 ret[k] = v
         return ret
 
-    @staticmethod
-    def from_mpris2(mpris2_dict):
+    @classmethod
+    def from_mpris2(cls, mpris2_dict):
         """
         Create a Metadata object from mpris2 metadata dict
         """
@@ -210,12 +210,11 @@ class Metadata(object):
             kargs['tracknum'] = int(mpris2_dict['xesam:trackNumber'])
         if 'mpris:length' in mpris2_dict:
             kargs['length'] = int(mpris2_dict['mpris:length'])
-        ret = Metadata(**kargs)
-        ret._extra = mpris2_dict
-        return ret
+        kargs['extra'] = mpris2_dict
+        return cls(**kargs)
 
-    @staticmethod
-    def from_dict(dbusdict):
+    @classmethod
+    def from_dict(cls, dbusdict):
         """
         Create a Metadata object from a D-Bus dict object.
 
@@ -327,9 +326,8 @@ class Metadata(object):
             kargs['length'] = dbusdict['mpris:length'] // 1000
         elif 'time' in dbusdict:
             kargs['length'] = dbusdict['time'] * 1000
-        ret = Metadata(**kargs)
-        ret._extra = dbusdict
-        return ret
+        kargs['extra'] = dbusdict
+        return cls(**kargs)
 
     def __str__(self):
         attrs = ['title', 'artist', 'album', 'location', 'length']

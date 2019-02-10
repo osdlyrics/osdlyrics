@@ -35,12 +35,6 @@ from osdlyrics.player_proxy import (CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
                                     BasePlayerProxy, PlayerInfo)
 
 
-def player_info_from_name(name):
-    """ Returns a dict representing a player info by the given name
-    """
-    return PlayerInfo(name, icon=name)
-
-
 class ProxyObject(BasePlayerProxy):
     """ The DBus object for MPRIS2 player proxy
     """
@@ -60,7 +54,7 @@ class ProxyObject(BasePlayerProxy):
         - `names`: list of bus names
         """
         return [
-            player_info_from_name(name[len(MPRIS2_PREFIX):])
+            PlayerInfo.from_name(name[len(MPRIS2_PREFIX):])
             for name in names
             if name.startswith(MPRIS2_PREFIX) and name != DAEMON_MPRIS2_NAME
         ]
