@@ -154,7 +154,7 @@ AC_CONFIG_FILES([
         src/tests/Makefile
         data/Makefile
         daemon/Makefile
-        daemon/config.py
+        python/__init__.py
         players/Makefile
         players/mpris1/Makefile
         players/mpris2/Makefile

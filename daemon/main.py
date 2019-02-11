@@ -24,13 +24,13 @@ import logging
 
 import dbus
 
+from osdlyrics import PACKAGE_VERSION
 from osdlyrics.app import AlreadyRunningException, App
 from osdlyrics.consts import (CONFIG_BUS_NAME, DAEMON_BUS_NAME,
                               DAEMON_INTERFACE, DAEMON_MPRIS2_NAME,
                               DAEMON_OBJECT_PATH, MPRIS2_OBJECT_PATH)
 from osdlyrics.metadata import Metadata
 
-import config
 import lyrics
 import lyricsource
 import player
@@ -122,7 +122,7 @@ class DaemonObject(dbus.service.Object):
                          in_signature='',
                          out_signature='s')
     def GetVersion(self):
-        return config.PACKAGE_VERSION
+        return PACKAGE_VERSION
 
     @dbus.service.method(dbus_interface=DAEMON_INTERFACE,
                          in_signature='',

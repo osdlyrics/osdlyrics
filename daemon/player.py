@@ -24,7 +24,7 @@ import logging
 import dbus.service
 import glib
 
-import osdlyrics
+from osdlyrics import PROGRAM_NAME
 from osdlyrics.app import App
 from osdlyrics.consts import (MPRIS2_OBJECT_PATH, MPRIS2_PLAYER_INTERFACE,
                               PLAYER_PROXY_INTERFACE,
@@ -32,8 +32,6 @@ from osdlyrics.consts import (MPRIS2_OBJECT_PATH, MPRIS2_PLAYER_INTERFACE,
 from osdlyrics.dbusext.service import (Object as DBusObject,
                                        property as dbus_property)
 import osdlyrics.timer
-
-import config
 
 MPRIS2_ROOT_INTERFACE = 'org.mpris.MediaPlayer2'
 PLAYER_INTERFACE = 'org.osdlyrics.Player'
@@ -541,7 +539,7 @@ class Mpris2Player(DBusObject):
     @dbus_property(dbus_interface=MPRIS2_ROOT_INTERFACE,
                    type_signature='s')
     def Identity(self):
-        return config.PROGRAM_NAME
+        return PROGRAM_NAME
 
     @dbus_property(dbus_interface=MPRIS2_ROOT_INTERFACE,
                    type_signature='s')

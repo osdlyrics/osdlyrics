@@ -20,7 +20,6 @@
 SUBDIRS = dbusext
 
 ol_PYTHON = \
-	__init__.py \
 	app.py \
 	config.py \
 	consts.py \
@@ -32,6 +31,14 @@ ol_PYTHON = \
 	timer.py \
 	metadata.py \
 	lyricsource.py \
+	$(NULL)
+
+nodist_ol_PYTHON = \
+	__init__.py \
+	$(NULL)
+
+EXTRA_DIST = \
+	__init__.py.in \
 	$(NULL)
 
 oldir = @pkgpythondir@
