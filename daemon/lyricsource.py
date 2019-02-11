@@ -122,7 +122,7 @@ class LyricSource(dbus.service.Object):
         if status == STATUS_SUCCESS:
             mytask = self._search_tasks[myticket]
             mytask['failure'] = False
-        if (status == STATUS_SUCCESS and len(results) > 0) or \
+        if (status == STATUS_SUCCESS and results) or \
                 status == STATUS_CANCELLED:
             self.SearchComplete(myticket, status, results)
         else: #STATUS_FAILURE
@@ -134,7 +134,7 @@ class LyricSource(dbus.service.Object):
             # so no search tasks from other sources succeed.
             if status == STATUS_FAILURE and mytask['failure'] != False:
                 mytask['failure'] = True
-            if len(mytask['sources']) == 0 or mytask['sources'][0] != source_id:
+            if not mytask['sources'] or mytask['sources'][0] != source_id:
                 logging.warning('Error, no source exists or source id mismatch with current id')
                 self.SearchComplete(myticket, STATUS_FAILURE, results)
             else:

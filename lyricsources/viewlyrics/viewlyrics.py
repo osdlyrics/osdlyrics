@@ -57,7 +57,7 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
         result = []
         page = 0
         pagesleft = 1
-        while(pagesleft > 0):
+        while pagesleft > 0:
             pageresult, pagesleft = self.real_search(title, artist, page)
             result += pageresult
             page += 1

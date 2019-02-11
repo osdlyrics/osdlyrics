@@ -104,13 +104,7 @@ def decode_by_charset(content):
     # half of the content of it and try again.
     if not encoding and len(content) > DETECT_CHARSET_GUESS_MIN_LEN:
         content_half = len(content) // 2
-        if content_half <= DETECT_CHARSET_GUESS_MAX_LEN and \
-                content_half >= DETECT_CHARSET_GUESS_MIN_LEN:
-            slice_end = content_half
-        elif content_half > DETECT_CHARSET_GUESS_MAX_LEN:
-            slice_end = DETECT_CHARSET_GUESS_MAX_LEN
-        else:
-            slice_end = DETECT_CHARSET_GUESS_MIN_LEN
+        slice_end = min(max(DETECT_CHARSET_GUESS_MIN_LEN, content_half), DETECT_CHARSET_GUESS_MAX_LEN)
         logging.warning('Failed to detect encoding, try to decode a part of it')
         encoding = chardet.detect(content[:slice_end])['encoding']
         logging.warning('guess encoding from part: ' + encoding)

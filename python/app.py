@@ -99,12 +99,12 @@ class App(object):
             self._watch_daemon_bus(options.watch_daemon)
 
     def _watch_daemon_bus(self, name):
-        if len(name) > 0:
+        if name:
             self._namewatch = self._conn.watch_name_owner(name,
                                                           self._daemon_name_changed)
 
     def _daemon_name_changed(self, name):
-        if len(name) == 0:
+        if not name:
             self._loop.quit()
             if (self._namewatch is not None):
                 self._namewatch.cancel()

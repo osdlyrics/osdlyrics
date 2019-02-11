@@ -158,7 +158,7 @@ class MpdProxy(BasePlayerProxy):
         return self._player
 
     def _on_data(self, client, condition):
-        while len(self._fetch_queue) > 0:
+        while self._fetch_queue:
             try:
                 cmd_item = self._fetch_queue.pop(0)
                 logging.debug('fetch cmd: %s', cmd_item.command)
@@ -174,7 +174,7 @@ class MpdProxy(BasePlayerProxy):
 
         # no pending data, socket might be closed
         data = os.read(self._client.fileno(), 1024)
-        if len(data) == 0:              # connection closed
+        if not data:              # connection closed
             logging.info('connection closed')
             self._on_disconnect()
             return
@@ -223,8 +223,7 @@ class MpdProxy(BasePlayerProxy):
         self._fetch_queue.append(CommandCallback(command, callback))
 
     def _is_on_idle(self):
-        return len(self._fetch_queue) > 0 \
-            and self._fetch_queue[-1].command == Cmds.IDLE
+        return self._fetch_queue and self._fetch_queue[-1].command == Cmds.IDLE
 
     def _start_idle(self):
         if not self._is_connected() or self._is_on_idle():

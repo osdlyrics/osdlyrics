@@ -132,7 +132,7 @@ class Object(ObjectType):
         """
         prop = getattr(self.__class__, prop_name, None)
         if isinstance(prop, Property) and \
-                (len(iface_name) == 0 or prop.interface == iface_name):
+                (not iface_name or prop.interface == iface_name):
             return getattr(self, prop_name)
         raise dbus.exceptions.DBusException('No property of %s.%s' % (iface_name, prop_name))
 
@@ -150,7 +150,7 @@ class Object(ObjectType):
         """
         prop = getattr(self.__class__, prop_name, None)
         if isinstance(prop, Property) and \
-                (len(iface_name) == 0 or prop.interface == iface_name):
+                (not iface_name or prop.interface == iface_name):
             prop.dbus_set(self, value)
         else:
             raise dbus.exceptions.DBusException('No property of %s.%s' % (iface_name, prop_name))

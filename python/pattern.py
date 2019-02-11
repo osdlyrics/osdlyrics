@@ -94,12 +94,12 @@ def expand_file(pattern, metadata):
                     if not location:
                         raise PatternException('Location not found in metadata')
                     uri = urllib.parse.urlparse(location)
-                    if uri.scheme != '' and not uri.scheme in ['file']:
-                        raise PatternException('Unsupported file scheme %s' % uri.scheme)
                     if uri.scheme == '':
                         path = uri.path
-                    else:
+                    elif uri.scheme == 'file':
                         path = urllib.request.url2pathname(uri.path)
+                    else:
+                        raise PatternException('Unsupported file scheme %s' % uri.scheme)
                     basename = os.path.basename(path)
                     root, ext = os.path.splitext(basename)
                     has_tag = True
@@ -159,7 +159,7 @@ def expand_path(pattern, metadata):
         if not location:
             raise PatternException('Location not found in metadata')
         uri = urllib.parse.urlparse(location)
-        if not uri.scheme in ['file']:
+        if uri.scheme != 'file':
             raise PatternException('Unsupported file scheme %s' % uri.scheme)
         path = urllib.request.url2pathname(uri.path)
         return os.path.dirname(path)

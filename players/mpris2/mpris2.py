@@ -105,7 +105,7 @@ class Mpris2Player(BasePlayer):
             self.disconnect()
 
     def _name_lost(self, name):
-        if len(name) > 0:
+        if name:
             return
         self.disconnect()
 

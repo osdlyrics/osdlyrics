@@ -67,7 +67,7 @@ class IniConfig(dbus.service.Object):
                 '%s is an invalid key. Keys must be in the form '
                 'of "Section/Name"' % key
                 )
-        if len(parts[0]) == 0 or len(parts[1]) == 0:
+        if not parts[0] or not parts[1]:
             raise MalformedKeyError(
                 'Malformed key "%s". Section or name must not be empty' % key)
         if add_section and not self._confparser.has_section(parts[0]):
@@ -231,7 +231,7 @@ def split(value, sep=';'):
         if curr == len(value) or value[curr] == sep:
             if start < curr:
                 item.append(value[start:curr])
-            if curr != len(value) or len(item) > 0:
+            if curr != len(value) or item:
                 ret.append(''.join(item))
             item = []
             start = curr + 1
@@ -259,7 +259,7 @@ def join(values, sep=';'):
     >>> print join([r'on\e', 't;wo'])
     on\\e;t\;wo;
     """
-    if len(values) == 0:
+    if not values:
         return ''
     result = []
     for item in values:

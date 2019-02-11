@@ -45,7 +45,7 @@ class NeteaseSource(BaseLyricSourcePlugin):
             raise http.client.HTTPException(status, '')
 
         def map_func(song):
-            if len(song['artists']) > 0:
+            if song['artists']:
                 artist_name = song['artists'][0]['name']
             else:
                 artist_name = ''

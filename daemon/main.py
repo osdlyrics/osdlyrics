@@ -136,7 +136,7 @@ class DaemonObject(dbus.service.Object):
             if name in self._watch_clients:
                 self._watch_clients[name].cancel()
                 del self._watch_clients[name]
-            if len(self._watch_clients) == 0:
+            if not self._watch_clients:
                 logging.info('All client disconnected, quit the daemon')
                 self._app.quit()
 

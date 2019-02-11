@@ -168,7 +168,7 @@ def get_envar_proxy():
             if '://' not in proxy:
                 proxy = 'http://' + proxy
             parts = urllib.parse.urlparse(proxy)
-            if not parts.scheme in ['http', 'socks4', 'socks5', '']:
+            if parts.scheme not in ('http', 'socks4', 'socks5', ''):
                 continue
             return ProxySettings(protocol=parts.scheme or 'http',
                                  host=parts.hostname,

@@ -56,10 +56,10 @@ def parse_query(query):
     result = urllib.parse.parse_qs(query)
     ret = {}
     for k, v in result.items():
-        if len(v) == 0:
-            ret[k] = True
-        else:
+        if v:
             ret[k] = v[0]
+        else:
+            ret[k] = True
     return ret
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
