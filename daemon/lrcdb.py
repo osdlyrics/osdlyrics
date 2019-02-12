@@ -21,16 +21,18 @@ from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
 from builtins import object
+
 import logging
-import sqlite3
 import os.path
+import sqlite3
+
+from osdlyrics.consts import (METADATA_ALBUM, METADATA_ARTIST, METADATA_TITLE,
+                              METADATA_TRACKNUM)
 import osdlyrics.utils
-from osdlyrics.consts import METADATA_URI, METADATA_TITLE, METADATA_ALBUM, \
-    METADATA_ARTIST, METADATA_TRACKNUM
 
 __all__ = (
     'LrcDb',
-    )
+)
 
 
 def query_param_from_metadata(metadata):
@@ -45,17 +47,18 @@ def query_param_from_metadata(metadata):
     }
     return param
 
+
 class LrcDb(object):
     """ Database to store location of LRC files that have been manually assigned
     """
-    
+
     TABLE_NAME = 'lyrics'
 
     METADATA_LIST = [METADATA_TITLE, METADATA_ARTIST, METADATA_ALBUM, METADATA_TRACKNUM]
 
     CREATE_TABLE = """
 CREATE TABLE IF NOT EXISTS {0} (
-  id INTEGER PRIMARY KEY AUTOINCREMENT, 
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   {1} TEXT, {2} TEXT, {3} TEXT, {4} INTEGER,
   uri TEXT UNIQUE ON CONFLICT REPLACE,
   lrcpath TEXT
@@ -75,7 +78,7 @@ UPDATE {0}
 """.format(TABLE_NAME)
 
     DELETE_LYRIC = 'DELETE FROM {0} WHERE '.format(TABLE_NAME)
-    
+
     FIND_LYRIC = 'SELECT lrcpath FROM {0} WHERE '.format(TABLE_NAME)
 
     QUERY_LOCATION = 'uri = ?'
@@ -84,7 +87,7 @@ UPDATE {0}
 
     def __init__(self, dbfile=None):
         """
-        
+
         Arguments:
         - `dbfile`: The sqlite db to open
         """
@@ -110,14 +113,14 @@ UPDATE {0}
         c = self._conn.cursor()
         location = metadata.location or ''
         if self._find_by_location(metadata):
-            logging.debug('Assign lyric file %s to track of location %s' % (uri, location))
+            logging.debug('Assign lyric file %s to track of location %s', uri, location)
             c.execute(LrcDb.UPDATE_LYRIC, (uri, location,))
         else:
             title = metadata.title or ''
             artist = metadata.artist or ''
             album = metadata.album or ''
             tracknum = max(metadata.tracknum, 0)
-            logging.debug('Assign lyrics file %s to track %s. %s - %s in album %s @ %s' % (uri, tracknum, artist, title, album, location))
+            logging.debug('Assign lyrics file %s to track %s. %s - %s in album %s @ %s', uri, tracknum, artist, title, album, location)
             c.execute(LrcDb.ASSIGN_LYRIC, (title, artist, album, tracknum, location, uri))
         self._conn.commit()
         c.close()
@@ -144,7 +147,7 @@ UPDATE {0}
         with the ``location`` attribute in metadata. If not found or ``location`` is
         not specified, try to find with respect to ``title``, ``artist``, ``album``
         and ``tracknum``
-        
+
         If found, return the uri of the LRC file. Otherwise return None. Note that
         this method may return an empty string, so use ``is None`` to figure out
         whether an uri is found
@@ -159,11 +162,11 @@ UPDATE {0}
 
     def _find_by_condition(self, where_clause, parameters=None):
         query = LrcDb.FIND_LYRIC + where_clause
-        logging.debug('Find by condition, query = %s, params = %s' % (query, parameters))
+        logging.debug('Find by condition, query = %s, params = %s', query, parameters)
         c = self._conn.cursor()
         c.execute(query, parameters)
         r = c.fetchone()
-        logging.debug('Fetch result: %s' % r)
+        logging.debug('Fetch result: %s', r)
         if r:
             return r[0]
         return None
@@ -176,6 +179,7 @@ UPDATE {0}
     def _find_by_info(self, metadata):
         return self._find_by_condition(LrcDb.QUERY_INFO,
                                        query_param_from_metadata(metadata))
+
 
 def test():
     """
@@ -220,6 +224,7 @@ def test():
     """
     import doctest
     doctest.testmod()
+
 
 if __name__ == '__main__':
     test()

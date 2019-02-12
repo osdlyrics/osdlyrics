@@ -1,13 +1,14 @@
 from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
-from builtins import map
-from builtins import str
-import http.client
+from builtins import map, str, super
+
 import gettext
+import http.client
 import json
+
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
-from osdlyrics.utils import http_download, get_proxy_settings
+from osdlyrics.utils import get_proxy_settings, http_download
 
 _ = gettext.gettext
 
@@ -18,12 +19,13 @@ NETEASE_LYRIC_URL = '/api/song/lyric'
 gettext.bindtextdomain('osdlyrics')
 gettext.textdomain('osdlyrics')
 
+
 class NeteaseSource(BaseLyricSourcePlugin):
     """ Lyric source from music.163.com
     """
 
     def __init__(self):
-        BaseLyricSourcePlugin.__init__(self, id='netease', name=_('Netease'))
+        super().__init__(id='netease', name=_('Netease'))
 
     def do_search(self, metadata):
         # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
@@ -45,7 +47,7 @@ class NeteaseSource(BaseLyricSourcePlugin):
             raise http.client.HTTPException(status, '')
 
         def map_func(song):
-            if len(song['artists']) > 0:
+            if song['artists']:
                 artist_name = song['artists'][0]['name']
             else:
                 artist_name = ''

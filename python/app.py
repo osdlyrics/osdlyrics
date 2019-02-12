@@ -19,6 +19,7 @@
 #
 
 from builtins import object
+
 from optparse import OptionParser
 
 import dbus
@@ -36,10 +37,12 @@ APP_BUS_PREFIX = 'org.osdlyrics.'
 gobject.threads_init()
 dbus.mainloop.glib.threads_init()
 
+
 class AlreadyRunningException(Exception):
     """ Raised when a process with given bus name exists.
     """
     pass
+
 
 class App(object):
     """ Basic class to create a component application for OSD Lyrics.
@@ -99,12 +102,12 @@ class App(object):
             self._watch_daemon_bus(options.watch_daemon)
 
     def _watch_daemon_bus(self, name):
-        if len(name) > 0:
+        if name:
             self._namewatch = self._conn.watch_name_owner(name,
                                                           self._daemon_name_changed)
 
     def _daemon_name_changed(self, name):
-        if len(name) == 0:
+        if not name:
             self._loop.quit()
             if (self._namewatch is not None):
                 self._namewatch.cancel()

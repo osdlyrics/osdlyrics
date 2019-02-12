@@ -19,6 +19,7 @@
 #
 from __future__ import unicode_literals
 from builtins import object
+
 import logging
 import re
 
@@ -122,7 +123,7 @@ class Metadata(object):
             ret['time'] = dbus.UInt32(self.length // 1000)
             ret['mtime'] = dbus.UInt32(self.length)
         for k, v in self._extra.items():
-            if k in Metadata.MPRIS1_KEYS and k not in ret:
+            if k in self.MPRIS1_KEYS and k not in ret:
                 ret[k] = v
         return ret
 
@@ -168,11 +169,11 @@ class Metadata(object):
         file:///path/to/file
         """
         ret = dbus.Dictionary(signature='sv')
-        mpris2map = { 'title': 'xesam:title',
-                      'album': 'xesam:album',
-                      'arturl': 'mpris:artUrl',
-                      'location': 'xesam:url',
-                      }
+        mpris2map = {'title': 'xesam:title',
+                     'album': 'xesam:album',
+                     'arturl': 'mpris:artUrl',
+                     'location': 'xesam:url',
+                     }
         for k in ['title', 'album', 'arturl', 'location']:
             if getattr(self, k) is not None:
                 ret[mpris2map[k]] = dbus.String(getattr(self, k))
@@ -183,12 +184,12 @@ class Metadata(object):
         if self.tracknum >= 0:
             ret['xesam:trackNumber'] = dbus.Int32(self.tracknum)
         for k, v in self._extra.items():
-            if k in Metadata.MPRIS2_KEYS and k not in ret:
+            if k in self.MPRIS2_KEYS and k not in ret:
                 ret[k] = v
         return ret
 
-    @staticmethod
-    def from_mpris2(mpris2_dict):
+    @classmethod
+    def from_mpris2(cls, mpris2_dict):
         """
         Create a Metadata object from mpris2 metadata dict
         """
@@ -209,12 +210,11 @@ class Metadata(object):
             kargs['tracknum'] = int(mpris2_dict['xesam:trackNumber'])
         if 'mpris:length' in mpris2_dict:
             kargs['length'] = int(mpris2_dict['mpris:length'])
-        ret = Metadata(**kargs)
-        ret._extra = mpris2_dict
-        return ret
+        kargs['extra'] = mpris2_dict
+        return cls(**kargs)
 
-    @staticmethod
-    def from_dict(dbusdict):
+    @classmethod
+    def from_dict(cls, dbusdict):
         """
         Create a Metadata object from a D-Bus dict object.
 
@@ -299,7 +299,7 @@ class Metadata(object):
             for dict_key in v:
                 if dict_key in dbusdict:
                     kargs[k] = dbusdict[dict_key]
-                    break;
+                    break
         # artist
         for k, v in string_list_dict.items():
             if k not in kargs and v in dbusdict:
@@ -313,7 +313,7 @@ class Metadata(object):
                 kargs['tracknum'] = tracknumber
             else:
                 if not re.match(r'\d+(/\d+)?', tracknumber):
-                    logging.warning('Malfromed tracknumber: %s' % tracknumber)
+                    logging.warning('Malfromed tracknumber: %s', tracknumber)
                 else:
                     kargs['tracknum'] = int(dbusdict['tracknumber'].split('/')[0])
         if 'tracknum' not in kargs and 'xesam:trackNumber' in dbusdict:
@@ -326,14 +326,14 @@ class Metadata(object):
             kargs['length'] = dbusdict['mpris:length'] // 1000
         elif 'time' in dbusdict:
             kargs['length'] = dbusdict['time'] * 1000
-        ret = Metadata(**kargs)
-        ret._extra = dbusdict
-        return ret
+        kargs['extra'] = dbusdict
+        return cls(**kargs)
 
     def __str__(self):
         attrs = ['title', 'artist', 'album', 'location', 'length']
         attr_value = ['  %s: %s' % (key, getattr(self, key)) for key in attrs]
         return 'metadata:\n' + '\n'.join(attr_value)
+
 
 if __name__ == '__main__':
     import doctest

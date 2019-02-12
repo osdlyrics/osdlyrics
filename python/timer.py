@@ -3,7 +3,7 @@
 # Copyright (C) 2011  Tiger Soldier
 #
 # This file is part of OSD Lyrics.
-# 
+#
 # OSD Lyrics is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -15,18 +15,20 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
-#/
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
+#
 from builtins import object
+
 from datetime import datetime
+
 
 class Timer(object):
     """ A timer to account the elapsed playing.
     """
-    
+
     def __init__(self, accuracy=0):
         """
-        
+
         Arguments:
         - `accuracy`:The accuracy of the time provided by players.
           If the difference between the time provided by players and the time of

@@ -17,48 +17,33 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-from builtins import str
+from builtins import str, super
 
 from contextlib import contextmanager
 import logging
 
 import dbus
 
-from osdlyrics.player_proxy import (
-    BasePlayer, BasePlayerProxy, PlayerInfo, CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
-    CAPS_PREV, CAPS_SEEK, REPEAT_ALL, REPEAT_NONE, REPEAT_TRACK, STATUS_PAUSED,
-    STATUS_PLAYING, STATUS_STOPPED)
 from osdlyrics.metadata import Metadata
+from osdlyrics.player_proxy import (CAPS, REPEAT, STATUS, BasePlayer,
+                                    BasePlayerProxy, PlayerInfo)
 
 MPRIS1_INTERFACE = 'org.freedesktop.MediaPlayer'
 MPRIS1_PREFIX = 'org.mpris.'
 
-MPRIS1_CAN_GO_NEXT           = 1 << 0,
-MPRIS1_CAN_GO_PREV           = 1 << 1,
-MPRIS1_CAN_PAUSE             = 1 << 2,
-MPRIS1_CAN_PLAY              = 1 << 3,
-MPRIS1_CAN_SEEK              = 1 << 4,
-MPRIS1_CAN_PROVIDE_METADATA  = 1 << 5,
-MPRIS1_CAN_HAS_TRACKLIST     = 1 << 6
-
-MPRIS1_CAPS_MAP = {
-    1 << 0: CAPS_NEXT,
-    1 << 1: CAPS_PREV,
-    1 << 2: CAPS_PAUSE,
-    1 << 3: CAPS_PLAY,
-    1 << 4: CAPS_SEEK,
-    }
-
-# The constants actually have the same values but that is the legacy of MPRIS1.
-MPRIS1_STATUS_MAP = {
-    0: STATUS_PLAYING,
-    1: STATUS_PAUSED,
-    2: STATUS_STOPPED,
+# These constants map flags/enums from MPRIS1-specific values to OSDLyrics values.
+CAPS_MAP = {
+    1 << 0: CAPS.NEXT,
+    1 << 1: CAPS.PREV,
+    1 << 2: CAPS.PAUSE,
+    1 << 3: CAPS.PLAY,
+    1 << 4: CAPS.SEEK,
 }
-
-
-def player_info_from_name(name):
-    return PlayerInfo(name, icon=name)
+STATUS_MAP = {
+    0: STATUS.PLAYING,
+    1: STATUS.PAUSED,
+    2: STATUS.STOPPED,
+}
 
 
 class ProxyObject(BasePlayerProxy):
@@ -68,11 +53,14 @@ class ProxyObject(BasePlayerProxy):
     def __init__(self):
         """
         """
-        super(ProxyObject, self).__init__('Mpris1')
+        super().__init__('Mpris1')
 
     def _get_player_from_bus_names(self, names):
-        return [player_info_from_name(name[len(MPRIS1_PREFIX):]) for name in names
-                if name.startswith(MPRIS1_PREFIX) and not name.startswith(MPRIS1_PREFIX + 'MediaPlayer2.')]
+        return [
+            PlayerInfo.from_name(name[len(MPRIS1_PREFIX):])
+            for name in names
+            if name.startswith(MPRIS1_PREFIX) and not name.startswith(MPRIS1_PREFIX + 'MediaPlayer2.')
+        ]
 
     def do_list_active_players(self):
         return self._get_player_from_bus_names(map(str, self.connection.list_names()))
@@ -91,8 +79,7 @@ class ProxyObject(BasePlayerProxy):
 
 class Mpris1Player(BasePlayer):
     def __init__(self, proxy, player_name):
-        super(Mpris1Player, self).__init__(proxy,
-                                           player_name)
+        super().__init__(proxy, player_name)
         self._signals = []
         self._name_watch = None
         self._status_tuple = None, None, None, None
@@ -115,7 +102,7 @@ class Mpris1Player(BasePlayer):
             self.disconnect()
 
     def _name_lost(self, name):
-        if len(name) > 0:
+        if name:
             return
         self.disconnect()
 
@@ -127,7 +114,7 @@ class Mpris1Player(BasePlayer):
             self._name_watch.cancel()
             self._name_watch = None
         self._player = None
-        super(Mpris1Player, self).disconnect()
+        super().disconnect()
 
     def next(self):
         self._player.Next()
@@ -145,7 +132,7 @@ class Mpris1Player(BasePlayer):
         self._player.Play()
 
     def set_repeat(self, repeat):
-        if repeat in [REPEAT_TRACK, REPEAT_ALL]:
+        if repeat in (REPEAT.TRACK, REPEAT.ALL):
             self._player.Repeat(True)
         else:
             self._player.Repeat(False)
@@ -154,17 +141,17 @@ class Mpris1Player(BasePlayer):
         status_tuple = (self._status_tuple if self._use_cached_status else
                         self._player.GetStatus())
         status, shuffle, repeat, loop = status_tuple
-        return MPRIS1_STATUS_MAP.get(status, STATUS_STOPPED)
+        return STATUS_MAP.get(status, STATUS.STOPPED)
 
     def get_repeat(self):
         status_tuple = (self._status_tuple if self._use_cached_status else
                         self._player.GetStatus())
         status, shuffle, repeat, loop = status_tuple
         if repeat:
-            return REPEAT_TRACK
+            return REPEAT.TRACK
         if loop:
-            return REPEAT_TRACK
-        return REPEAT_NONE
+            return REPEAT.TRACK
+        return REPEAT.NONE
 
     def get_shuffle(self):
         status_tuple = (self._status_tuple if self._use_cached_status else
@@ -180,7 +167,7 @@ class Mpris1Player(BasePlayer):
     def get_caps(self):
         caps = set()
         mpris1_caps = self._player.GetCaps()
-        for bit, cap in MPRIS1_CAPS_MAP.items():
+        for bit, cap in CAPS_MAP.items():
             if mpris1_caps & bit:
                 caps.add(cap)
         return caps

@@ -18,18 +18,42 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 from __future__ import unicode_literals
-from builtins import object
+from builtins import object, super
+from future.utils import raise_from
+
+from abc import abstractmethod
 import logging
 
 import dbus
 import dbus.service
 
+from . import errors, timer
 from .app import App
 from .consts import (MPRIS2_PLAYER_INTERFACE, PLAYER_PROXY_INTERFACE,
                      PLAYER_PROXY_OBJECT_PATH_PREFIX)
 from .dbusext.service import Object as DBusObject, property as dbus_property
-from . import errors
-from . import timer
+
+
+class CAPS(object):
+    NEXT = 1 << 0
+    PREV = 1 << 1
+    PAUSE = 1 << 2
+    PLAY = 1 << 3
+    SEEK = 1 << 4
+    PROVIDE_METADATA = 1 << 5
+
+
+class REPEAT(object):
+    NONE = 0
+    TRACK = 1
+    ALL = 2
+
+
+class STATUS(object):
+    PLAYING = 0
+    PAUSED = 1
+    STOPPED = 2
+
 
 class ConnectPlayerError(errors.BaseError):
     """
@@ -50,9 +74,8 @@ class BasePlayerProxy(dbus.service.Object):
           `org.osdlyrics.PlayerProxy.` + name
         """
         self._app = App('PlayerProxy.' + name)
-        super(BasePlayerProxy, self).__init__(
-            conn=self._app.connection,
-            object_path=PLAYER_PROXY_OBJECT_PATH_PREFIX + name)
+        super().__init__(conn=self._app.connection,
+                         object_path=PLAYER_PROXY_OBJECT_PATH_PREFIX + name)
         self._name = name
         self._connected_players = {}
 
@@ -88,14 +111,19 @@ class BasePlayerProxy(dbus.service.Object):
     def ConnectPlayer(self, player_name):
         if self._connected_players.setdefault(player_name, None):
             return self._connected_players[player_name].object_path
-        player = self.do_connect_player(player_name)
+        try:
+            player = self.do_connect_player(player_name)
+        except TypeError as e:
+            raise_from(errors.BaseError(
+                '%s cannot instantiate Player[%s, %s]' % (type(self).__name__, self.name, player_name)
+            ), e)
         if player and player.connected:
             player.set_disconnect_cb(self._player_lost_cb)
             self._connected_players[player_name] = player
-            logging.info('Connected to %s' % player.object_path)
+            logging.info('Connected to %s', player.object_path)
             return player.object_path
         else:
-            raise ConnectPlayerError('%s cannot be connected' % player_name)
+            raise ConnectPlayerError('%s cannot be connected', player_name)
 
     @dbus.service.signal(dbus_interface=PLAYER_PROXY_INTERFACE,
                          signature='s')
@@ -107,33 +135,30 @@ class BasePlayerProxy(dbus.service.Object):
             del self._connected_players[player.name]
             self.PlayerLost(player.name)
 
+    @abstractmethod
     def do_list_active_players(self):
         """
         Lists supported players that are aready running
 
         Returns an list of `PlayerInfo` objects.
-
-        Derived classes must reimplement this method.
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def do_list_supported_players(self):
         """
         Lists supported players.
 
         Returns an list of `PlayerInfo` objects.
-
-        Derived classes must reimplement this method.
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def do_list_activatable_players(self):
         """
         Lists supported players installed on the system.
 
         Returns an list of `PlayerInfo` objects.
-
-        Derived classes must reimplement this method.
         """
         raise NotImplementedError()
 
@@ -146,6 +171,7 @@ class BasePlayerProxy(dbus.service.Object):
         """
         raise NotImplementedError()
 
+
 class PlayerInfo(object):
     """Information about a supported player
     """
@@ -156,6 +182,10 @@ class PlayerInfo(object):
         self._binname = binname
         self._cmd = cmd
         self._icon = icon
+
+    @classmethod
+    def from_name(cls, name):
+        return cls(name, icon=name)
 
     @property
     def name(self):
@@ -186,21 +216,6 @@ class PlayerInfo(object):
         for k in keys:
             ret[k] = getattr(self, '_' + k)
         return ret
-
-CAPS_NEXT = 1 << 0
-CAPS_PREV = 1 << 1
-CAPS_PAUSE = 1 << 2
-CAPS_PLAY = 1 << 3
-CAPS_SEEK = 1 << 4
-CAPS_PROVIDE_METADATA = 1 << 5
-
-STATUS_PLAYING = 0
-STATUS_PAUSED = 1
-STATUS_STOPPED = 2
-
-REPEAT_NONE = 0
-REPEAT_TRACK = 1
-REPEAT_ALL = 2
 
 
 class BasePlayer(DBusObject):
@@ -234,10 +249,9 @@ class BasePlayer(DBusObject):
         - `proxy`: The BasePlayerProxy object that creates the player
         - `name`: The name of the player object
         """
-        self._object_path = (PLAYER_PROXY_OBJECT_PATH_PREFIX + proxy.name +
-                             '/' + name)
-        super(BasePlayer, self).__init__(conn=proxy.connection,
-                                         object_path=self._object_path)
+        self._object_path = PLAYER_PROXY_OBJECT_PATH_PREFIX + proxy.name + '/' + name
+        super().__init__(conn=proxy.connection,
+                         object_path=self._object_path)
         self._name = name
         self._proxy = proxy
         self._disconnect_cb = None
@@ -272,21 +286,22 @@ class BasePlayer(DBusObject):
         """
         Return the playing status.
 
-        The return value should be one of STATUS_PLAYING, STATUS_PAUSED, and
-        STATUS_STOPPED
+        The return value should be one of STATUS.PLAYING, STATUS.PAUSED, and
+        STATUS.STOPPED
 
         Derived classes that supports playing status should reimplement this.
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_metadata(self):
+        # type: () -> Metadata
         """
         Return metadata of current track. The return value is of the type Metadata
-
-        Derived classes must reimplement this method.
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_position(self):
         """
         Gets the ellapsed time in current track.
@@ -295,12 +310,13 @@ class BasePlayer(DBusObject):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_caps(self):
         """
         Return capablities of the players.
 
-        The return value should be a set of CAPS_PLAY, CAPS_PAUSE, CAPS_NEXT,
-        CAPS_PREV, CAPS_SEEK
+        The return value should be a set of CAPS.PLAY, CAPS.PAUSE, CAPS.NEXT,
+        CAPS.PREV, CAPS.SEEK
         """
         raise NotImplementedError()
 
@@ -308,18 +324,18 @@ class BasePlayer(DBusObject):
         """
         Gets the repeat mode of the player
 
-        Returns one of REPEAT_NONE, REPEAT_TRACK, or REPEAT_ALL
+        Returns one of REPEAT.NONE, REPEAT.TRACK, or REPEAT.ALL
 
-        The default implementation returns REPEAT_NONE
+        The default implementation returns REPEAT.NONE
         """
-        return REPEAT_NONE
+        return REPEAT.NONE
 
     def set_repeat(self, mode):
         """
         Sets the repeat mode of the player
 
         Arguments:
-        - `mode`: REPEAT_NONE, REPEAT_TRACK, or REPEAT_ALL
+        - `mode`: REPEAT.NONE, REPEAT.TRACK, or REPEAT.ALL
         """
         raise NotImplementedError()
 
@@ -400,10 +416,10 @@ class BasePlayer(DBusObject):
 
     def _setup_timer_status(self, status):
         status_map = {
-            STATUS_PAUSED: 'pause',
-            STATUS_PLAYING: 'play',
-            STATUS_STOPPED: 'stop',
-            }
+            STATUS.PAUSED: 'pause',
+            STATUS.PLAYING: 'play',
+            STATUS.STOPPED: 'stop',
+        }
         if self._timer:
             getattr(self._timer, status_map[status])()
 
@@ -418,7 +434,7 @@ class BasePlayer(DBusObject):
         """
         if self._timer is None:
             self._setup_timer()
-            if self._get_cached_status() != STATUS_STOPPED:
+            if self._get_cached_status() != STATUS.STOPPED:
                 self._timer.time = self.get_position()
         return self._timer.time
 
@@ -519,7 +535,7 @@ class BasePlayer(DBusObject):
             self.play_pause()
         else:
             status = self._get_cached_status()
-            if status == STATUS_PLAYING:
+            if status == STATUS.PLAYING:
                 self.pause()
             else:
                 self.play()
@@ -535,10 +551,10 @@ class BasePlayer(DBusObject):
                    writeable=False)
     def PlaybackStatus(self):
         status_map = {
-            STATUS_PLAYING: 'Playing',
-            STATUS_PAUSED: 'Paused',
-            STATUS_STOPPED: 'Stopped',
-            }
+            STATUS.PLAYING: 'Playing',
+            STATUS.PAUSED: 'Paused',
+            STATUS.STOPPED: 'Stopped',
+        }
         return status_map[self._get_cached_status()]
 
     @PlaybackStatus.setter
@@ -549,10 +565,10 @@ class BasePlayer(DBusObject):
                    type_signature='s')
     def LoopStatus(self):
         status_map = {
-            REPEAT_NONE: 'None',
-            REPEAT_ALL: 'Playlist',
-            REPEAT_TRACK: 'Track',
-            }
+            REPEAT.NONE: 'None',
+            REPEAT.ALL: 'Playlist',
+            REPEAT.TRACK: 'Track',
+        }
         return status_map[self._get_cached_loop_status()]
 
     @LoopStatus.setter
@@ -562,10 +578,10 @@ class BasePlayer(DBusObject):
     @LoopStatus.dbus_setter
     def LoopStatus(self, loop_status):
         status_map = {
-            'None': REPEAT_NONE,
-            'Playlist': REPEAT_ALL,
-            'Track': REPEAT_TRACK,
-            }
+            'None': REPEAT.NONE,
+            'Playlist': REPEAT.ALL,
+            'Track': REPEAT.TRACK,
+        }
         if loop_status not in status_map:
             raise ValueError('Unknown loop status ' + loop_status)
         self.set_repeat(status_map[loop_status])
@@ -634,7 +650,7 @@ class BasePlayer(DBusObject):
                    type_signature='b',
                    writeable=False)
     def CanGoNext(self):
-        return CAPS_NEXT in self._get_cached_caps()
+        return CAPS.NEXT in self._get_cached_caps()
 
     @CanGoNext.setter
     def CanGoNext(self, value):
@@ -644,7 +660,7 @@ class BasePlayer(DBusObject):
                    type_signature='b',
                    writeable=False)
     def CanGoPrevious(self):
-        return CAPS_PREV in self._get_cached_caps()
+        return CAPS.PREV in self._get_cached_caps()
 
     @CanGoPrevious.setter
     def CanGoPrevious(self, value):
@@ -654,7 +670,7 @@ class BasePlayer(DBusObject):
                    type_signature='b',
                    writeable=False)
     def CanPlay(self):
-        return CAPS_PLAY in self._get_cached_caps()
+        return CAPS.PLAY in self._get_cached_caps()
 
     @CanPlay.setter
     def CanPlay(self, value):
@@ -664,7 +680,7 @@ class BasePlayer(DBusObject):
                    type_signature='b',
                    writeable=False)
     def CanPause(self):
-        return CAPS_PAUSE in self._get_cached_caps()
+        return CAPS.PAUSE in self._get_cached_caps()
 
     @CanPause.setter
     def CanPause(self, value):
@@ -674,7 +690,7 @@ class BasePlayer(DBusObject):
                    type_signature='b',
                    writeable=False)
     def CanSeek(self):
-        return CAPS_SEEK in self._get_cached_caps()
+        return CAPS.SEEK in self._get_cached_caps()
 
     @CanSeek.setter
     def CanSeek(self, value):
@@ -726,12 +742,12 @@ class BasePlayer(DBusObject):
         self._caps = self.get_caps()
         if orig_caps is not None:
             caps_map = {
-                CAPS_NEXT: 'CanGoNext',
-                CAPS_PREV: 'CanGoPrevious',
-                CAPS_PLAY: 'CanPlay',
-                CAPS_PAUSE: 'CanPause',
-                CAPS_SEEK: 'CanSeek',
-                }
+                CAPS.NEXT: 'CanGoNext',
+                CAPS.PREV: 'CanGoPrevious',
+                CAPS.PLAY: 'CanPlay',
+                CAPS.PAUSE: 'CanPause',
+                CAPS.SEEK: 'CanSeek',
+            }
             for cap, method in caps_map.items():
                 if cap in orig_caps != cap in self._caps:
                     setattr(self, method, cap in self._caps)

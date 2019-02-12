@@ -16,9 +16,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
-#/
+#
+from builtins import super
 
 import dbus.exceptions
+
 
 class BaseError(dbus.exceptions.DBusException):
     """ Base class for raising an exception through D-Bus
@@ -41,7 +43,8 @@ class BaseError(dbus.exceptions.DBusException):
                 error_name = error_name[:-len('Error')]
             dbus_error_name = 'org.osdlyrics.Error.' + error_name
         kwargs['name'] = dbus_error_name
-        dbus.exceptions.DBusException.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
+
 
 class PatternException(Exception):
     pass

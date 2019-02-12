@@ -20,8 +20,8 @@
 from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
-from builtins import str
-from builtins import object
+from builtins import object, str
+
 import io
 import os
 import os.path
@@ -38,7 +38,7 @@ __all__ = (
     'get_config_path',
     'http_download',
     'path2uri',
-    )
+)
 
 pycurl.global_init(pycurl.GLOBAL_DEFAULT)
 
@@ -47,6 +47,7 @@ if sys.version_info < (3, 0):
     if sys.getdefaultencoding() != 'utf-8':
         reload(sys)
         sys.setdefaultencoding('utf-8')
+
 
 class ProxySettings(object):
     """
@@ -60,6 +61,7 @@ class ProxySettings(object):
         self.port = port
         self.username = username
         self.password = password
+
 
 def get_config_path(filename='', expanduser=True):
     """
@@ -79,6 +81,7 @@ def get_config_path(filename='', expanduser=True):
     if expanduser:
         path = os.path.expanduser(path)
     return path
+
 
 def path2uri(path):
     # type: (Text) -> Text
@@ -132,9 +135,10 @@ def get_proxy_settings(config=None, conn=None):
         username = config.get_string('Download/proxy-username')
         passwd = config.get_string('Download/proxy-passwd')
         return ProxySettings(protocol=protocol, host=host, port=port,
-                            username=username, password=passwd)
+                             username=username, password=passwd)
     if proxy_type == 'system':
         return detect_system_proxy()
+
 
 def detect_system_proxy():
     r"""
@@ -157,6 +161,7 @@ def detect_system_proxy():
             return proxy
     return get_envar_proxy()
 
+
 def get_envar_proxy():
     r"""
     Return proxy settings from environment variable `http_proxy`
@@ -168,7 +173,7 @@ def get_envar_proxy():
             if '://' not in proxy:
                 proxy = 'http://' + proxy
             parts = urllib.parse.urlparse(proxy)
-            if not parts.scheme in ['http', 'socks4', 'socks5', '']:
+            if parts.scheme not in ('http', 'socks4', 'socks5', ''):
                 continue
             return ProxySettings(protocol=parts.scheme or 'http',
                                  host=parts.hostname,
@@ -176,6 +181,7 @@ def get_envar_proxy():
                                  username=parts.username,
                                  password=parts.password)
     return ProxySettings(protocol='no')
+
 
 def detect_desktop_shell():
     r"""
@@ -192,13 +198,14 @@ def detect_desktop_shell():
         return 'unity'
     return 'unknown'
 
+
 def get_gsettings_proxy():
     r"""
     Return proxy settings from gsetting, this is used in GNOME 3
     """
     try:
         from gi.repository import Gio
-    except:
+    except ImportError:
         return None
     if not hasattr(Gio, 'Settings'):
         return None
@@ -207,7 +214,7 @@ def get_gsettings_proxy():
     settings = Gio.Settings('org.gnome.system.proxy')
     if settings.get_string('mode') != 'manual':
         return ProxySettings(protocol='no')
-    protocol_map = { 'http': 'http', 'socks5': 'socks' }
+    protocol_map = {'http': 'http', 'socks5': 'socks'}
     for protocol, key in protocol_map.items():
         settings = Gio.Settings('org.gnome.system.proxy.' + key)
         host = settings.get_string('host').strip()
@@ -226,13 +233,14 @@ def get_gsettings_proxy():
                              password=password)
     return ProxySettings(protocol='no')
 
+
 def get_kde_proxy():
     r"""
     Detect KDE4 proxy settings
     """
     try:
         import PyKDE4.kdecore as kdecore
-    except:
+    except ImportError:
         return None
     config = kdecore.KConfig('kioslaverc', kdecore.KConfig.NoGlobals)
     if not config.hasGroup('Proxy Settings'):
@@ -262,6 +270,7 @@ def get_kde_proxy():
                                          host=host,
                                          port=port)
     return ProxySettings('no')
+
 
 def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, proxy=None):
     # type: (Text, int, Text, Union[bytes, Dict[Text, Any]], Dict[Text, Any], int, Any) -> Tuple[int, bytes]
@@ -334,6 +343,7 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
     c.perform()
     return c.getinfo(pycurl.HTTP_CODE), buf.getvalue()
 
+
 def ensure_path(path, ignore_file_name=True):
     """ Create directories if necessary.
 
@@ -353,6 +363,7 @@ def ensure_path(path, ignore_file_name=True):
     if os.path.isdir(path):
         return
     os.makedirs(path)
+
 
 def find_file_in_dirs(filename, dirs, filter_func=None):
     """
@@ -374,6 +385,7 @@ def find_file_in_dirs(filename, dirs, filter_func=None):
             ret.append(path)
     return ret
 
+
 def cmd_exists(cmd):
     """
     Check if a command exists.
@@ -386,6 +398,7 @@ def cmd_exists(cmd):
                                  os.environ['PATH'].split(':'),
                                  is_exec_file)
     return len(cmdfiles) > 0
+
 
 def is_exec_file(filepath):
     """
@@ -402,6 +415,7 @@ def is_exec_file(filepath):
     if st.st_gid in gid:
         return (st.st_mode & stat.S_IXGRP) != 0
     return (st.st_mode & stat.S_IXOTH) != 0
+
 
 if __name__ == '__main__':
     import doctest

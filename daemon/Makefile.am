@@ -7,13 +7,5 @@ daemon_PYTHON = \
 	lyricsource.py \
 	$(NULL)
 
-nodist_daemon_PYTHON = \
-	config.py \
-	$(NULL)
-
-EXTRA_DIST = \
-	config.py.in \
-	$(NULL)
-
 daemondir = $(pkglibdir)/daemon
 

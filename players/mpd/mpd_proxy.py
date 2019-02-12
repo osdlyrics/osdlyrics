@@ -16,12 +16,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
-#/
+#
 
 """MPD support for OSD Lyrics. Requires MPD >= 0.16 and mpd-python >= 0.3
 """
 from __future__ import unicode_literals
-from builtins import object
+from builtins import object, super
+
 import logging
 import os
 import select
@@ -40,10 +41,8 @@ except (ImportError, AssertionError):
 
 from osdlyrics.consts import PLAYER_PROXY_INTERFACE
 from osdlyrics.metadata import Metadata
-from osdlyrics.player_proxy import (
-    BasePlayer, BasePlayerProxy, PlayerInfo, CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
-    CAPS_PREV, CAPS_SEEK, REPEAT_ALL, REPEAT_NONE, REPEAT_TRACK, STATUS_PAUSED,
-    STATUS_PLAYING, STATUS_STOPPED)
+from osdlyrics.player_proxy import (CAPS, REPEAT, STATUS, BasePlayer,
+                                    BasePlayerProxy, PlayerInfo)
 from osdlyrics.timer import Timer
 from osdlyrics.utils import cmd_exists
 
@@ -51,8 +50,10 @@ PLAYER_NAME = 'Mpd'
 DEFAULT_HOST = 'localhost'
 DEFAULT_PORT = 6600
 
+
 class NoConnectionError(Exception):
     pass
+
 
 class CommandCallback(object):
     def __init__(self, command, callback):
@@ -62,6 +63,7 @@ class CommandCallback(object):
     def call(self, *args):
         if callable(self.callback):
             self.callback(*args)
+
 
 class Cmds(object):
     CONFIG = 'config'
@@ -84,9 +86,10 @@ class Cmds(object):
     STATUS = 'status'
     STOP = 'stop'
 
+
 class MpdProxy(BasePlayerProxy):
     def __init__(self):
-        super(MpdProxy, self).__init__('Mpd')
+        super().__init__('Mpd')
         self._player = None
         self._init_address()
         self._client = None
@@ -158,7 +161,7 @@ class MpdProxy(BasePlayerProxy):
         return self._player
 
     def _on_data(self, client, condition):
-        while len(self._fetch_queue) > 0:
+        while self._fetch_queue:
             try:
                 cmd_item = self._fetch_queue.pop(0)
                 logging.debug('fetch cmd: %s', cmd_item.command)
@@ -168,13 +171,13 @@ class MpdProxy(BasePlayerProxy):
                 retval = getattr(self._client, 'fetch_' + cmd_item.command)()
                 cmd_item.call(retval)
             except Exception as e:
-               logging.exception(e)
-               self._on_disconnect()
+                logging.exception(e)
+                self._on_disconnect()
             return True
 
         # no pending data, socket might be closed
         data = os.read(self._client.fileno(), 1024)
-        if len(data) == 0:              # connection closed
+        if not data:              # connection closed
             logging.info('connection closed')
             self._on_disconnect()
             return
@@ -223,8 +226,7 @@ class MpdProxy(BasePlayerProxy):
         self._fetch_queue.append(CommandCallback(command, callback))
 
     def _is_on_idle(self):
-        return len(self._fetch_queue) > 0 \
-            and self._fetch_queue[-1].command == Cmds.IDLE
+        return self._fetch_queue and self._fetch_queue[-1].command == Cmds.IDLE
 
     def _start_idle(self):
         if not self._is_connected() or self._is_on_idle():
@@ -258,6 +260,7 @@ class MpdProxy(BasePlayerProxy):
         if self._player:
             ret['player'] = self._player.debug_info()
         return ret
+
 
 class MpdPlayer(BasePlayer):
 
@@ -295,7 +298,7 @@ class MpdPlayer(BasePlayer):
     }
 
     def __init__(self, proxy, playername):
-        super(MpdPlayer, self).__init__(proxy, playername)
+        super().__init__(proxy, playername)
         self._inited = False
         self._metadata = None
         self._songid = -1
@@ -329,7 +332,7 @@ class MpdPlayer(BasePlayer):
         logging.debug('status\n%s', status)
         changes = set()
         for prop, handler in self.STATUS_CHANGE_MAP.items():
-            if not prop in status:
+            if prop not in status:
                 value = None
             else:
                 func = handler[0]
@@ -348,13 +351,13 @@ class MpdPlayer(BasePlayer):
                 self._send_cmd(Cmds.CURRENTSONG, sync=True)
 
         if 'status' in changes:
-            if self._state == STATUS_PAUSED:
+            if self._state == STATUS.PAUSED:
                 self._elapsed.pause()
-            elif self._state == STATUS_PLAYING:
+            elif self._state == STATUS.PLAYING:
                 self._elapsed.play()
             else:
                 self._elapsed.stop()
-        if self._state == STATUS_STOPPED:
+        if self._state == STATUS.STOPPED:
             elapsed = 0
         else:
             elapsed = float(status['elapsed']) * 1000
@@ -381,9 +384,9 @@ class MpdPlayer(BasePlayer):
     @staticmethod
     def _parse_status(value):
         status_map = {
-            'play': STATUS_PLAYING,
-            'pause': STATUS_PAUSED,
-            'stop': STATUS_STOPPED,
+            'play': STATUS.PLAYING,
+            'pause': STATUS.PAUSED,
+            'stop': STATUS.STOPPED,
         }
         if value not in status_map:
             raise RuntimeError('Unknown status ' + value)
@@ -416,20 +419,20 @@ class MpdPlayer(BasePlayer):
         return self._elapsed.time
 
     def get_caps(self):
-        return set([CAPS_PLAY, CAPS_PAUSE, CAPS_NEXT, CAPS_PREV, CAPS_SEEK])
+        return set([CAPS.PLAY, CAPS.PAUSE, CAPS.NEXT, CAPS.PREV, CAPS.SEEK])
 
     def get_repeat(self):
         if not self._repeat:
-            return REPEAT_NONE
+            return REPEAT.NONE
         if not self._single:
-            return REPEAT_ALL
-        return REPEAT_TRACK
+            return REPEAT.ALL
+        return REPEAT.TRACK
 
     def set_repeat(self, mode):
         repeat_mode_map = {
-            REPEAT_NONE: (0, 0),
-            REPEAT_TRACK: (1, 1),
-            REPEAT_ALL: (1, 0),
+            REPEAT.NONE: (0, 0),
+            REPEAT.TRACK: (1, 1),
+            REPEAT.ALL: (1, 0),
         }
         if mode not in repeat_mode_map:
             raise ValueError('Unknown repeat mode: %s', mode)
@@ -446,9 +449,9 @@ class MpdPlayer(BasePlayer):
         self._send_cmd(Cmds.RANDOM, self._random)
 
     def play(self):
-        if self._state == STATUS_PAUSED:
+        if self._state == STATUS.PAUSED:
             self._send_cmd(Cmds.PAUSE, 0)
-        elif self._state == STATUS_STOPPED:
+        elif self._state == STATUS.STOPPED:
             self._send_cmd(Cmds.PLAY)
 
     def pause(self):
@@ -476,6 +479,7 @@ class MpdPlayer(BasePlayer):
             'position': self.get_position()
         })
         return ret
+
 
 if __name__ == '__main__':
     proxy = MpdProxy()

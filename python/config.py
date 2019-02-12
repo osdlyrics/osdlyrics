@@ -19,6 +19,7 @@
 #
 
 from builtins import object
+
 import logging
 
 import dbus
@@ -61,7 +62,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetBool(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -76,7 +77,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetInt(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -91,7 +92,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetBool(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -106,7 +107,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetString(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -121,7 +122,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetStringList(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -155,11 +156,11 @@ class Config(object):
             for handler in self._signals.get(name, []):
                 handler(name)
 
+
 def test():
     def value_changed(name):
         typename = name.split('/')[1]
-        logging.debug('%s has been changed to %s' % (name,
-                                                     getattr(config, 'get_' + typename)(name)))
+        logging.debug('%s has been changed to %s', name, getattr(config, 'get_' + typename)(name))
 
     import glib
     from dbus.mainloop.glib import DBusGMainLoop
@@ -167,17 +168,18 @@ def test():
     dbus_mainloop = DBusGMainLoop()
     conn = dbus.SessionBus(mainloop=dbus_mainloop)
     config = Config(conn)
-    testcase = { 'bool': False,
-                 'int': 123,
-                 'double': 123.54,
-                 'string': 'Foobar',
-                 'string_list': ['Foo', 'bar'],
-                 }
+    testcase = {'bool': False,
+                'int': 123,
+                'double': 123.54,
+                'string': 'Foobar',
+                'string_list': ['Foo', 'bar'],
+                }
     for k in testcase:
         config.connect_change('test/' + k, value_changed)
     for k, v in testcase.items():
         getattr(config, 'set_' + k)('test/' + k, v)
     loop.run()
+
 
 if __name__ == '__main__':
     test()

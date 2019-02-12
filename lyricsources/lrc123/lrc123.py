@@ -18,8 +18,10 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from builtins import super
 from future import standard_library
 standard_library.install_aliases()
+
 import http.client
 import logging
 import re
@@ -27,19 +29,20 @@ import re
 import pycurl
 
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
-from osdlyrics.utils import http_download, get_proxy_settings
+from osdlyrics.utils import get_proxy_settings, http_download
 
 HOST = 'www.lrc123.com'
 SEARCH_URL = '/?keyword=%s&field=all'
 RESULT_PATTERN = re.compile(r'<div class="newscont .*?href="/\?field=singer.*?>(.*?)</a>.*?href="/\?field=album.*?>(.*?)</a>.*?href="/\?field=song.*?>(.*?)</a>.*?href="/download/lrc/(.*?)">LRC', re.DOTALL)
 DOWNLOAD_URL_PREFIX = '/download/lrc/'
 
+
 class Lrc123Source(BaseLyricSourcePlugin):
     """ Lyric source from xiami.com
     """
 
     def __init__(self):
-        BaseLyricSourcePlugin.__init__(self, id='lrc123', name='LRC123')
+        super().__init__(id='lrc123', name='LRC123')
 
     def do_search(self, metadata):
         # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
@@ -79,7 +82,7 @@ class Lrc123Source(BaseLyricSourcePlugin):
 
     def do_download(self, downloadinfo):
         # type: (Any) -> bytes
-        status, content = http_download(url=HOST+downloadinfo,
+        status, content = http_download(url=HOST + downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
             raise http.client.HTTPException(status, '')

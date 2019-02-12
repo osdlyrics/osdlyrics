@@ -18,8 +18,10 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from builtins import super
 from future import standard_library
 standard_library.install_aliases()
+
 import logging
 import os
 import os.path
@@ -27,9 +29,9 @@ import re
 import urllib.parse
 import urllib.request
 
+import chardet
 import dbus
 import dbus.service
-import chardet
 
 import osdlyrics
 from osdlyrics.app import App
@@ -48,36 +50,40 @@ DEFAULT_FILE_PATTERNS = [
     '%t-%p',
     '%f',
     '%t',
-    ]
+]
 
 DEFAULT_PATH_PATTERNS = [
     '~/.lyrics',
     '%',
-    ]
+]
 
 SUPPORTED_SCHEMES = [
     'file',
-#    'tag',
+    # 'tag',
     'none',
-    ]
+]
 
 DETECT_CHARSET_GUESS_MIN_LEN = 40
 DETECT_CHARSET_GUESS_MAX_LEN = 100
+
 
 class InvalidUriException(Exception):
     """ Exception of invalid uri.
     """
 
     def __init__(self, uri):
-        Exception.__init__(self, "Invalid URI: %s" % uri)
+        super().__init__("Invalid URI: %s" % uri)
+
 
 class CannotLoadLrcException(Exception):
     def __init__(self, uri):
-        Exception.__init__(self, "Cannot load lrc file from %s" % uri)
+        super().__init__("Cannot load lrc file from %s" % uri)
+
 
 class CannotSaveLrcException(Exception):
     def __init__(self, uri):
-        Exception.__init__(self, "Cannot save lrc file to %s" % uri)
+        super().__init__("Cannot save lrc file to %s" % uri)
+
 
 def metadata_description(metadata):
     if metadata.title is None:
@@ -103,15 +109,9 @@ def decode_by_charset(content):
     # case,chardet may fail to determine what the encoding it is. So we take
     # half of the content of it and try again.
     if not encoding and len(content) > DETECT_CHARSET_GUESS_MIN_LEN:
-        content_half = len(content) // 2
-        if content_half <= DETECT_CHARSET_GUESS_MAX_LEN and \
-                content_half >= DETECT_CHARSET_GUESS_MIN_LEN:
-            slice_end = content_half
-        elif content_half > DETECT_CHARSET_GUESS_MAX_LEN:
-            slice_end = DETECT_CHARSET_GUESS_MAX_LEN
-        else:
-            slice_end = DETECT_CHARSET_GUESS_MIN_LEN
         logging.warning('Failed to detect encoding, try to decode a part of it')
+        content_half = len(content) // 2
+        slice_end = min(max(DETECT_CHARSET_GUESS_MIN_LEN, content_half), DETECT_CHARSET_GUESS_MAX_LEN)
         encoding = chardet.detect(content[:slice_end])['encoding']
         logging.warning('guess encoding from part: ' + encoding)
     if not encoding:
@@ -138,6 +138,7 @@ def is_valid_uri(uri):
             return True
     return False
 
+
 def ensure_uri_scheme(uri):
     # type: (Text) -> Text
     """
@@ -152,6 +153,7 @@ def ensure_uri_scheme(uri):
             uri = osdlyrics.utils.path2uri(uri)
     return uri
 
+
 def load_from_file(urlparts):
     """
     Load the content of file from urlparse.ParseResult
@@ -165,8 +167,9 @@ def load_from_file(urlparts):
     try:
         return open(path, 'rb').read()
     except IOError as e:
-        logging.info("Cannot open file %s to read: %s" % (path, e))
+        logging.info("Cannot open file %s to read: %s", path, e)
         return None
+
 
 def load_from_uri(uri):
     # type: (Text) -> Optional[Text]
@@ -178,7 +181,7 @@ def load_from_uri(uri):
     URI_LOAD_HANDLERS = {
         'file': load_from_file,
         'none': lambda uri: b'',
-        }
+    }
 
     url_parts = urllib.parse.urlparse(uri)
     content = URI_LOAD_HANDLERS[url_parts.scheme](url_parts)
@@ -186,6 +189,7 @@ def load_from_uri(uri):
         return None
     content = decode_by_charset(content).replace('\0', '')
     return content
+
 
 def save_to_file(urlparts, content, create):
     # type: (Any, bytes, bool) -> bool
@@ -218,6 +222,7 @@ def save_to_file(urlparts, content, create):
     file.write(content)
     return True
 
+
 def save_to_uri(uri, content, create=True):
     # type: (Text, bytes, bool) -> bool
     """
@@ -228,10 +233,11 @@ def save_to_uri(uri, content, create=True):
     URI_SAVE_HANDLERS = {
         'file': save_to_file,
         'none': lambda urlparts, content, create: True,
-        }
+    }
 
     url_parts = urllib.parse.urlparse(uri)
     return URI_SAVE_HANDLERS[url_parts.scheme](url_parts, content, create)
+
 
 def update_lrc_offset(content, offset):
     r"""
@@ -256,12 +262,11 @@ def update_lrc_offset(content, offset):
                        offset,
                        content[search_result.end(2):])
 
+
 class LyricsService(dbus.service.Object):
 
     def __init__(self, conn):
-        dbus.service.Object.__init__(self,
-                                     conn=conn,
-                                     object_path=LYRICS_OBJECT_PATH)
+        super().__init__(conn=conn, object_path=LYRICS_OBJECT_PATH)
         self._db = lrcdb.LrcDb()
         self._config = osdlyrics.config.Config(conn)
         self._metadata = Metadata()
@@ -309,14 +314,12 @@ class LyricsService(dbus.service.Object):
         if uri:
             lrc = load_from_uri(uri)
             if lrc is not None:
-                logging.info("LRC for track %s not found in db but found by pattern: %s" % (metadata_description(metadata), uri))
+                logging.info("LRC for track %s not found in db but found by pattern: %s", metadata_description(metadata), uri)
         if lrc is None:
-            logging.info("LRC for track %s not found" %
-                         metadata_description(metadata))
+            logging.info("LRC for track %s not found", metadata_description(metadata))
             return False, '', ''
         else:
-            logging.info("LRC for track %s found: %s" %
-                         (metadata_description(metadata), uri))
+            logging.info("LRC for track %s found: %s", metadata_description(metadata), uri)
             return True, uri, lrc
 
     @dbus.service.method(dbus_interface=LYRICS_INTERFACE,
@@ -384,7 +387,7 @@ class LyricsService(dbus.service.Object):
         for path_pat in path_patterns:
             try:
                 path = expand_path(path_pat, metadata)
-            except:
+            except Exception:
                 continue
             for file_pat in file_patterns:
                 try:
@@ -405,7 +408,7 @@ class LyricsService(dbus.service.Object):
         for path_pat in path_patterns:
             try:
                 path = expand_path(path_pat, metadata)
-            except:
+            except Exception:
                 continue
             for file_pat in file_patterns:
                 try:
@@ -418,17 +421,20 @@ class LyricsService(dbus.service.Object):
         return None
 
     def set_current_metadata(self, metadata):
-        logging.info('Setting current metadata: %s' % metadata)
+        logging.info('Setting current metadata: %s', metadata)
         self._metadata = metadata
+
 
 def doc_test():
     import doctest
     doctest.testmod()
 
+
 def test():
     app = App('Lyrics', False)
-    lyrics_service = LyricsService(app.connection)
+    lyrics_service = LyricsService(app.connection)  # noqa: F841
     app.run()
+
 
 if __name__ == '__main__':
     doc_test()

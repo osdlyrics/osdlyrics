@@ -20,10 +20,8 @@
 
 from future import standard_library
 standard_library.install_aliases()
-from builtins import chr
-from builtins import str
-from builtins import range
-from builtins import object
+from builtins import chr, object, range, str, super
+
 import logging
 import threading
 
@@ -45,7 +43,6 @@ DOWNLOAD_CANCELLED = 1
 DOWNLOAD_FAILED = 2
 
 
-
 def onmainthread(func):
     def decfunc(self, app, *args, **kwargs):
         def timeout_cb():
@@ -58,6 +55,7 @@ def onmainthread(func):
 class SearchResult(object):
     """ Lyrics that match the metadata to be searched.
     """
+
     def __init__(self, sourceid, downloadinfo, title='', artist='', album='', comment=''):
         """
 
@@ -81,12 +79,12 @@ class SearchResult(object):
     def to_dict(self, ):
         """ Convert the result to a dict so that it can be sent with D-Bus.
         """
-        return { 'title': self._title,
-                 'artist': self._artist,
-                 'album': self._album,
-                 'comment': self._comment,
-                 'sourceid': self._sourceid,
-                 'downloadinfo': self._downloadinfo }
+        return {'title': self._title,
+                'artist': self._artist,
+                'album': self._album,
+                'comment': self._comment,
+                'sourceid': self._sourceid,
+                'downloadinfo': self._downloadinfo}
 
 
 class BaseTaskThread(threading.Thread):
@@ -117,7 +115,7 @@ class BaseTaskThread(threading.Thread):
         - `kwargs`: A dictionary of keyword arguments for the target invocation.
           Defaults to `{}`.
         """
-        threading.Thread.__init__(self)
+        super().__init__()
         self._onfinish = onfinish
         self._onerror = onerror
         self._args = args
@@ -158,9 +156,8 @@ class BaseLyricSourcePlugin(DBusObject):
         self._id = id
         self._app = App('LyricSourcePlugin.' + id,
                         watch_daemon=watch_daemon)
-        DBusObject.__init__(self,
-                            conn=self._app.connection,
-                            object_path=LYRIC_SOURCE_PLUGIN_OBJECT_PATH_PREFIX + self._id)
+        super().__init__(conn=self._app.connection,
+                         object_path=LYRIC_SOURCE_PLUGIN_OBJECT_PATH_PREFIX + self._id)
         self._search_count = 0
         self._download_count = 0
         self._search_tasks = {}
@@ -194,7 +191,7 @@ class BaseLyricSourcePlugin(DBusObject):
     def do_searchfailure(self, ticket, e):
         if ticket in self._search_tasks:
             del self._search_tasks[ticket]
-            logging.info('Search fail, %s' % e)
+            logging.info('Search fail, %s', e)
             self.SearchComplete(ticket, SEARCH_FAILED, [])
 
     @dbus.service.method(dbus_interface=LYRIC_SOURCE_PLUGIN_INTERFACE,
@@ -218,7 +215,6 @@ class BaseLyricSourcePlugin(DBusObject):
         if ticket in self._search_tasks:
             del self._search_tasks[ticket]
             self.SearchComplete(ticket, SEARCH_CANCELLED, [])
-
 
     def do_download(self, downloadinfo):
         """
@@ -271,21 +267,20 @@ class BaseLyricSourcePlugin(DBusObject):
             self.DownloadComplete(ticket, DOWNLOAD_CANCELLED, '')
 
     @dbus_property(dbus_interface=LYRIC_SOURCE_PLUGIN_INTERFACE,
-                  type_signature='s')
+                   type_signature='s')
     def Name(self):
         return self._name
 
     @dbus.service.signal(dbus_interface=LYRIC_SOURCE_PLUGIN_INTERFACE,
                          signature='iiaa{sv}')
     def SearchComplete(self, ticket, status, results):
-        logging.debug('search complete: ticket: %d, status: %d' % (ticket, status))
+        logging.debug('search complete: ticket: %d, status: %d', ticket, status)
         pass
-
 
     @dbus.service.signal(dbus_interface=LYRIC_SOURCE_PLUGIN_INTERFACE,
                          signature='iiay')
     def DownloadComplete(self, ticket, status, result):
-        logging.debug('download complete: ticket: %d, status: %d' % (ticket, status), '' if status == DOWNLOAD_SUCCEED else ', result: %s' % result)
+        logging.debug('download complete: ticket: %d, status: %d%s', ticket, status, '' if status == DOWNLOAD_SUCCEED else ', result: %s' % result)
         pass
 
     def run(self):
@@ -318,20 +313,18 @@ class BaseLyricSourcePlugin(DBusObject):
 def test():
     class DummyLyricSourcePlugin(BaseLyricSourcePlugin):
         def __init__(self):
-            BaseLyricSourcePlugin.__init__(self,
-                                           id='dummy',
-                                           watch_daemon=False)
+            super().__init__(id='dummy', watch_daemon=False)
 
         def do_search(self, metadata):
             if metadata.title:
-                logging.info('title: %s' % metadata.title)
+                logging.info('title: %s', metadata.title)
                 results = [SearchResult(title=metadata.title + str(i),
                                         artist=metadata.artist + str(i),
                                         album=metadata.album + str(i),
                                         sourceid=i,
                                         downloadinfo='\n'.join((metadata.title,
-                                                               metadata.artist,
-                                                               metadata.album)))
+                                                                metadata.artist,
+                                                                metadata.album)))
                            for i in range(10)]
                 return results
 
@@ -362,7 +355,7 @@ def test():
         if status == 0:
             downloadinfo = results[0]['downloadinfo']
             source.Download(downloadinfo,
-                            reply_handler=lambda t:download_reply(t, 0),
+                            reply_handler=lambda t: download_reply(t, 0),
                             error_handler=dummy_error)
         del search_tickets[ticket]
         check_quit()
@@ -414,10 +407,10 @@ def test():
                   reply_handler=lambda t: search_reply(t, 0),
                   error_handler=dummy_error)
     source.Search({'foo': 'bar'},
-                  reply_handler=lambda t:search_reply(t, 2),
+                  reply_handler=lambda t: search_reply(t, 2),
                   error_handler=dummy_error)
     source.Download(123,
-                    reply_handler=lambda t:download_reply(t, 2),
+                    reply_handler=lambda t: download_reply(t, 2),
                     error_handler=dummy_error)
     app.run()
 

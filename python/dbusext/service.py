@@ -16,11 +16,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
-#/
+#
 
+from abc import ABCMeta
 import logging
-import xml.etree.ElementTree as xet
 import sys
+import xml.etree.ElementTree as xet
 
 import dbus
 import dbus.exceptions
@@ -29,14 +30,13 @@ import glib
 
 from .property import Property
 
-
 # Use the default encoding in ElementTree.tostring under Python 2, but prefer
 # Unicode under Python 3 to obtain a 'str', not 'bytes' instance.
 # TODO: remove once we have fully migrated to Python 3
 INTROSPECT_ENCODING = 'unicode' if sys.version_info >= (3, 0) else 'us-ascii'
 
 
-class ObjectTypeCls(dbus.service.Object.__class__):
+class ObjectTypeCls(dbus.service.InterfaceType, ABCMeta):
     def __init__(cls, name, bases, dct):
         property_dict = {}
         for k, v in dct.items():
@@ -56,12 +56,15 @@ class ObjectTypeCls(dbus.service.Object.__class__):
         property_table[cls.__module__ + '.' + cls.__name__] = property_dict
         super(ObjectTypeCls, cls).__init__(name, bases, dct)
 
+
 ObjectType = ObjectTypeCls('ObjectType', (dbus.service.Object, ), {})
+
 
 class Object(ObjectType):
     """ DBus object wrapper which provides DBus property support
     """
     # __metaclass__ = ObjectType
+
     def __init__(self, conn=None, object_path=None, bus_name=None):
         """
         Either conn or bus_name is required; object_path is also required.
@@ -132,10 +135,9 @@ class Object(ObjectType):
         """
         prop = getattr(self.__class__, prop_name, None)
         if isinstance(prop, Property) and \
-                (len(iface_name) == 0 or prop.interface == iface_name):
+                (not iface_name or prop.interface == iface_name):
             return getattr(self, prop_name)
         raise dbus.exceptions.DBusException('No property of %s.%s' % (iface_name, prop_name))
-
 
     @dbus.service.method(dbus_interface=dbus.PROPERTIES_IFACE,
                          in_signature='ssv',
@@ -150,7 +152,7 @@ class Object(ObjectType):
         """
         prop = getattr(self.__class__, prop_name, None)
         if isinstance(prop, Property) and \
-                (len(iface_name) == 0 or prop.interface == iface_name):
+                (not iface_name or prop.interface == iface_name):
             prop.dbus_set(self, value)
         else:
             raise dbus.exceptions.DBusException('No property of %s.%s' % (iface_name, prop_name))
@@ -271,6 +273,7 @@ def property(type_signature,
                         fget=fget)
     return dec_handler
 
+
 def _property2element(prop):
     """
     Convert an osdlyrics.dbusext.service.Property object to
@@ -292,11 +295,13 @@ def _property2element(prop):
         elem.append(annotation)
     return elem
 
+
 def test():
     BUS_NAME = 'org.example.test'
     IFACE = 'org.example.test'
     PATH = '/org/example/test'
     DEFAULT_VALUE = 'default value of x'
+
     class TestObj(Object):
         def __init__(self, loop):
             Object.__init__(self, conn=dbus.SessionBus(), object_path=PATH)
@@ -358,12 +363,12 @@ def test():
     def get_all_reply_handler(expected_dict):
         def handler(value):
             for k, v in value.items():
-                if not k in expected_dict:
+                if k not in expected_dict:
                     logging.warning('GetAll: unexpected key %s', k)
                 elif v != expected_dict[k]:
                     logging.warning('GetAll: expected value of key %s is %s but %s got', k, expected_dict[k], v)
             for k in expected_dict:
-                if not k in value:
+                if k not in value:
                     logging.warning('GetAll: missing key %s', k)
             logging.debug('GetAll finished')
         return handler
@@ -428,10 +433,11 @@ def test():
     loop = glib.MainLoop()
     dbus_mainloop = DBusGMainLoop()
     conn = dbus.SessionBus(mainloop=dbus_mainloop)
-    bus_name = dbus.service.BusName(BUS_NAME, conn)
-    testobj = TestObjSub(loop)
+    bus_name = dbus.service.BusName(BUS_NAME, conn)  # noqa: F841
+    testobj = TestObjSub(loop)  # noqa: F841
     glib.timeout_add(100, test_timeout)
     loop.run()
+
 
 if __name__ == '__main__':
     test()

@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-from builtins import str
+from builtins import str, super
 
 import logging
 
@@ -28,16 +28,17 @@ import dbus.types
 from osdlyrics.consts import (DAEMON_MPRIS2_NAME, MPRIS2_OBJECT_PATH,
                               MPRIS2_PLAYER_INTERFACE, MPRIS2_PREFIX)
 from osdlyrics.metadata import Metadata
-from osdlyrics.player_proxy import (
-    BasePlayer, BasePlayerProxy, PlayerInfo, CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
-    CAPS_PREV, CAPS_SEEK, REPEAT_ALL, REPEAT_NONE, REPEAT_TRACK, STATUS_PAUSED,
-    STATUS_PLAYING, STATUS_STOPPED)
+from osdlyrics.player_proxy import (CAPS, REPEAT, STATUS, BasePlayer,
+                                    BasePlayerProxy, PlayerInfo)
 
-
-def player_info_from_name(name):
-    """ Returns a dict representing a player info by the given name
-    """
-    return PlayerInfo(name, icon=name)
+# These constants map flags/enums from MPRIS2-specific values to OSDLyrics values.
+CAPS_MAP = {
+    'CanGoNext': CAPS.NEXT,
+    'CanGoPrevious': CAPS.PREV,
+    'CanPlay': CAPS.PLAY,
+    'CanPause': CAPS.PAUSE,
+    'CanSeek': CAPS.SEEK,
+}
 
 
 class ProxyObject(BasePlayerProxy):
@@ -47,7 +48,7 @@ class ProxyObject(BasePlayerProxy):
     def __init__(self):
         """
         """
-        super(ProxyObject, self).__init__('Mpris2')
+        super().__init__('Mpris2')
 
     def _get_player_from_bus_names(self, names):
         """ Returns list of `PlayerInfo` objects according to names.
@@ -58,9 +59,11 @@ class ProxyObject(BasePlayerProxy):
         Arguments:
         - `names`: list of bus names
         """
-        return [player_info_from_name(name[len(MPRIS2_PREFIX):])
-                for name in names if name.startswith(MPRIS2_PREFIX) and
-                name != DAEMON_MPRIS2_NAME]
+        return [
+            PlayerInfo.from_name(name[len(MPRIS2_PREFIX):])
+            for name in names
+            if name.startswith(MPRIS2_PREFIX) and name != DAEMON_MPRIS2_NAME
+        ]
 
     def do_list_active_players(self):
         return self._get_player_from_bus_names(map(str, self.connection.list_names()))
@@ -79,8 +82,7 @@ class ProxyObject(BasePlayerProxy):
 
 class Mpris2Player(BasePlayer):
     def __init__(self, proxy, player_name):
-        super(Mpris2Player, self).__init__(proxy,
-                                           player_name)
+        super().__init__(proxy, player_name)
         self._properties_changed_signal = None
         self._seeked_signal = None
         self._name_watch = None
@@ -101,11 +103,11 @@ class Mpris2Player(BasePlayer):
                 'Seeked', self._player_seeked)
             self._name_watch = self.connection.watch_name_owner(
                 mpris2_object_path, self._name_lost)
-        except:
+        except Exception:
             self.disconnect()
 
     def _name_lost(self, name):
-        if len(name) > 0:
+        if name:
             return
         self.disconnect()
 
@@ -122,13 +124,13 @@ class Mpris2Player(BasePlayer):
 
     def _player_properties_changed(self, iface, changed, invalidated):
         caps_props = ['CanGoNext', 'CanGoPrevious', 'CanPlay', 'CanPause', 'CanSeek']
-        prop_map = { 'PlaybackStatus': 'status_changed',
-                     'LoopStatus': 'repeat_changed',
-                     'Shuffle': 'shuffle_changed',
-                     'Metadata': 'track_changed',
-                     }
+        prop_map = {'PlaybackStatus': 'status_changed',
+                    'LoopStatus': 'repeat_changed',
+                    'Shuffle': 'shuffle_changed',
+                    'Metadata': 'track_changed',
+                    }
         # status_props = ['PlaybackStatus', 'LoopStatus', 'Shuffle']
-        logging.debug('Status changed: %s' % changed)
+        logging.debug('Status changed: %s', changed)
         for caps in caps_props:
             if caps in changed:
                 self.caps_changed()
@@ -165,44 +167,44 @@ class Mpris2Player(BasePlayer):
 
     def set_repeat(self, repeat):
         try:
-            if repeat == REPEAT_TRACK:
+            if repeat == REPEAT.TRACK:
                 self._player_prop.Set(MPRIS2_PLAYER_INTERFACE, 'LoopStatus',
                                       'Track')
-            elif repeat == REPEAT_ALL:
+            elif repeat == REPEAT.ALL:
                 self._player_prop.Set(MPRIS2_PLAYER_INTERFACE, 'LoopStatus',
                                       'Playlist')
             else:
                 self._player_prop.Set(MPRIS2_PLAYER_INTERFACE, 'LoopStatus',
                                       'None')
-        except:
+        except Exception:
             pass
 
     def get_status(self):
-        playback_dict = {'Playing': STATUS_PLAYING,
-                         'Paused': STATUS_PAUSED,
-                         'Stopped': STATUS_STOPPED}
+        playback_dict = {'Playing': STATUS.PLAYING,
+                         'Paused': STATUS.PAUSED,
+                         'Stopped': STATUS.STOPPED}
         try:
             return playback_dict[self._player_prop.Get(MPRIS2_PLAYER_INTERFACE,
                                                        'PlaybackStatus')]
         except Exception as e:
-            logging.error('Failed to get status: %s' % e)
-            return STATUS_PLAYING
+            logging.error('Failed to get status: %s', e)
+            return STATUS.PLAYING
 
     def get_repeat(self):
-        repeat_dict = {'None': REPEAT_NONE,
-                       'Track': REPEAT_TRACK,
-                       'Playlist': REPEAT_ALL}
+        repeat_dict = {'None': REPEAT.NONE,
+                       'Track': REPEAT.TRACK,
+                       'Playlist': REPEAT.ALL}
         try:
             return repeat_dict[self._player_prop.Get(MPRIS2_PLAYER_INTERFACE,
                                                      'LoopStatus')]
-        except:
-            return REPEAT_NONE
+        except Exception:
+            return REPEAT.NONE
 
     def get_shuffle(self):
         try:
             return bool(self._player_prop.Get(MPRIS2_PLAYER_INTERFACE,
                                               'Shuffle'))
-        except:
+        except Exception:
             return False
 
     def get_metadata(self):
@@ -211,15 +213,9 @@ class Mpris2Player(BasePlayer):
 
     def get_caps(self):
         caps = set()
-        caps_dict = { 'CanGoNext': CAPS_NEXT,
-                      'CanGoPrevious': CAPS_PREV,
-                      'CanPlay': CAPS_PLAY,
-                      'CanPause': CAPS_PAUSE,
-                      'CanSeek': CAPS_SEEK,
-            }
-        for k, v in caps_dict.items():
+        for k, cap in CAPS_MAP.items():
             if self._player_prop.Get(MPRIS2_PLAYER_INTERFACE, k):
-                caps.add(v)
+                caps.add(cap)
         return caps
 
     def set_volume(self, volume):
@@ -234,13 +230,13 @@ class Mpris2Player(BasePlayer):
         self._player.SetPosition(track_id, time_in_mili * 1000)
 
     def get_position(self):
-        return (self._player_prop.Get(MPRIS2_PLAYER_INTERFACE, 'Position') //
-                1000)
+        return self._player_prop.Get(MPRIS2_PLAYER_INTERFACE, 'Position') // 1000
 
 
 def run():
     mpris2 = ProxyObject()
     mpris2.run()
+
 
 if __name__ == '__main__':
     run()

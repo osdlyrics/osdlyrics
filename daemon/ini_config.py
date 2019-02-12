@@ -20,7 +20,8 @@
 
 from future import standard_library
 standard_library.install_aliases()
-from builtins import str
+from builtins import str, super
+
 import configparser
 
 import dbus
@@ -36,11 +37,11 @@ import osdlyrics.utils
 class MalformedKeyError(osdlyrics.errors.BaseError):
     pass
 
+
 class ValueNotExistError(osdlyrics.errors.BaseError):
     def __init__(self, key=''):
-        super(ValueNotExistError, self).__init__(
-            'Value of key %s does not exist' % key
-            )
+        super().__init__('Value of key %s does not exist' % key)
+
 
 class IniConfig(dbus.service.Object):
     """ Implement org.osdlyrics.Config
@@ -49,8 +50,7 @@ class IniConfig(dbus.service.Object):
     def __init__(self,
                  conn,
                  filename=osdlyrics.utils.get_config_path('osdlyrics.conf')):
-        super(IniConfig, self).__init__(conn=conn,
-                                        object_path=CONFIG_OBJECT_PATH)
+        super().__init__(conn=conn, object_path=CONFIG_OBJECT_PATH)
         self._conn = conn
         self._confparser = configparser.RawConfigParser()
         osdlyrics.utils.ensure_path(filename)
@@ -66,8 +66,8 @@ class IniConfig(dbus.service.Object):
             raise MalformedKeyError(
                 '%s is an invalid key. Keys must be in the form '
                 'of "Section/Name"' % key
-                )
-        if len(parts[0]) == 0 or len(parts[1]) == 0:
+            )
+        if not parts[0] or not parts[1]:
             raise MalformedKeyError(
                 'Malformed key "%s". Section or name must not be empty' % key)
         if add_section and not self._confparser.has_section(parts[0]):
@@ -81,7 +81,7 @@ class IniConfig(dbus.service.Object):
         section, name = self._split_key(key)
         try:
             return self._confparser.getboolean(section, name)
-        except:
+        except (configparser.NoSectionError, configparser.NoOptionError):
             raise ValueNotExistError(key)
 
     @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
@@ -91,7 +91,7 @@ class IniConfig(dbus.service.Object):
         section, name = self._split_key(key)
         try:
             return self._confparser.getint(section, name)
-        except:
+        except (configparser.NoSectionError, configparser.NoOptionError):
             raise ValueNotExistError(key)
 
     @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
@@ -101,7 +101,7 @@ class IniConfig(dbus.service.Object):
         section, name = self._split_key(key)
         try:
             return self._confparser.getfloat(section, name)
-        except:
+        except (configparser.NoSectionError, configparser.NoOptionError):
             raise ValueNotExistError(key)
 
     @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
@@ -111,7 +111,7 @@ class IniConfig(dbus.service.Object):
         section, name = self._split_key(key)
         try:
             return self._confparser.get(section, name)
-        except:
+        except (configparser.NoSectionError, configparser.NoOptionError):
             raise ValueNotExistError(key)
 
     @dbus.service.method(dbus_interface=CONFIG_BUS_NAME,
@@ -121,7 +121,7 @@ class IniConfig(dbus.service.Object):
         value = self.GetString(key)
         try:
             return split(value)
-        except:
+        except (configparser.NoSectionError, configparser.NoOptionError):
             raise ValueNotExistError(key)
 
     def _set_value(self, key, value, overwrite=True):
@@ -202,6 +202,7 @@ class IniConfig(dbus.service.Object):
     def ValueChanged(self, changed):
         pass
 
+
 def split(value, sep=';'):
     r"""
     >>> split('')
@@ -231,7 +232,7 @@ def split(value, sep=';'):
         if curr == len(value) or value[curr] == sep:
             if start < curr:
                 item.append(value[start:curr])
-            if curr != len(value) or len(item) > 0:
+            if curr != len(value) or item:
                 ret.append(''.join(item))
             item = []
             start = curr + 1
@@ -243,6 +244,7 @@ def split(value, sep=';'):
                 curr = start
         curr = curr + 1
     return ret
+
 
 def join(values, sep=';'):
     r"""
@@ -259,24 +261,27 @@ def join(values, sep=';'):
     >>> print join([r'on\e', 't;wo'])
     on\\e;t\;wo;
     """
-    if len(values) == 0:
+    if not values:
         return ''
     result = []
     for item in values:
         result.append(item.replace('\\', '\\\\').replace(sep, '\\;'))
     return sep.join(result) + sep
 
+
 def test():
     import doctest
     doctest.testmod()
+
 
 def run():
     app = App('Config')
     if len(sys.argv) > 1:
         ini_conf = IniConfig(app.connection, sys.argv[1])
     else:
-        ini_conf = IniConfig(app.connection)
+        ini_conf = IniConfig(app.connection)  # noqa: F841
     app.run()
+
 
 if __name__ == '__main__':
     import sys
