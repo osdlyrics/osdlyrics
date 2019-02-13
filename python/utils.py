@@ -331,7 +331,7 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
     elif method == 'POST':
         c.setopt(pycurl.POST, 1)
         if len(params) > 0:
-            c.setopt(pycurl.POSTFIELDS, params) #Someone had forgot an 'S'
+            c.setopt(pycurl.POSTFIELDS, params)
             c.setopt(pycurl.POSTFIELDSIZE, len(params))
     url = ensure_utf8(url)
     c.setopt(pycurl.URL, url)

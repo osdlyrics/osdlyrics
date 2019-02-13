@@ -1,5 +1,4 @@
 daemon_PYTHON = \
-	errors.py \
 	ini_config.py \
 	main.py \
 	lrcdb.py \

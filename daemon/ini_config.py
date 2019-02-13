@@ -31,8 +31,7 @@ import osdlyrics.utils
 
 
 class MalformedKeyError(osdlyrics.errors.BaseError):
-    def __init__(self, *args):
-        super(MalformedKeyError, self).__init__(*args)
+    pass
 
 class ValueNotExistError(osdlyrics.errors.BaseError):
     def __init__(self, key=''):

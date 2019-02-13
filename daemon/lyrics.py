@@ -79,10 +79,6 @@ class CannotSaveLrcException(Exception):
     def __init__(self, uri):
         Exception.__init__(self, "Cannot save lrc file to %s" % uri)
 
-class DecodeException(Exception):
-    def __init__(self, msg):
-        Exception.__init__(self, msg)
-
 def metadata_description(metadata):
     if metadata.title is not None:
         if metadata.artist is not None:
@@ -117,8 +113,7 @@ def decode_by_charset(content):
     # case,chardet may fail to determine what the encoding it is. So we take
     # half of the content of it and try again.
     if not encoding and len(content) > DETECT_CHARSET_GUESS_MIN_LEN:
-        content_len = len(content)
-        content_half = content_len / 2
+        content_half = len(content) / 2
         if content_half <= DETECT_CHARSET_GUESS_MAX_LEN and \
                 content_half >= DETECT_CHARSET_GUESS_MIN_LEN:
             slice_end = content_half

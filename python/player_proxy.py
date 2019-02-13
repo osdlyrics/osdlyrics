@@ -35,8 +35,8 @@ class ConnectPlayerError(errors.BaseError):
     """
     Exception raised when BasePlayerProxy.do_connect_player() fails
     """
-    def __init__(self, message):
-        super(ConnectPlayerError, self).__init__(message)
+    pass
+
 
 class BasePlayerProxy(dbus.service.Object):
     """ Base class to create an application to provide player proxy support
@@ -151,8 +151,6 @@ class PlayerInfo(object):
     """
 
     def __init__(self, name, appname='', binname='', cmd='', icon=''):
-        """
-        """
         self._name = name
         self._appname = appname
         self._binname = binname
