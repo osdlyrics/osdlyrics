@@ -18,6 +18,7 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from abc import ABCMeta
 import logging
 import sys
 import xml.etree.ElementTree as xet
@@ -35,7 +36,7 @@ from .property import Property
 INTROSPECT_ENCODING = 'unicode' if sys.version_info >= (3, 0) else 'us-ascii'
 
 
-class ObjectTypeCls(dbus.service.Object.__class__):
+class ObjectTypeCls(dbus.service.InterfaceType, ABCMeta):
     def __init__(cls, name, bases, dct):
         property_dict = {}
         for k, v in dct.items():

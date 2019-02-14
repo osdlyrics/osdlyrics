@@ -21,6 +21,7 @@ from builtins import str, super
 
 import logging
 
+from dbus.exceptions import DBusException
 import dbus.service
 import glib
 
@@ -117,16 +118,18 @@ class PlayerSupport(dbus.service.Object):
         """
         try:
             path = proxy.ConnectPlayer(player_info['name'])
-            player = self.connection.get_object(proxy.bus_name,
-                                                path)
-            self._active_player = {'info': player_info,
-                                   'player': player,
-                                   'proxy': proxy}
-            self._mpris2_player.connect_player(player)
-            self.PlayerConnected(player_info)
-            return True
-        except Exception:
+        except DBusException as e:
+            if e._dbus_error_name != 'org.osdlyrics.Error.ConnectPlayer':
+                logger.exception('BugReport')
             return False
+        player = self.connection.get_object(proxy.bus_name,
+                                            path)
+        self._active_player = {'info': player_info,
+                               'player': player,
+                               'proxy': proxy}
+        self._mpris2_player.connect_player(player)
+        self.PlayerConnected(player_info)
+        return True
 
     def _player_lost_cb(self, player_name):
         if self._active_player and self._active_player['info']['name'] == player_name:

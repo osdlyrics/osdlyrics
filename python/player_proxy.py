@@ -19,7 +19,9 @@
 #
 from __future__ import unicode_literals
 from builtins import object, super
+from future.utils import raise_from
 
+from abc import abstractmethod
 import logging
 
 import dbus
@@ -109,7 +111,12 @@ class BasePlayerProxy(dbus.service.Object):
     def ConnectPlayer(self, player_name):
         if self._connected_players.setdefault(player_name, None):
             return self._connected_players[player_name].object_path
-        player = self.do_connect_player(player_name)
+        try:
+            player = self.do_connect_player(player_name)
+        except TypeError as e:
+            raise_from(errors.BaseError(
+                '%s cannot instantiate Player[%s, %s]' % (type(self).__name__, self.name, player_name)
+            ), e)
         if player and player.connected:
             player.set_disconnect_cb(self._player_lost_cb)
             self._connected_players[player_name] = player
@@ -128,33 +135,30 @@ class BasePlayerProxy(dbus.service.Object):
             del self._connected_players[player.name]
             self.PlayerLost(player.name)
 
+    @abstractmethod
     def do_list_active_players(self):
         """
         Lists supported players that are aready running
 
         Returns an list of `PlayerInfo` objects.
-
-        Derived classes must reimplement this method.
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def do_list_supported_players(self):
         """
         Lists supported players.
 
         Returns an list of `PlayerInfo` objects.
-
-        Derived classes must reimplement this method.
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def do_list_activatable_players(self):
         """
         Lists supported players installed on the system.
 
         Returns an list of `PlayerInfo` objects.
-
-        Derived classes must reimplement this method.
         """
         raise NotImplementedError()
 
@@ -289,14 +293,15 @@ class BasePlayer(DBusObject):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_metadata(self):
+        # type: () -> Metadata
         """
         Return metadata of current track. The return value is of the type Metadata
-
-        Derived classes must reimplement this method.
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_position(self):
         """
         Gets the ellapsed time in current track.
@@ -305,6 +310,7 @@ class BasePlayer(DBusObject):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def get_caps(self):
         """
         Return capablities of the players.
