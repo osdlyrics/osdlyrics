@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+from builtins import super
 
 import datetime
 import logging
@@ -36,7 +37,7 @@ CONNECTION_TIMEOUT = 1000
 
 class HttpPlayerProxy(BasePlayerProxy):
     def __init__(self):
-        super(HttpPlayerProxy, self).__init__('Http')
+        super().__init__('Http')
         self._server = server.HttpServer(('', 7119),
                                          self)
         self._server_watch = glib.io_add_watch(self._server.fileno(),
@@ -91,7 +92,7 @@ class HttpPlayerProxy(BasePlayerProxy):
 class HttpPlayer(BasePlayer):
 
     def __init__(self, proxy, name, caps):
-        super(HttpPlayer, self).__init__(proxy, name)
+        super().__init__(proxy, name)
         self._status = STATUS_STOPPED
         self._caps = caps
         self._metadata = Metadata()

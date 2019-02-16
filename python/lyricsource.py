@@ -20,7 +20,7 @@
 
 from future import standard_library
 standard_library.install_aliases()
-from builtins import chr, object, range, str
+from builtins import chr, object, range, str, super
 
 import logging
 import threading
@@ -115,7 +115,7 @@ class BaseTaskThread(threading.Thread):
         - `kwargs`: A dictionary of keyword arguments for the target invocation.
           Defaults to `{}`.
         """
-        threading.Thread.__init__(self)
+        super().__init__()
         self._onfinish = onfinish
         self._onerror = onerror
         self._args = args
@@ -156,9 +156,8 @@ class BaseLyricSourcePlugin(DBusObject):
         self._id = id
         self._app = App('LyricSourcePlugin.' + id,
                         watch_daemon=watch_daemon)
-        DBusObject.__init__(self,
-                            conn=self._app.connection,
-                            object_path=LYRIC_SOURCE_PLUGIN_OBJECT_PATH_PREFIX + self._id)
+        super().__init__(conn=self._app.connection,
+                         object_path=LYRIC_SOURCE_PLUGIN_OBJECT_PATH_PREFIX + self._id)
         self._search_count = 0
         self._download_count = 0
         self._search_tasks = {}
@@ -314,9 +313,7 @@ class BaseLyricSourcePlugin(DBusObject):
 def test():
     class DummyLyricSourcePlugin(BaseLyricSourcePlugin):
         def __init__(self):
-            BaseLyricSourcePlugin.__init__(self,
-                                           id='dummy',
-                                           watch_daemon=False)
+            super().__init__(id='dummy', watch_daemon=False)
 
         def do_search(self, metadata):
             if metadata.title:

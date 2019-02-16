@@ -20,7 +20,7 @@
 
 from future import standard_library
 standard_library.install_aliases()
-from builtins import str
+from builtins import str, super
 
 import configparser
 
@@ -40,9 +40,7 @@ class MalformedKeyError(osdlyrics.errors.BaseError):
 
 class ValueNotExistError(osdlyrics.errors.BaseError):
     def __init__(self, key=''):
-        super(ValueNotExistError, self).__init__(
-            'Value of key %s does not exist' % key
-        )
+        super().__init__('Value of key %s does not exist' % key)
 
 
 class IniConfig(dbus.service.Object):
@@ -52,8 +50,7 @@ class IniConfig(dbus.service.Object):
     def __init__(self,
                  conn,
                  filename=osdlyrics.utils.get_config_path('osdlyrics.conf')):
-        super(IniConfig, self).__init__(conn=conn,
-                                        object_path=CONFIG_OBJECT_PATH)
+        super().__init__(conn=conn, object_path=CONFIG_OBJECT_PATH)
         self._conn = conn
         self._confparser = configparser.RawConfigParser()
         osdlyrics.utils.ensure_path(filename)

@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-from builtins import str
+from builtins import str, super
 
 from contextlib import contextmanager
 import logging
@@ -65,7 +65,7 @@ class ProxyObject(BasePlayerProxy):
     def __init__(self):
         """
         """
-        super(ProxyObject, self).__init__('Mpris1')
+        super().__init__('Mpris1')
 
     def _get_player_from_bus_names(self, names):
         return [
@@ -91,8 +91,7 @@ class ProxyObject(BasePlayerProxy):
 
 class Mpris1Player(BasePlayer):
     def __init__(self, proxy, player_name):
-        super(Mpris1Player, self).__init__(proxy,
-                                           player_name)
+        super().__init__(proxy, player_name)
         self._signals = []
         self._name_watch = None
         self._status_tuple = None, None, None, None
@@ -127,7 +126,7 @@ class Mpris1Player(BasePlayer):
             self._name_watch.cancel()
             self._name_watch = None
         self._player = None
-        super(Mpris1Player, self).disconnect()
+        super().disconnect()
 
     def next(self):
         self._player.Next()

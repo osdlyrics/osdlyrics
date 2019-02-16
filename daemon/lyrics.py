@@ -18,6 +18,7 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from builtins import super
 from future import standard_library
 standard_library.install_aliases()
 
@@ -71,17 +72,17 @@ class InvalidUriException(Exception):
     """
 
     def __init__(self, uri):
-        Exception.__init__(self, "Invalid URI: %s" % uri)
+        super().__init__("Invalid URI: %s" % uri)
 
 
 class CannotLoadLrcException(Exception):
     def __init__(self, uri):
-        Exception.__init__(self, "Cannot load lrc file from %s" % uri)
+        super().__init__("Cannot load lrc file from %s" % uri)
 
 
 class CannotSaveLrcException(Exception):
     def __init__(self, uri):
-        Exception.__init__(self, "Cannot save lrc file to %s" % uri)
+        super().__init__("Cannot save lrc file to %s" % uri)
 
 
 def metadata_description(metadata):
@@ -265,9 +266,7 @@ def update_lrc_offset(content, offset):
 class LyricsService(dbus.service.Object):
 
     def __init__(self, conn):
-        dbus.service.Object.__init__(self,
-                                     conn=conn,
-                                     object_path=LYRICS_OBJECT_PATH)
+        super().__init__(conn=conn, object_path=LYRICS_OBJECT_PATH)
         self._db = lrcdb.LrcDb()
         self._config = osdlyrics.config.Config(conn)
         self._metadata = Metadata()

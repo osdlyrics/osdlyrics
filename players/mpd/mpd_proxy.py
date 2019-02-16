@@ -21,7 +21,7 @@
 """MPD support for OSD Lyrics. Requires MPD >= 0.16 and mpd-python >= 0.3
 """
 from __future__ import unicode_literals
-from builtins import object
+from builtins import object, super
 
 import logging
 import os
@@ -92,7 +92,7 @@ class Cmds(object):
 
 class MpdProxy(BasePlayerProxy):
     def __init__(self):
-        super(MpdProxy, self).__init__('Mpd')
+        super().__init__('Mpd')
         self._player = None
         self._init_address()
         self._client = None
@@ -301,7 +301,7 @@ class MpdPlayer(BasePlayer):
     }
 
     def __init__(self, proxy, playername):
-        super(MpdPlayer, self).__init__(proxy, playername)
+        super().__init__(proxy, playername)
         self._inited = False
         self._metadata = None
         self._songid = -1

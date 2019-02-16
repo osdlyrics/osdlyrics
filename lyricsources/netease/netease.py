@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
-from builtins import map, str
+from builtins import map, str, super
 
 import gettext
 import http.client
@@ -25,7 +25,7 @@ class NeteaseSource(BaseLyricSourcePlugin):
     """
 
     def __init__(self):
-        BaseLyricSourcePlugin.__init__(self, id='netease', name=_('Netease'))
+        super().__init__(id='netease', name=_('Netease'))
 
     def do_search(self, metadata):
         # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]

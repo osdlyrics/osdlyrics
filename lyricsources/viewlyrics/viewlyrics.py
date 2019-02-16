@@ -20,7 +20,7 @@
 from __future__ import unicode_literals
 from future import standard_library
 standard_library.install_aliases()
-from builtins import bytes
+from builtins import bytes, super
 
 import hashlib
 import http.client
@@ -50,7 +50,7 @@ def normalize_str(s):
 
 class ViewlyricsSource(BaseLyricSourcePlugin):
     def __init__(self):
-        BaseLyricSourcePlugin.__init__(self, id='viewlyrics', name='ViewLyrics')
+        super().__init__(id='viewlyrics', name='ViewLyrics')
 
     def do_search(self, metadata):
         # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]

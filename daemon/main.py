@@ -18,6 +18,7 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 from __future__ import print_function
+from builtins import super
 
 import logging
 
@@ -47,12 +48,12 @@ class InvalidClientNameException(Exception):
         Arguments:
         - `name`: The invalid client bus name
         """
-        Exception.__init__(self, 'Client bus name %s is invalid' % name)
+        super().__init__('Client bus name %s is invalid' % name)
 
 
 class MainApp(App):
     def __init__(self, ):
-        App.__init__(self, 'Daemon', False)
+        super().__init__('Daemon', False)
         self._player = player.PlayerSupport(self.connection)
         self._lyrics = lyrics.LyricsService(self.connection)
         self._connect_metadata_signal()
@@ -97,9 +98,8 @@ class DaemonObject(dbus.service.Object):
     """
 
     def __init__(self, app):
-        dbus.service.Object.__init__(self,
-                                     conn=app.connection,
-                                     object_path=DAEMON_OBJECT_PATH)
+        super().__init__(conn=app.connection,
+                         object_path=DAEMON_OBJECT_PATH)
         self._watch_clients = {}
         self._app = app
 

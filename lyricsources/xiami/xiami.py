@@ -20,7 +20,7 @@
 
 from future import standard_library
 standard_library.install_aliases()
-from builtins import str
+from builtins import str, super
 
 # import urlparse
 import gettext
@@ -51,9 +51,7 @@ class XiamiSource(BaseLyricSourcePlugin):
     """
 
     def __init__(self):
-        BaseLyricSourcePlugin.__init__(self, id='xiami', name=_('Xiami'))
-        self._search = {}
-        self._download = {}
+        super().__init__(id='xiami', name=_('Xiami'))
 
     def do_search(self, metadata):
         # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]

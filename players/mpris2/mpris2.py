@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-from builtins import str
+from builtins import str, super
 
 import logging
 
@@ -42,7 +42,7 @@ class ProxyObject(BasePlayerProxy):
     def __init__(self):
         """
         """
-        super(ProxyObject, self).__init__('Mpris2')
+        super().__init__('Mpris2')
 
     def _get_player_from_bus_names(self, names):
         """ Returns list of `PlayerInfo` objects according to names.
@@ -76,8 +76,7 @@ class ProxyObject(BasePlayerProxy):
 
 class Mpris2Player(BasePlayer):
     def __init__(self, proxy, player_name):
-        super(Mpris2Player, self).__init__(proxy,
-                                           player_name)
+        super().__init__(proxy, player_name)
         self._properties_changed_signal = None
         self._seeked_signal = None
         self._name_watch = None

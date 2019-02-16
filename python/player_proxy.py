@@ -18,7 +18,7 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 from __future__ import unicode_literals
-from builtins import object
+from builtins import object, super
 
 import logging
 
@@ -51,9 +51,8 @@ class BasePlayerProxy(dbus.service.Object):
           `org.osdlyrics.PlayerProxy.` + name
         """
         self._app = App('PlayerProxy.' + name)
-        super(BasePlayerProxy, self).__init__(
-            conn=self._app.connection,
-            object_path=PLAYER_PROXY_OBJECT_PATH_PREFIX + name)
+        super().__init__(conn=self._app.connection,
+                         object_path=PLAYER_PROXY_OBJECT_PATH_PREFIX + name)
         self._name = name
         self._connected_players = {}
 
@@ -242,8 +241,8 @@ class BasePlayer(DBusObject):
         - `name`: The name of the player object
         """
         self._object_path = PLAYER_PROXY_OBJECT_PATH_PREFIX + proxy.name + '/' + name
-        super(BasePlayer, self).__init__(conn=proxy.connection,
-                                         object_path=self._object_path)
+        super().__init__(conn=proxy.connection,
+                         object_path=self._object_path)
         self._name = name
         self._proxy = proxy
         self._disconnect_cb = None

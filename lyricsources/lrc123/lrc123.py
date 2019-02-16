@@ -18,6 +18,7 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from builtins import super
 from future import standard_library
 standard_library.install_aliases()
 
@@ -41,7 +42,7 @@ class Lrc123Source(BaseLyricSourcePlugin):
     """
 
     def __init__(self):
-        BaseLyricSourcePlugin.__init__(self, id='lrc123', name='LRC123')
+        super().__init__(id='lrc123', name='LRC123')
 
     def do_search(self, metadata):
         # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]

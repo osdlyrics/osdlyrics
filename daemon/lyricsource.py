@@ -18,7 +18,7 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from builtins import str
+from builtins import str, super
 
 import logging
 
@@ -57,9 +57,7 @@ class LyricSource(dbus.service.Object):
     """
 
     def __init__(self, conn):
-        dbus.service.Object.__init__(self,
-                                     conn=conn,
-                                     object_path=LYRIC_SOURCE_OBJECT_PATH)
+        super().__init__(conn=conn, object_path=LYRIC_SOURCE_OBJECT_PATH)
         self._sources = {}
         self._search_tasks = {}
         self._n_search_tickets = 0

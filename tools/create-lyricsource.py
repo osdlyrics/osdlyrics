@@ -57,6 +57,7 @@ Exec=@PYTHON@ @pkglibdir@/lyricsources/${name}/${name}.py
 
 PYTHON = r"""# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from builtins import super
 from future import standard_library
 standard_library.install_aliases()
 
@@ -65,7 +66,7 @@ import http.client
 
 class ${capsname}Source(BaseLyricSourcePlugin):
     def __init__(self):
-        BaseLyricSourcePlugin.__init__(self, id='${name}', name='${name}')
+        super().__init__(id='${name}', name='${name}')
 
     def do_search(self, metadata):
         # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]

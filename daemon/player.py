@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-from builtins import str
+from builtins import str, super
 
 import logging
 
@@ -52,9 +52,7 @@ class PlayerSupport(dbus.service.Object):
         Arguments:
          - `conn`: DBus connection of the object
         """
-        dbus.service.Object.__init__(self,
-                                     conn=conn,
-                                     object_path=PLAYER_OBJECT_PATH)
+        super().__init__(conn=conn, object_path=PLAYER_OBJECT_PATH)
         self._active_player = None
         self._player_proxies = {}
         self._connect_player_proxies()
@@ -215,8 +213,7 @@ class PlayerSupport(dbus.service.Object):
 class Mpris2Player(DBusObject):
 
     def __init__(self, conn):
-        super(Mpris2Player, self).__init__(conn=conn,
-                                           object_path=MPRIS2_OBJECT_PATH)
+        super().__init__(conn=conn, object_path=MPRIS2_OBJECT_PATH)
         self._signals = []
         self._player = None
         self._timer = osdlyrics.timer.Timer()
