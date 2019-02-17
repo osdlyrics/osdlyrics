@@ -55,6 +55,12 @@ Exec=@PYTHON@ @pkglibdir@/lyricsources/${name}/${name}.py
 """
 
 PYTHON = r"""# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+
+import http.client
+
 
 class ${capsname}Source(BaseLyricSourcePlugin):
     def __init__(self):
@@ -65,11 +71,12 @@ class ${capsname}Source(BaseLyricSourcePlugin):
         # you can make use of utils.http_download
         #
         # example:
-        status, content = http_download(url='http://foo.bar/foobar'
-                                        params={param1='foo', param2='bar'},
+        status, content = http_download(url='http://foo.bar/foobar',
+                                        params={'param1': 'foo', 'param2': 'bar'},
                                         proxy=get_proxy_settings(config=self.config_proxy))
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status, '')
+            raise http.client.HTTPException(status, '')
+
         # now do something with content
         return [SearchResult(title='title',
                              artist='artist',
@@ -79,11 +86,11 @@ class ${capsname}Source(BaseLyricSourcePlugin):
 
     def do_download(self, downloadinfo):
         # type: (Any) -> bytes
-        # downloadinfo is what you set in SearchResult
+        # `downloadinfo` is what you set in SearchResult
         status, content = http_download(url=downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status, '')
+            raise http.client.HTTPException(status, '')
         return content
 
 

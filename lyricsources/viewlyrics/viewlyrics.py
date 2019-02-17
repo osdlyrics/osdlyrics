@@ -146,7 +146,7 @@ class ViewlyricsSource(BaseLyricSourcePlugin):
 
     def do_download(self, downloadinfo):
         # type: (Any) -> bytes
-        # downloadinfo is what you set in SearchResult
+        # `downloadinfo` is what you set in SearchResult
         status, content = http_download(url=downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
