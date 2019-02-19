@@ -387,17 +387,17 @@ class LyricsService(dbus.service.Object):
         for path_pat in path_patterns:
             try:
                 path = expand_path(path_pat, metadata)
-            except Exception:
+            except osdlyrics.pattern.PatternException:
                 continue
             for file_pat in file_patterns:
                 try:
                     filename = expand_file(file_pat, metadata)
-                    fullpath = os.path.join(path, filename + '.lrc')
-                    uri = osdlyrics.utils.path2uri(fullpath)
-                    if save_to_uri(uri, content):
-                        return uri
                 except osdlyrics.pattern.PatternException:
-                    pass
+                    continue
+                fullpath = os.path.join(path, filename + '.lrc')
+                uri = osdlyrics.utils.path2uri(fullpath)
+                if save_to_uri(uri, content):
+                    return uri
         return ''
 
     def _expand_patterns(self, metadata):
@@ -408,16 +408,17 @@ class LyricsService(dbus.service.Object):
         for path_pat in path_patterns:
             try:
                 path = expand_path(path_pat, metadata)
-            except Exception:
+            except osdlyrics.pattern.PatternException:
+                logger.exception('expand gg')
                 continue
             for file_pat in file_patterns:
                 try:
                     filename = expand_file(file_pat, metadata)
-                    fullpath = os.path.join(path, filename + '.lrc')
-                    if os.path.isfile(fullpath):
-                        return fullpath
                 except osdlyrics.pattern.PatternException:
-                    pass
+                    continue
+                fullpath = os.path.join(path, filename + '.lrc')
+                if os.path.isfile(fullpath):
+                    return fullpath
         return None
 
     def set_current_metadata(self, metadata):

@@ -148,8 +148,6 @@ def expand_path(pattern, metadata):
     >>> from_dict = Metadata.from_dict
     >>> expand_path('%', from_dict({'location': 'file:///tmp/a.lrc'}))
     '/tmp'
-    >>> expand_path('%foo', from_dict({'location': 'file:///tmp/a.lrc'}))
-    '%foo'
     >>> expand_path('/bar', from_dict({}))
     '/bar'
     >>> expand_path('%', from_dict({'Title': 'hello'}))
@@ -163,10 +161,13 @@ def expand_path(pattern, metadata):
             raise PatternException('Location not found in metadata')
         uri = urllib.parse.urlparse(location)
         if uri.scheme != 'file':
-            raise PatternException('Unsupported file scheme %s' % uri.scheme)
+            raise PatternException('Unsupported scheme: %s' % uri.scheme)
         path = urllib.request.url2pathname(uri.path)
         return os.path.dirname(path)
-    return os.path.expanduser(pattern)
+    path = os.path.expanduser(pattern)
+    if not os.path.isabs(path):
+        raise PatternException('Path is not absolute: %s' % path)
+    return path
 
 
 if __name__ == '__main__':
