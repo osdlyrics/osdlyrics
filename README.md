@@ -26,8 +26,20 @@ OSD Lyrics is available for Ubuntu in [our PPA](https://launchpad.net/~osd-lyric
 ### Requirements
 
 On Ubuntu, the following packages need to be installed to compile OSD Lyrics:
-- `libappindicator-dev`
+
+- Python 2.6+/3.4+
 - `libdbus-glib-1-dev`
+- `intltool`
+- `libappindicator-dev` (optional)
+
+### Runtime Dependencies
+
+- Python:
+    - Python 2: python (>= 2.6)
+- Supported players:
+    - MPRIS2
+    - MPRIS
+    - [MPD](https://www.musicpd.org): mpd (>= 0.16.0), python-mpd
 
 ## Cloning repository
 
