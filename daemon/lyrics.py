@@ -154,16 +154,13 @@ def ensure_uri_scheme(uri):
     return uri
 
 
-def load_from_file(urlparts):
+def _load_from_file(urlparts):
     """
     Load the content of file from urlparse.ParseResult
 
     Return the content of the file, or None if error raised.
     """
-    if urlparts.scheme == 'file':
-        path = urllib.request.url2pathname(urlparts.path)
-    else:
-        path = urlparts.path
+    path = urllib.request.url2pathname(urlparts.path)
     try:
         return open(path, 'rb').read()
     except IOError as e:
@@ -179,7 +176,7 @@ def load_from_uri(uri):
     If loaded, return the content. If failed, return None.
     """
     URI_LOAD_HANDLERS = {
-        'file': load_from_file,
+        'file': _load_from_file,
         'none': lambda uri: b'',
     }
 
@@ -191,17 +188,14 @@ def load_from_uri(uri):
     return content
 
 
-def save_to_file(urlparts, content, create):
+def _save_to_file(urlparts, content, create):
     # type: (Any, bytes, bool) -> bool
     """
     Save the content of file to urlparse.ParseResult
 
     Return True if succeeded
     """
-    if urlparts.scheme == 'file':
-        path = urllib.request.url2pathname(urlparts.path)
-    else:
-        path = urlparts.path
+    path = urllib.request.url2pathname(urlparts.path)
     if not create:
         if not os.path.isfile(path):
             logging.warning("Cannot write to file %s: file not exists", path)
@@ -231,7 +225,7 @@ def save_to_uri(uri, content, create=True):
     Return True if succeeded, or False if failed.
     """
     URI_SAVE_HANDLERS = {
-        'file': save_to_file,
+        'file': _save_to_file,
         'none': lambda urlparts, content, create: True,
     }
 
