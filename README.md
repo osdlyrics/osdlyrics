@@ -6,6 +6,8 @@ Show synced lyrics with your favorite media player on Linux.
 
 OSD Lyrics is a desktop application to view lyrics compatible with various media players. It is not a plugin but a standalone program. OSD Lyrics shows lyrics on your desktop, in the style similar to KaraOK. It also provides another displaying style, in which lyrics scroll from bottom to top. OSD Lyrics can download lyrics from the network automatically.
 
+![Screenshot in OSD mode](screenshot.png)
+
 ## License
 
 OSD Lyrics is released under GPL v3. See [LICENSE](LICENSE) for more detail.
