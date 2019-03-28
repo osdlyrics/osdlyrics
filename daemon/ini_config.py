@@ -179,7 +179,8 @@ class IniConfig(dbus.service.Object):
     def save(self, filename=None):
         if filename is None:
             filename = self._filename
-        self._confparser.write(open(filename, 'w'))
+        with open(filename, 'w') as f:
+            self._confparser.write(f)
         if self._save_timer is not None:
             GLib.source_remove(self._save_timer)
             self._save_timer = None

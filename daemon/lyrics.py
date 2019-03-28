@@ -162,7 +162,8 @@ def _load_from_file(urlparts):
     """
     path = urllib.request.url2pathname(urlparts.path)
     try:
-        return open(path, 'rb').read()
+        with open(path, 'rb') as f:
+            return f.read()
     except IOError as e:
         logging.info("Cannot open file %s to read: %s", path, e)
         return None
