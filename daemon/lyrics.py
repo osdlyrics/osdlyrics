@@ -372,7 +372,7 @@ class LyricsService(dbus.service.Object):
         # Remove any existing file association and save the new lyrics content
         # to the configured patterns.
         self._db.delete(metadata)
-        uri = self._save_to_patterns(metadata, content)
+        uri = self._save_to_patterns(metadata, content.rstrip('\0'))
         if uri and metadata_equal(metadata, self._metadata):
             self.CurrentLyricsChanged()
         return uri
