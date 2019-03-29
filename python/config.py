@@ -15,8 +15,10 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+
+from builtins import object
 
 import logging
 
@@ -60,7 +62,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetBool(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -75,7 +77,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetInt(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -90,7 +92,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetBool(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -105,7 +107,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetString(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -120,7 +122,7 @@ class Config(object):
             if default is not None:
                 try:
                     self._proxy.SetStringList(key, default)
-                except:
+                except Exception:
                     pass
                 return default
             raise e
@@ -151,33 +153,33 @@ class Config(object):
 
     def _value_changed_cb(self, name_list):
         for name in name_list:
-            if name in self._signals:
-               for handler in self._signals[name]:
-                   handler(name)
+            for handler in self._signals.get(name, []):
+                handler(name)
+
 
 def test():
     def value_changed(name):
         typename = name.split('/')[1]
-        logging.debug('%s has been changed to %s' % (name,
-                                                     getattr(config, 'get_' + typename)(name)))
+        logging.debug('%s has been changed to %s', name, getattr(config, 'get_' + typename)(name))
 
-    import glib
+    from gi.repository import GLib
     from dbus.mainloop.glib import DBusGMainLoop
-    loop = glib.MainLoop()
+    loop = GLib.MainLoop()
     dbus_mainloop = DBusGMainLoop()
     conn = dbus.SessionBus(mainloop=dbus_mainloop)
     config = Config(conn)
-    testcase = { 'bool': False,
-                 'int': 123,
-                 'double': 123.54,
-                 'string': 'Foobar',
-                 'string_list': ['Foo', 'bar'],
-                 }
-    for k in testcase.keys():
+    testcase = {'bool': False,
+                'int': 123,
+                'double': 123.54,
+                'string': 'Foobar',
+                'string_list': ['Foo', 'bar'],
+                }
+    for k in testcase:
         config.connect_change('test/' + k, value_changed)
     for k, v in testcase.items():
         getattr(config, 'set_' + k)('test/' + k, v)
     loop.run()
+
 
 if __name__ == '__main__':
     test()

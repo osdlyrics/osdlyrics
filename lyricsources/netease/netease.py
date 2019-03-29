@@ -1,8 +1,14 @@
-import httplib
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import map, str, super
+
 import gettext
+import http.client
 import json
+
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
-from osdlyrics.utils import ensure_utf8, http_download, get_proxy_settings
+from osdlyrics.utils import get_proxy_settings, http_download
 
 _ = gettext.gettext
 
@@ -13,36 +19,35 @@ NETEASE_LYRIC_URL = '/api/song/lyric'
 gettext.bindtextdomain('osdlyrics')
 gettext.textdomain('osdlyrics')
 
+
 class NeteaseSource(BaseLyricSourcePlugin):
     """ Lyric source from music.163.com
     """
 
     def __init__(self):
-        """
-        """
-
-        BaseLyricSourcePlugin.__init__(self, id='netease', name=_('Netease'))
+        super().__init__(id='netease', name=_('Netease'))
 
     def do_search(self, metadata):
+        # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
         keys = []
         if metadata.title:
             keys.append(metadata.title)
         if metadata.artist:
             keys.append(metadata.artist)
-        urlkey = ensure_utf8('+'.join(keys)).replace(' ', '+')
         url = NETEASE_HOST + NETEASE_SEARCH_URL
+        urlkey = '+'.join(keys).replace(' ', '+')
         params = 's=%s&type=1' % urlkey
 
         status, content = http_download(url=url,
                                         method='POST',
-                                        params=params,
+                                        params=params.encode('utf-8'),
                                         proxy=get_proxy_settings(self.config_proxy))
 
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status, '')
+            raise http.client.HTTPException(status, '')
 
         def map_func(song):
-            if len(song['artists']) > 0:
+            if song['artists']:
                 artist_name = song['artists'][0]['name']
             else:
                 artist_name = ''
@@ -53,25 +58,24 @@ class NeteaseSource(BaseLyricSourcePlugin):
                                 sourceid=self.id,
                                 downloadinfo=url)
 
-        parsed = json.loads(content)
+        parsed = json.loads(content.decode('utf-8'))
         result = list(map(map_func, parsed['result']['songs']))
 
         return result
 
     def do_download(self, downloadinfo):
-        if not isinstance(downloadinfo, str) and \
-                not isinstance(downloadinfo, unicode):
-            raise TypeError('Expect the downloadinfo as a string of url, but got type ',
-                            type(downloadinfo))
-
+        # type: (Any) -> bytes
         status, content = http_download(url=downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status)
+            raise http.client.HTTPException(status)
 
-        parsed = json.loads(content)
+        parsed = json.loads(content.decode('utf-8'))
+        if 'nolyric' in parsed:
+            raise ValueError('This item has no lyrics.')
         lyric = parsed['lrc']['lyric']
-        return lyric
+        return lyric.encode('utf-8')
+
 
 if __name__ == '__main__':
     netease = NeteaseSource()

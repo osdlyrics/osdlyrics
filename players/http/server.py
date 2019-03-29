@@ -15,30 +15,33 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import BaseHTTPServer
+from future import standard_library
+standard_library.install_aliases()
+
+import http.server
 import json
 import logging
-import urlparse
+import urllib.parse
 
 from osdlyrics.metadata import Metadata
-from osdlyrics.player_proxy import (CAPS_NEXT, CAPS_PAUSE, CAPS_PLAY,
-    CAPS_PREV, CAPS_SEEK, STATUS_PAUSED, STATUS_PLAYING, STATUS_STOPPED)
+from osdlyrics.player_proxy import CAPS, STATUS
 
 from error import BadRequestError, HttpError, NotFoundError
 from validator import (param_enum, param_int, param_set, param_str,
                        validate_params)
 
-PARAM_STATUS = param_enum({'playing': STATUS_PLAYING,
-                           'paused': STATUS_PAUSED,
-                           'stopped': STATUS_STOPPED})
-PARAM_CAPS = param_set({'play': CAPS_PLAY,
-                        'pause': CAPS_PAUSE,
-                        'next': CAPS_NEXT,
-                        'prev': CAPS_PREV,
-                        'seek': CAPS_SEEK})
+PARAM_STATUS = param_enum({'playing': STATUS.PLAYING,
+                           'paused': STATUS.PAUSED,
+                           'stopped': STATUS.STOPPED})
+PARAM_CAPS = param_set({'play': CAPS.PLAY,
+                        'pause': CAPS.PAUSE,
+                        'next': CAPS.NEXT,
+                        'prev': CAPS.PREV,
+                        'seek': CAPS.SEEK})
+
 
 def parse_query(query):
     """ Parse query strings in GET or POST to a dict
@@ -47,23 +50,24 @@ def parse_query(query):
     values as the query values. If a query name does not have a value, the
     value to the key is True. If more than one value assigned to the query name,
     any one may be assigned to the key.
-    
+
     Arguments:
     - `query`: A string like 'query1=value&query2=value'
     """
-    result = urlparse.parse_qs(query)
+    result = urllib.parse.parse_qs(query)
     ret = {}
     for k, v in result.items():
-        if len(v) == 0:
-            ret[k] = True
-        else:
+        if v:
             ret[k] = v[0]
+        else:
+            ret[k] = True
     return ret
 
-class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+
+class RequestHandler(http.server.BaseHTTPRequestHandler):
     """ Handles HTTP request
     """
-    
+
     server_version = 'OsdLyricsHttp/1.0'
 
     def _send_content(self, content):
@@ -75,7 +79,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         self.send_error(error.code, error.message)
 
     def _processquery(self, params):
-        url = urlparse.urlparse(self.path)
+        url = urllib.parse.urlparse(self.path)
         cmd = url.path[1:]
         if hasattr(self, 'do_' + cmd):
             try:
@@ -87,7 +91,7 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             self._send_error(NotFoundError('Invalid request: %s' % cmd))
 
     def do_GET(self):
-        url = urlparse.urlparse(self.path)
+        url = urllib.parse.urlparse(self.path)
         params = parse_query(url.query)
         self._processquery(params)
 
@@ -147,24 +151,24 @@ class RequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def get_player(self, name):
         try:
             return self.server.player_proxy.get_player(name)
-        except:
+        except Exception:
             raise BadRequestError('Invalid player id: %s' % name)
-        
 
-class HttpServer(BaseHTTPServer.HTTPServer):
+
+class HttpServer(http.server.HTTPServer):
     """
     Lyrics Http server
     """
-    
+
     def __init__(self, server_address, player_proxy):
         """
-        
+
         Arguments:
         - `server_address`:
         """
-        BaseHTTPServer.HTTPServer.__init__(self,
-                                           server_address,
-                                           RequestHandler)
+        http.server.HTTPServer.__init__(self,
+                                        server_address,
+                                        RequestHandler)
         self._player_conter = 1
         self._connected_players = {}
         self._player_proxy = player_proxy
@@ -172,4 +176,3 @@ class HttpServer(BaseHTTPServer.HTTPServer):
     @property
     def player_proxy(self):
         return self._player_proxy
-        

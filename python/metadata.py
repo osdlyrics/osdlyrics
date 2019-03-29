@@ -15,15 +15,18 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+from __future__ import unicode_literals
+from builtins import object
 
 import logging
 import re
 
 import dbus
 
-from . import utils
+from .consts import METADATA_ALBUM, METADATA_ARTIST, METADATA_TITLE
+
 
 class Metadata(object):
     """
@@ -74,7 +77,7 @@ class Metadata(object):
         - `arturl`: (string) The URI of the picture of the cover of the album
         - `tracknum`: (int) The number of the track
         - `location`: (string) The URI of the file
-        - `length`: (int) The duration of the track
+        - `length`: (int) The duration of the track in milliseconds.
         - `extra`: (dict) A dict that is intend to store additional properties
                    provided by MPRIS1 or MPRIS2 DBus dicts. The MPRIS1-related
                    values will be set in the dict returned by `to_mpris1`. The
@@ -89,6 +92,23 @@ class Metadata(object):
         self.length = length
         self._extra = extra
 
+    def __eq__(self, other):
+        """
+        Two metadatas are equal if:
+        - The locations are not empty and are equal, or
+        - The titles, artists and albums are equal.
+
+        See also: src/ol_metadata.c:ol_metadata_equal, thougn they aren't consistent.
+        """
+        if self is other:
+            return True
+        if self.location == other.location and self.location != '':
+            return True
+        for key in [METADATA_TITLE, METADATA_ARTIST, METADATA_ALBUM]:
+            if getattr(self, key) != getattr(other, key):
+                return False
+        return True
+
     def to_mpris1(self):
         """
         Converts the metadata to mpris1 dict
@@ -96,14 +116,14 @@ class Metadata(object):
         ret = dbus.Dictionary(signature='sv')
         for k in ['title', 'artist', 'album', 'arturl', 'location']:
             if getattr(self, k) is not None:
-                ret[k] = dbus.String(utils.ensure_unicode(getattr(self, k)))
+                ret[k] = dbus.String(getattr(self, k))
         if self.tracknum >= 0:
             ret['tracknumber'] = dbus.String(self.tracknum)
         if self.length >= 0:
-            ret['time'] = dbus.UInt32(self.length / 1000)
+            ret['time'] = dbus.UInt32(self.length // 1000)
             ret['mtime'] = dbus.UInt32(self.length)
         for k, v in self._extra.items():
-            if k in Metadata.MPRIS1_KEYS and k not in ret:
+            if k in self.MPRIS1_KEYS and k not in ret:
                 ret[k] = v
         return ret
 
@@ -122,41 +142,41 @@ class Metadata(object):
         ...                       'custom value': 'yoooooo',
         ...                       })
         >>> dict = mt.to_mpris2()
-        >>> print dict['xesam:title']
+        >>> print(dict['xesam:title'])
         Title
-        >>> print dict['xesam:artist']
-        [dbus.String(u'Artist1'), dbus.String(u'Artist2'), dbus.String(u'Artist3')]
-        >>> print dict['xesam:url']
+        >>> print(dict['xesam:artist'])
+        [dbus.String('Artist1'), dbus.String('Artist2'), dbus.String('Artist3')]
+        >>> print(dict['xesam:url'])
         file:///path/to/file
-        >>> print dict['mpris:artUrl']
+        >>> print(dict['mpris:artUrl'])
         file:///art/url
-        >>> print dict['mpris:length']
+        >>> print(dict['mpris:length'])
         123
-        >>> print dict['xesam:trackNumber']
+        >>> print(dict['xesam:trackNumber'])
         456
-        >>> print dict['xesam:userRating']
+        >>> print(dict['xesam:userRating'])
         1.0
         >>> 'custom value' in dict
         False
         >>> mt2 = Metadata.from_dict(dict)
-        >>> print mt2.title
+        >>> print(mt2.title)
         Title
-        >>> print mt2.artist
+        >>> print(mt2.artist)
         Artist1, Artist2, Artist3
-        >>> print mt2.album
+        >>> print(mt2.album)
         Album
-        >>> print mt2.location
+        >>> print(mt2.location)
         file:///path/to/file
         """
         ret = dbus.Dictionary(signature='sv')
-        mpris2map = { 'title': 'xesam:title',
-                      'album': 'xesam:album',
-                      'arturl': 'mpris:artUrl',
-                      'location': 'xesam:url',
-                      }
+        mpris2map = {'title': 'xesam:title',
+                     'album': 'xesam:album',
+                     'arturl': 'mpris:artUrl',
+                     'location': 'xesam:url',
+                     }
         for k in ['title', 'album', 'arturl', 'location']:
             if getattr(self, k) is not None:
-                ret[mpris2map[k]] = dbus.String(utils.ensure_unicode(getattr(self, k)))
+                ret[mpris2map[k]] = dbus.String(getattr(self, k))
         if self.artist is not None:
             ret['xesam:artist'] = [dbus.String(v.strip()) for v in self.artist.split(',')]
         if self.length >= 0:
@@ -164,12 +184,12 @@ class Metadata(object):
         if self.tracknum >= 0:
             ret['xesam:trackNumber'] = dbus.Int32(self.tracknum)
         for k, v in self._extra.items():
-            if k in Metadata.MPRIS2_KEYS and k not in ret:
+            if k in self.MPRIS2_KEYS and k not in ret:
                 ret[k] = v
         return ret
 
-    @staticmethod
-    def from_mpris2(mpris2_dict):
+    @classmethod
+    def from_mpris2(cls, mpris2_dict):
         """
         Create a Metadata object from mpris2 metadata dict
         """
@@ -190,12 +210,11 @@ class Metadata(object):
             kargs['tracknum'] = int(mpris2_dict['xesam:trackNumber'])
         if 'mpris:length' in mpris2_dict:
             kargs['length'] = int(mpris2_dict['mpris:length'])
-        ret = Metadata(**kargs)
-        ret._extra = mpris2_dict
-        return ret
+        kargs['extra'] = mpris2_dict
+        return cls(**kargs)
 
-    @staticmethod
-    def from_dict(dbusdict):
+    @classmethod
+    def from_dict(cls, dbusdict):
         """
         Create a Metadata object from a D-Bus dict object.
 
@@ -205,7 +224,7 @@ class Metadata(object):
         >>> title = 'Title'
         >>> artist = 'Artist'
         >>> arturl = 'file:///art/url'
-        >>> location = 'file///location'
+        >>> location = 'file:///location'
         >>> tracknumber = 42
         >>> md1 = Metadata.from_dict({'title': title,
         ...                           'artist': artist,
@@ -280,7 +299,7 @@ class Metadata(object):
             for dict_key in v:
                 if dict_key in dbusdict:
                     kargs[k] = dbusdict[dict_key]
-                    break;
+                    break
         # artist
         for k, v in string_list_dict.items():
             if k not in kargs and v in dbusdict:
@@ -294,7 +313,7 @@ class Metadata(object):
                 kargs['tracknum'] = tracknumber
             else:
                 if not re.match(r'\d+(/\d+)?', tracknumber):
-                    logging.warning('Malfromed tracknumber: %s' % tracknumber)
+                    logging.warning('Malfromed tracknumber: %s', tracknumber)
                 else:
                     kargs['tracknum'] = int(dbusdict['tracknumber'].split('/')[0])
         if 'tracknum' not in kargs and 'xesam:trackNumber' in dbusdict:
@@ -304,17 +323,17 @@ class Metadata(object):
         if 'mtime' in dbusdict:
             kargs['length'] = dbusdict['mtime']
         elif 'mpris:length' in dbusdict:
-            kargs['length'] = int(dbusdict['mpris:length'])
+            kargs['length'] = dbusdict['mpris:length'] // 1000
         elif 'time' in dbusdict:
             kargs['length'] = dbusdict['time'] * 1000
-        ret = Metadata(**kargs)
-        ret._extra = dbusdict
-        return ret
+        kargs['extra'] = dbusdict
+        return cls(**kargs)
 
     def __str__(self):
         attrs = ['title', 'artist', 'album', 'location', 'length']
         attr_value = ['  %s: %s' % (key, getattr(self, key)) for key in attrs]
         return 'metadata:\n' + '\n'.join(attr_value)
+
 
 if __name__ == '__main__':
     import doctest

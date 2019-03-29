@@ -15,8 +15,10 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+
+from builtins import object, str
 
 import dbus.exceptions
 
@@ -55,7 +57,7 @@ class Property(object):
         self._fget = fget
         self.__name__ = name
         self._dbusset = dbus_set
-        if not emit_change in [True, False, 'invalidates']:
+        if emit_change not in [True, False, 'invalidates']:
             raise ValueError('Value of emit_change must be one of True, False, or \'invalidates\'')
         self._emit_change = emit_change
         self._readable = readable
@@ -122,7 +124,7 @@ class Property(object):
         else:
             changed = False
         if changed and getattr(self, '__name__', None) and getattr(obj, '_property_set', None):
-            obj._property_set(self.__name__, self._emit_change == True)
+            obj._property_set(self.__name__, self._emit_change is True)
 
     def setter(self, fset):
         """
@@ -199,7 +201,7 @@ DBUS_TYPE_MAP = {
     's': dbus.String,
     'o': dbus.ObjectPath,
     'g': dbus.Signature,
-    }
+}
 
 
 def wrap_dbus_type(signature, value):

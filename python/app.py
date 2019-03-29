@@ -15,8 +15,10 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+
+from builtins import object
 
 from optparse import OptionParser
 
@@ -24,21 +26,21 @@ import dbus
 import dbus.mainloop.glib
 from dbus.mainloop.glib import DBusGMainLoop
 import dbus.service
-import glib
-import gobject
+from gi.repository import GLib
 
 from .consts import DAEMON_BUS_NAME
 
 APP_BUS_PREFIX = 'org.osdlyrics.'
 
 
-gobject.threads_init()
 dbus.mainloop.glib.threads_init()
+
 
 class AlreadyRunningException(Exception):
     """ Raised when a process with given bus name exists.
     """
     pass
+
 
 class App(object):
     """ Basic class to create a component application for OSD Lyrics.
@@ -71,7 +73,7 @@ class App(object):
         self._name = name
         self._namewatch = None
         self._watch_daemon = watch_daemon
-        self._loop = glib.MainLoop()
+        self._loop = GLib.MainLoop()
         self._conn = dbus.SessionBus(mainloop=DBusGMainLoop())
         self._bus_names = []
         try:
@@ -93,17 +95,17 @@ class App(object):
                           help=('A well-known bus name on DBus. Exit when the'
                                 ' name disappears. If set to empty string,'
                                 ' this player proxy will not exit.'))
-        (options, args) = parser.parse_args()
+        options, args = parser.parse_args()
         if self._watch_daemon:
             self._watch_daemon_bus(options.watch_daemon)
 
     def _watch_daemon_bus(self, name):
-        if len(name) > 0:
+        if name:
             self._namewatch = self._conn.watch_name_owner(name,
                                                           self._daemon_name_changed)
 
     def _daemon_name_changed(self, name):
-        if len(name) == 0:
+        if not name:
             self._loop.quit()
             if (self._namewatch is not None):
                 self._namewatch.cancel()
@@ -135,12 +137,10 @@ class App(object):
 
         This is useful for notifying a thread is finished.
         """
-        def timeout_func():
+        def timeout_func(*user_data):
             target(*args, **kwargs)
-            return False
-        source = glib.Timeout(0)
-        source.set_callback(timeout_func)
-        source.attach(self._loop.get_context())
+            return GLib.SOURCE_REMOVE
+        GLib.timeout_add(0, timeout_func)
 
     def quit(self):
         """Quits the main loop"""

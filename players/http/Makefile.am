@@ -1,5 +1,5 @@
 http_PYTHON = \
-	http.py \
+	http-player.py \
 	server.py \
 	validator.py \
 	error.py \

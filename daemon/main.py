@@ -15,20 +15,22 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+from __future__ import print_function
+from builtins import super
 
 import logging
 
 import dbus
 
+from osdlyrics import PACKAGE_VERSION
 from osdlyrics.app import AlreadyRunningException, App
 from osdlyrics.consts import (CONFIG_BUS_NAME, DAEMON_BUS_NAME,
                               DAEMON_INTERFACE, DAEMON_MPRIS2_NAME,
                               DAEMON_OBJECT_PATH, MPRIS2_OBJECT_PATH)
 from osdlyrics.metadata import Metadata
 
-import config
 import lyrics
 import lyricsource
 import player
@@ -46,12 +48,12 @@ class InvalidClientNameException(Exception):
         Arguments:
         - `name`: The invalid client bus name
         """
-        Exception.__init__(self, 'Client bus name %s is invalid' % name)
+        super().__init__('Client bus name %s is invalid' % name)
 
 
 class MainApp(App):
     def __init__(self, ):
-        App.__init__(self, 'Daemon', False)
+        super().__init__('Daemon', False)
         self._player = player.PlayerSupport(self.connection)
         self._lyrics = lyrics.LyricsService(self.connection)
         self._connect_metadata_signal()
@@ -71,7 +73,7 @@ class MainApp(App):
     def _activate_config(self, ):
         try:
             self.connection.activate_name_owner(CONFIG_BUS_NAME)
-        except:
+        except Exception:
             logging.error("Cannot activate config service")
 
     def _player_properties_changed(self, iface, changed, invalidated):
@@ -96,9 +98,8 @@ class DaemonObject(dbus.service.Object):
     """
 
     def __init__(self, app):
-        dbus.service.Object.__init__(self,
-                                     conn=app.connection,
-                                     object_path=DAEMON_OBJECT_PATH)
+        super().__init__(conn=app.connection,
+                         object_path=DAEMON_OBJECT_PATH)
         self._watch_clients = {}
         self._app = app
 
@@ -106,7 +107,7 @@ class DaemonObject(dbus.service.Object):
                          in_signature='s',
                          out_signature='')
     def Hello(self, client_bus_name):
-        logging.info('A new client connected: %s' % client_bus_name)
+        logging.info('A new client connected: %s', client_bus_name)
         if is_valid_client_bus_name(client_bus_name):
             if client_bus_name not in self._watch_clients:
                 self._watch_clients[client_bus_name] = \
@@ -121,7 +122,7 @@ class DaemonObject(dbus.service.Object):
                          in_signature='',
                          out_signature='s')
     def GetVersion(self):
-        return config.PACKAGE_VERSION
+        return PACKAGE_VERSION
 
     @dbus.service.method(dbus_interface=DAEMON_INTERFACE,
                          in_signature='',
@@ -131,11 +132,11 @@ class DaemonObject(dbus.service.Object):
 
     def _client_owner_changed(self, name, owner):
         if owner == '':
-            logging.info('Client %s disconnected' % name)
+            logging.info('Client %s disconnected', name)
             if name in self._watch_clients:
                 self._watch_clients[name].cancel()
                 del self._watch_clients[name]
-            if len(self._watch_clients) == 0:
+            if not self._watch_clients:
                 logging.info('All client disconnected, quit the daemon')
                 self._app.quit()
 

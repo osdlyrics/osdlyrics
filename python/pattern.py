@@ -15,14 +15,19 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 
 import os.path
-import urlparse
+import urllib.parse
+import urllib.request
 
 from .errors import PatternException
-from .utils import url2path
+
 
 def expand_file(pattern, metadata):
     """
@@ -43,16 +48,18 @@ def expand_file(pattern, metadata):
     If the pattern cannot be expand, raise an PatternException. Otherwise
     return the expended pattern.
 
-    >>> metadata = {'artist': 'Foo',
+    >>> from osdlyrics.metadata import Metadata
+    >>> from_dict = Metadata.from_dict
+    >>> metadata = from_dict({'artist': 'Foo',
     ... 'title': 'Bar',
     ... 'tracknumber': '1',
     ... 'album': 'Album',
-    ... 'location': 'file:///%E6%AD%8C%E6%9B%B2/%E7%9A%84/%E5%9C%B0%E5%9D%80.mp3'}
+    ... 'location': 'file:///%E6%AD%8C%E6%9B%B2/%E7%9A%84/%E5%9C%B0%E5%9D%80.mp3'})
     >>> expand_file('%p - %t', metadata)
     'Foo - Bar'
     >>> expand_file('foobar', metadata)
     'foobar'
-    >>> print expand_file('name is %f :)', metadata)
+    >>> print(expand_file('name is %f :)', metadata))
     name is 地址 :)
     >>> expand_file('%something else', metadata)
     '%something else'
@@ -62,10 +69,10 @@ def expand_file(pattern, metadata):
     '%%'
     >>> expand_file('%n - %a:%p,%t', metadata)
     '1 - Album:Foo,Bar'
-    >>> expand_file('%t', {})
+    >>> expand_file('%t', from_dict({}))
     Traceback (most recent call last):
         ...
-    PatternException: 'title not in metadata'
+    osdlyrics.errors.PatternException: title not in metadata
     """
     keys = {'t': 'title',
             'p': 'artist',
@@ -88,13 +95,13 @@ def expand_file(pattern, metadata):
                     location = metadata.location
                     if not location:
                         raise PatternException('Location not found in metadata')
-                    uri = urlparse.urlparse(location)
-                    if uri.scheme != '' and not uri.scheme in ['file']:
-                        raise PatternException('Unsupported file scheme %s' % uri.scheme)
+                    uri = urllib.parse.urlparse(location)
                     if uri.scheme == '':
                         path = uri.path
+                    elif uri.scheme == 'file':
+                        path = urllib.request.url2pathname(uri.path)
                     else:
-                        path = url2path(uri)
+                        raise PatternException('Unsupported file scheme %s' % uri.scheme)
                     basename = os.path.basename(path)
                     root, ext = os.path.splitext(basename)
                     has_tag = True
@@ -103,6 +110,8 @@ def expand_file(pattern, metadata):
                     value = getattr(metadata, keys[tag])
                     if not value:
                         raise PatternException('%s not in metadata' % keys[tag])
+                    if not isinstance(value, str):
+                        value = str(value)
                     has_tag = True
                     parts.append(value)
             if has_tag:
@@ -114,6 +123,7 @@ def expand_file(pattern, metadata):
             parts.append(pattern[start:])
             break
     return ''.join(parts)
+
 
 def expand_path(pattern, metadata):
     """
@@ -134,27 +144,31 @@ def expand_path(pattern, metadata):
     return the expended pattern.
 
 
-    >>> expand_path('%', {'location': 'file:///tmp/a.lrc'})
+    >>> from osdlyrics.metadata import Metadata
+    >>> from_dict = Metadata.from_dict
+    >>> expand_path('%', from_dict({'location': 'file:///tmp/a.lrc'}))
     '/tmp'
-    >>> expand_path('%foo', {'location': 'file:///tmp/a.lrc'})
-    '%foo'
-    >>> expand_path('/bar', {})
+    >>> expand_path('/bar', from_dict({}))
     '/bar'
-    >>> expand_path('%', {'Title': 'hello'})
+    >>> expand_path('%', from_dict({'Title': 'hello'}))
     Traceback (most recent call last):
         ...
-    PatternException: 'Location not found in metadata'
+    osdlyrics.errors.PatternException: Location not found in metadata
     """
     if pattern == '%':
         location = metadata.location
         if not location:
             raise PatternException('Location not found in metadata')
-        uri = urlparse.urlparse(location)
-        if not uri.scheme in ['file']:
-            raise PatternException('Unsupported file scheme %s' % uri.scheme)
-        path = url2path(uri)
+        uri = urllib.parse.urlparse(location)
+        if uri.scheme != 'file':
+            raise PatternException('Unsupported scheme: %s' % uri.scheme)
+        path = urllib.request.url2pathname(uri.path)
         return os.path.dirname(path)
-    return os.path.expanduser(pattern)
+    path = os.path.expanduser(pattern)
+    if not os.path.isabs(path):
+        raise PatternException('Path is not absolute: %s' % path)
+    return path
+
 
 if __name__ == '__main__':
     import doctest

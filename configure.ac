@@ -27,7 +27,7 @@ AC_PROG_CXX
 AC_PROG_MAKE_SET
 AM_PROG_CC_C_O
 AC_PROG_RANLIB
-AM_PATH_PYTHON([2.5])
+AM_PATH_PYTHON([2.6])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -154,7 +154,7 @@ AC_CONFIG_FILES([
         src/tests/Makefile
         data/Makefile
         daemon/Makefile
-        daemon/config.py
+        python/__init__.py
         players/Makefile
         players/mpris1/Makefile
         players/mpris2/Makefile

@@ -15,24 +15,24 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+from builtins import str, super
 
 import logging
 
+from dbus.exceptions import DBusException
 import dbus.service
-import glib
+from gi.repository import GLib
 
-import osdlyrics
+from osdlyrics import PROGRAM_NAME
 from osdlyrics.app import App
-from osdlyrics.consts import (MPRIS2_PLAYER_INTERFACE, MPRIS2_OBJECT_PATH,
+from osdlyrics.consts import (MPRIS2_OBJECT_PATH, MPRIS2_PLAYER_INTERFACE,
                               PLAYER_PROXY_INTERFACE,
                               PLAYER_PROXY_OBJECT_PATH_PREFIX)
 from osdlyrics.dbusext.service import (Object as DBusObject,
                                        property as dbus_property)
 import osdlyrics.timer
-
-import config
 
 MPRIS2_ROOT_INTERFACE = 'org.mpris.MediaPlayer2'
 PLAYER_INTERFACE = 'org.osdlyrics.Player'
@@ -51,9 +51,7 @@ class PlayerSupport(dbus.service.Object):
         Arguments:
          - `conn`: DBus connection of the object
         """
-        dbus.service.Object.__init__(self,
-                                     conn=conn,
-                                     object_path=PLAYER_OBJECT_PATH)
+        super().__init__(conn=conn, object_path=PLAYER_OBJECT_PATH)
         self._active_player = None
         self._player_proxies = {}
         self._connect_player_proxies()
@@ -61,8 +59,8 @@ class PlayerSupport(dbus.service.Object):
         self._mpris2_player = Mpris2Player(conn)
 
     def _start_detect_player(self):
-        self._detect_timer = glib.timeout_add(self.DETECT_PLAYER_TIMEOUT,
-                                              lambda : not self._detect_player())
+        self._detect_timer = GLib.timeout_add(self.DETECT_PLAYER_TIMEOUT,
+                                              lambda: not self._detect_player())
 
     def _detect_player(self):
         """
@@ -81,10 +79,10 @@ class PlayerSupport(dbus.service.Object):
                         break
                 if detected:
                     break
-            except:
+            except Exception:
                 pass
         if detected and self._detect_timer:
-            glib.source_remove(self._detect_timer)
+            GLib.source_remove(self._detect_timer)
             self._detect_timer = None
         return detected
 
@@ -97,7 +95,7 @@ class PlayerSupport(dbus.service.Object):
             try:
                 self.connection.activate_name_owner(bus_name)
             except Exception as e:
-                logging.warning('Cannot activate proxy %s: %s' % (bus_name, e))
+                logging.warning('Cannot activate proxy %s: %s', bus_name, e)
         self.connection.watch_name_owner(bus_name,
                                          lambda name: self._proxy_name_changed(proxy_name, len(name) == 0))
 
@@ -105,10 +103,10 @@ class PlayerSupport(dbus.service.Object):
         """
         Activates all player proxy services
         """
-        active_names = self.connection.list_names()
+        active_names = map(str, self.connection.list_names())
         for bus_name in active_names:
             self._connect_proxy(bus_name, False)
-        activatable_names = self.connection.list_activatable_names()
+        activatable_names = map(str, self.connection.list_activatable_names())
         for bus_name in activatable_names:
             self._connect_proxy(bus_name, True)
 
@@ -120,16 +118,18 @@ class PlayerSupport(dbus.service.Object):
         """
         try:
             path = proxy.ConnectPlayer(player_info['name'])
-            player = self.connection.get_object(proxy.bus_name,
-                                                path)
-            self._active_player = {'info': player_info,
-                                   'player': player,
-                                   'proxy': proxy}
-            self._mpris2_player.connect_player(player)
-            self.PlayerConnected(player_info)
-            return True
-        except Exception:
+        except DBusException as e:
+            if e._dbus_error_name != 'org.osdlyrics.Error.ConnectPlayer':
+                logger.exception('BugReport')
             return False
+        player = self.connection.get_object(proxy.bus_name,
+                                            path)
+        self._active_player = {'info': player_info,
+                               'player': player,
+                               'proxy': proxy}
+        self._mpris2_player.connect_player(player)
+        self.PlayerConnected(player_info)
+        return True
 
     def _player_lost_cb(self, player_name):
         if self._active_player and self._active_player['info']['name'] == player_name:
@@ -142,7 +142,7 @@ class PlayerSupport(dbus.service.Object):
     def _proxy_name_changed(self, proxy_name, lost):
         bus_name = PLAYER_PROXY_BUS_NAME_PREFIX + proxy_name
         if not lost:
-            logging.info('Get player proxy %s' % proxy_name)
+            logging.info('Get player proxy %s', proxy_name)
             proxy = self.connection.get_object(
                 bus_name, PLAYER_PROXY_OBJECT_PATH_PREFIX + proxy_name)
             proxy.connect_to_signal('PlayerLost',
@@ -150,9 +150,9 @@ class PlayerSupport(dbus.service.Object):
             self._player_proxies[proxy_name] = dbus.Interface(
                 proxy, PLAYER_PROXY_INTERFACE)
         else:
-            if not proxy_name in self._player_proxies:
+            if proxy_name not in self._player_proxies:
                 return
-            logging.info('Player proxy %s lost' % proxy_name)
+            logging.info('Player proxy %s lost', proxy_name)
             proxy = self._player_proxies[proxy_name]
             # If current player is provided by the proxy, it is lost.
             if self._active_player and self._active_player['proxy'] == proxy:
@@ -161,7 +161,7 @@ class PlayerSupport(dbus.service.Object):
             # Try to reactivate proxy
             try:
                 self.connection.activate_name_owner(bus_name)
-            except:
+            except Exception:
                 pass
 
     @dbus.service.method(dbus_interface=PLAYER_INTERFACE,
@@ -172,7 +172,7 @@ class PlayerSupport(dbus.service.Object):
         for proxy in self._player_proxies.values():
             try:
                 ret = ret + proxy.ListSupportedPlayers()
-            except:
+            except Exception:
                 pass
         return ret
 
@@ -184,7 +184,7 @@ class PlayerSupport(dbus.service.Object):
         for proxy in self._player_proxies.values():
             try:
                 ret = ret + proxy.ListActivatablePlayers()
-            except:
+            except Exception:
                 pass
         return ret
 
@@ -214,8 +214,7 @@ class PlayerSupport(dbus.service.Object):
 class Mpris2Player(DBusObject):
 
     def __init__(self, conn):
-        super(Mpris2Player, self).__init__(conn=conn,
-                                           object_path=MPRIS2_OBJECT_PATH)
+        super().__init__(conn=conn, object_path=MPRIS2_OBJECT_PATH)
         self._signals = []
         self._player = None
         self._timer = osdlyrics.timer.Timer()
@@ -260,12 +259,12 @@ class Mpris2Player(DBusObject):
             'Playing': 'play',
             'Paused': 'pause',
             'Stopped': 'stop',
-            }
+        }
         if status in status_map:
             getattr(self._timer, status_map[status])()
 
     def _seeked_cb(self, position):
-        self._timer.time = position / 1000
+        self._timer.time = position // 1000
         self.Seeked(position)
 
     def _properties_changed_cb(self, iface, changed, invalidated):
@@ -283,7 +282,7 @@ class Mpris2Player(DBusObject):
                                    'CanPause',
                                    'CanSeek',
                                    ])
-        for k, v in changed.iteritems():
+        for k, v in changed.items():
             if k in accepted_properties:
                 setattr(self, k, v)
 
@@ -543,7 +542,7 @@ class Mpris2Player(DBusObject):
     @dbus_property(dbus_interface=MPRIS2_ROOT_INTERFACE,
                    type_signature='s')
     def Identity(self):
-        return config.PROGRAM_NAME
+        return PROGRAM_NAME
 
     @dbus_property(dbus_interface=MPRIS2_ROOT_INTERFACE,
                    type_signature='s')
@@ -563,8 +562,8 @@ class Mpris2Player(DBusObject):
 
 def test():
     app = App('osdlyrics')
-    mpris2_name = dbus.service.BusName('org.mpris.osdlyrics', app.connection)
-    player_support = PlayerSupport(app.connection)
+    mpris2_name = dbus.service.BusName('org.mpris.osdlyrics', app.connection)  # noqa: F841
+    player_support = PlayerSupport(app.connection)  # noqa: F841
     app.run()
 
 

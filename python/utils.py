@@ -15,36 +15,39 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+from __future__ import unicode_literals
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object, str
 
+import io
 import os
 import os.path
 import stat
-import StringIO
 import sys
-import urllib
-import urlparse
+import urllib.parse
+import urllib.request
 
 import pycurl
 
 __all__ = (
     'cmd_exists',
-    'ensure_utf8',
-    'ensure_unicode',
     'ensure_path',
     'get_config_path',
     'http_download',
     'path2uri',
-    'url2path',
-    )
+)
 
 pycurl.global_init(pycurl.GLOBAL_DEFAULT)
 
-# make sure the default encoding is utf-8
-if sys.getdefaultencoding() != 'utf-8':
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
+if sys.version_info < (3, 0):
+    # make sure the default encoding is utf-8
+    if sys.getdefaultencoding() != 'utf-8':
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
+
 
 class ProxySettings(object):
     """
@@ -58,6 +61,7 @@ class ProxySettings(object):
         self.port = port
         self.username = username
         self.password = password
+
 
 def get_config_path(filename='', expanduser=True):
     """
@@ -78,7 +82,9 @@ def get_config_path(filename='', expanduser=True):
         path = os.path.expanduser(path)
     return path
 
+
 def path2uri(path):
+    # type: (Text) -> Text
     r"""
     Converts a path to URI with file sheme.
 
@@ -93,41 +99,13 @@ def path2uri(path):
     'file:///path/to/file'
     >>> path2uri('invalid/path')
     'invalid/path'
-    >>> path2uri('/\xe8\xb7\xaf\xe5\xbe\x84/\xe6\x96\x87\xe4\xbb\xb6')
+    >>> path2uri('/\u8def\u5f84/\u6587\u4ef6')
     'file:///%E8%B7%AF%E5%BE%84/%E6%96%87%E4%BB%B6'
     """
-    if path.startswith('~'):
-        path = os.path.expanduser(path)
-    if not path.startswith('/'):
+    path = os.path.expanduser(path)
+    if not os.path.isabs(path):
         return path
-    if isinstance(path, unicode):
-        path = path.encode('utf8')
-    return 'file://' + urllib.pathname2url(path)
-
-
-# TODO: remove once we fully migrate to Python 3
-if sys.version_info < (3, 0):
-    def ensure_unicode(value):
-        r"""
-        If value is a string, decode with utf-8. Otherwise return it directly.
-        """
-        if isinstance(value, str):
-            return value.decode('utf8')
-        return value
-
-    def ensure_utf8(value):
-        r"""
-        If value is a unicode, encode with utf-8. Otherwise return it directly.
-        """
-        if isinstance(value, unicode):
-            return value.encode('utf8')
-        return value
-
-    def url2path(urlparts):
-        return urllib.url2pathname(urlparts.path.encode('ascii')).decode('utf8')
-else:
-    ensure_unicode = ensure_utf8 = lambda s: s
-    url2path = lambda urlparts: urllib.request.url2pathname(urlparts.path)
+    return 'file://' + urllib.request.pathname2url(path)
 
 
 def get_proxy_settings(config=None, conn=None):
@@ -147,19 +125,20 @@ def get_proxy_settings(config=None, conn=None):
         raise ValueError('Either config or conn must be specified')
     if config is None:
         config = config.Config(conn)
-    proxy_type = config.get_string('Download/proxy')
-    if proxy_type.lower() == 'no':
+    proxy_type = config.get_string('Download/proxy').lower()
+    if proxy_type == 'no':
         return ProxySettings(protocol='no')
-    if proxy_type.lower() == 'manual':
+    if proxy_type == 'manual':
         protocol = config.get_string('Download/proxy-type')
         host = config.get_string('Download/proxy-host')
         port = config.get_int('Download/proxy-port')
         username = config.get_string('Download/proxy-username')
         passwd = config.get_string('Download/proxy-passwd')
         return ProxySettings(protocol=protocol, host=host, port=port,
-                            username=username, password=passwd)
-    if proxy_type.lower() == 'system':
+                             username=username, password=passwd)
+    if proxy_type == 'system':
         return detect_system_proxy()
+
 
 def detect_system_proxy():
     r"""
@@ -182,6 +161,7 @@ def detect_system_proxy():
             return proxy
     return get_envar_proxy()
 
+
 def get_envar_proxy():
     r"""
     Return proxy settings from environment variable `http_proxy`
@@ -189,18 +169,19 @@ def get_envar_proxy():
     envars = ['http_proxy', 'HTTP_PROXY']
     proxies = [os.environ.get(v) for v in envars]
     for proxy in proxies:
-        if proxy is not None:
-            if proxy.find('://') < 0:
+        if proxy:
+            if '://' not in proxy:
                 proxy = 'http://' + proxy
-            parts = urlparse.urlparse(proxy)
-            if not parts.scheme in ['http', 'socks4', 'socks5', '']:
+            parts = urllib.parse.urlparse(proxy)
+            if parts.scheme not in ('http', 'socks4', 'socks5', ''):
                 continue
-            return ProxySettings(protocol=parts.scheme if parts.scheme != '' else 'http',
+            return ProxySettings(protocol=parts.scheme or 'http',
                                  host=parts.hostname,
-                                 port=parts.port if parts.port is not None else 8080,
+                                 port=parts.port or 8080,
                                  username=parts.username,
                                  password=parts.password)
     return ProxySettings(protocol='no')
+
 
 def detect_desktop_shell():
     r"""
@@ -217,13 +198,14 @@ def detect_desktop_shell():
         return 'unity'
     return 'unknown'
 
+
 def get_gsettings_proxy():
     r"""
     Return proxy settings from gsetting, this is used in GNOME 3
     """
     try:
         from gi.repository import Gio
-    except:
+    except ImportError:
         return None
     if not hasattr(Gio, 'Settings'):
         return None
@@ -232,7 +214,7 @@ def get_gsettings_proxy():
     settings = Gio.Settings('org.gnome.system.proxy')
     if settings.get_string('mode') != 'manual':
         return ProxySettings(protocol='no')
-    protocol_map = { 'http': 'http', 'socks5': 'socks' }
+    protocol_map = {'http': 'http', 'socks5': 'socks'}
     for protocol, key in protocol_map.items():
         settings = Gio.Settings('org.gnome.system.proxy.' + key)
         host = settings.get_string('host').strip()
@@ -251,13 +233,14 @@ def get_gsettings_proxy():
                              password=password)
     return ProxySettings(protocol='no')
 
+
 def get_kde_proxy():
     r"""
     Detect KDE4 proxy settings
     """
     try:
         import PyKDE4.kdecore as kdecore
-    except:
+    except ImportError:
         return None
     config = kdecore.KConfig('kioslaverc', kdecore.KConfig.NoGlobals)
     if not config.hasGroup('Proxy Settings'):
@@ -271,19 +254,16 @@ def get_kde_proxy():
     elif proxy_type in [1, 4]:
         for key in ['httpProxy', 'socksProxy']:
             value = str(group.readEntry(key))
-            if value.strip() != '':
+            if value.strip():
                 # KDE 4.8 uses whitespace to seperate port and hostname
                 value = value.replace(' ', ':')
-                if value.find('://') < 0:
+                if '://' not in value:
                     value = 'http://' + value
-                parts = urlparse.urlparse(value)
+                parts = urllib.parse.urlparse(value)
                 host = parts.hostname
-                try:
-                    port = parts.port
-                except:
-                    port = None
+                port = parts.port
                 if host is not None and host.strip() != '' and \
-                        port is not None and port > 0 and port < 65536:
+                        port is not None and 0 < port < 65536:
                     protocolmap = {'httpProxy': 'http',
                                    'socksProxy': 'socks5'}
                     return ProxySettings(protocolmap[key],
@@ -291,7 +271,9 @@ def get_kde_proxy():
                                          port=port)
     return ProxySettings('no')
 
+
 def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, proxy=None):
+    # type: (Text, int, Text, Union[bytes, Dict[Text, Any]], Dict[Text, Any], int, Any) -> Tuple[int, bytes]
     r"""
     Helper function to download files from website
 
@@ -301,41 +283,41 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
     If `'User-Agent'` is not set in `headers`, it will be set to `'OSD Lyrics'`.
 
     Arguments:
-     - `url`: The url of the content
+     - `url`: The url of the content. Must be a bytes or an ascii-encodable unicode.
      - `port`: (optional) The port.
      - `method`: (optional) The HTTP method to download contents. Available values
                  are `'POST'` or `'GET'`. The default value is `'GET'`.
-     - `params`: (optional) The parameters of the request. It is a dict. If `method`
-                 is `'GET'`, `params` will be encoded and append to the url as the
-                 param part. If `method` is `'POST'`, `params` will be added to
-                 request headers as post data.
+     - `params`: (optional) The parameters of the request. It is either a dict or bytes.
+                 If it is a dict, it will be utf8-urlencoded. If `method` is `'GET'`,
+                 `params` will be append to the url as the param part. If `method` is
+                 `'POST'`, `params` will be added to request body as post data.
      - `headers`: (optional) A dict of HTTP headers.
      - `proxy`: (optional) A ProxySettings object to sepcify the proxy to use.
 
     >>> code, content = http_download('http://www.python.org/')
     >>> code
     200
-    >>> content.find('Python') >= 0
+    >>> b'Python' in content
     True
     """
     c = pycurl.Curl()
-    buf = StringIO.StringIO()
+    buf = io.BytesIO()
     c.setopt(pycurl.NOSIGNAL, 1)
     c.setopt(pycurl.DNS_USE_GLOBAL_CACHE, 0)
     c.setopt(pycurl.FOLLOWLOCATION, 1)
     c.setopt(pycurl.MAXREDIRS, 5)
     c.setopt(pycurl.WRITEFUNCTION, buf.write)
-    if method == 'GET' and len(params) > 0:
-        params = urllib.urlencode(params)
+    if isinstance(params, dict):
+        params = urllib.parse.urlencode(params)
+    if method == 'GET' and params:
         url = url + ('/' if '/' not in url else '') + ('?' if '?' not in url else '&') + params
     elif method == 'POST':
         c.setopt(pycurl.POST, 1)
-        if len(params) > 0:
-            c.setopt(pycurl.POSTFIELDS, params) #Someone had forgot an 'S'
+        if params:
+            c.setopt(pycurl.POSTFIELDS, params)
             c.setopt(pycurl.POSTFIELDSIZE, len(params))
-    url = ensure_utf8(url)
     c.setopt(pycurl.URL, url)
-    if port > 0 and port < 65536:
+    if 0 < port < 65536:
         c.setopt(pycurl.PORT, port)
 
     real_headers = {'User-Agent': 'OSD Lyrics'}
@@ -361,6 +343,7 @@ def http_download(url, port=0, method='GET', params={}, headers={}, timeout=15, 
     c.perform()
     return c.getinfo(pycurl.HTTP_CODE), buf.getvalue()
 
+
 def ensure_path(path, ignore_file_name=True):
     """ Create directories if necessary.
 
@@ -380,6 +363,7 @@ def ensure_path(path, ignore_file_name=True):
     if os.path.isdir(path):
         return
     os.makedirs(path)
+
 
 def find_file_in_dirs(filename, dirs, filter_func=None):
     """
@@ -401,6 +385,7 @@ def find_file_in_dirs(filename, dirs, filter_func=None):
             ret.append(path)
     return ret
 
+
 def cmd_exists(cmd):
     """
     Check if a command exists.
@@ -413,6 +398,7 @@ def cmd_exists(cmd):
                                  os.environ['PATH'].split(':'),
                                  is_exec_file)
     return len(cmdfiles) > 0
+
 
 def is_exec_file(filepath):
     """
@@ -429,6 +415,7 @@ def is_exec_file(filepath):
     if st.st_gid in gid:
         return (st.st_mode & stat.S_IXGRP) != 0
     return (st.st_mode & stat.S_IXOTH) != 0
+
 
 if __name__ == '__main__':
     import doctest

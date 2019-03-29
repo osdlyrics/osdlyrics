@@ -15,34 +15,37 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import httplib
+from builtins import super
+from future import standard_library
+standard_library.install_aliases()
+
+import http.client
 import logging
 import re
 
 import pycurl
 
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
-from osdlyrics.utils import http_download, get_proxy_settings
+from osdlyrics.utils import get_proxy_settings, http_download
 
 HOST = 'www.lrc123.com'
 SEARCH_URL = '/?keyword=%s&field=all'
 RESULT_PATTERN = re.compile(r'<div class="newscont .*?href="/\?field=singer.*?>(.*?)</a>.*?href="/\?field=album.*?>(.*?)</a>.*?href="/\?field=song.*?>(.*?)</a>.*?href="/download/lrc/(.*?)">LRC', re.DOTALL)
 DOWNLOAD_URL_PREFIX = '/download/lrc/'
 
+
 class Lrc123Source(BaseLyricSourcePlugin):
     """ Lyric source from xiami.com
     """
 
     def __init__(self):
-        """
-        """
-
-        BaseLyricSourcePlugin.__init__(self, id='lrc123', name='LRC123')
+        super().__init__(id='lrc123', name='LRC123')
 
     def do_search(self, metadata):
+        # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
         keys = []
         if metadata.title:
             keys.append(metadata.title)
@@ -61,7 +64,7 @@ class Lrc123Source(BaseLyricSourcePlugin):
             return []
 
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status)
+            raise http.client.HTTPException(status)
         match = RESULT_PATTERN.findall(content)
         result = []
         if match:
@@ -78,15 +81,13 @@ class Lrc123Source(BaseLyricSourcePlugin):
         return result
 
     def do_download(self, downloadinfo):
-        if not isinstance(downloadinfo, str) and \
-                not isinstance(downloadinfo, unicode):
-            raise TypeError('Expect the downloadinfo as a string of url, but got type ',
-                            type(downloadinfo))
-        status, content = http_download(url=HOST+downloadinfo,
+        # type: (Any) -> bytes
+        status, content = http_download(url=HOST + downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status, '')
+            raise http.client.HTTPException(status, '')
         return content
+
 
 if __name__ == '__main__':
     lrc123 = Lrc123Source()

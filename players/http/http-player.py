@@ -15,18 +15,19 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
+from builtins import super
 
 import datetime
 import logging
 import time
 
-import glib
+from gi.repository import GLib
 
 from osdlyrics.metadata import Metadata
-from osdlyrics.player_proxy import (BasePlayer, BasePlayerProxy, PlayerInfo,
-                                    STATUS_PAUSED, STATUS_STOPPED)
+from osdlyrics.player_proxy import (STATUS, BasePlayer, BasePlayerProxy,
+                                    PlayerInfo)
 import osdlyrics.timer
 
 import server
@@ -36,14 +37,15 @@ CONNECTION_TIMEOUT = 1000
 
 class HttpPlayerProxy(BasePlayerProxy):
     def __init__(self):
-        super(HttpPlayerProxy, self).__init__('Http')
+        super().__init__('Http')
         self._server = server.HttpServer(('', 7119),
                                          self)
-        self._server_watch = glib.io_add_watch(self._server.fileno(),
-                                               glib.IO_IN,
+        self._server_watch = GLib.io_add_watch(self._server.fileno(),
+                                               GLib.PRIORITY_DEFAULT,
+                                               GLib.IOCondition.IN,
                                                self._handle_req)
         self._players = {}
-        self._connection_timer = glib.timeout_add(CONNECTION_TIMEOUT,
+        self._connection_timer = GLib.timeout_add(CONNECTION_TIMEOUT,
                                                   self._check_connection)
         self._player_counter = 1
 
@@ -62,17 +64,14 @@ class HttpPlayerProxy(BasePlayerProxy):
     def remove_player(self, name):
         try:
             del self._players[name]
-        except:
+        except KeyError:
             pass
 
     def get_player(self, name):
         return self._players[name]
 
     def do_list_active_players(self):
-        ret = []
-        for v in self._players.values():
-            ret.append(PlayerInfo(v.name))
-        return ret
+        return [PlayerInfo(v.name) for v in self._players.values()]
 
     def do_list_supported_players(self):
         return []
@@ -94,8 +93,8 @@ class HttpPlayerProxy(BasePlayerProxy):
 class HttpPlayer(BasePlayer):
 
     def __init__(self, proxy, name, caps):
-        super(HttpPlayer, self).__init__(proxy, name)
-        self._status = STATUS_STOPPED
+        super().__init__(proxy, name)
+        self._status = STATUS.STOPPED
         self._caps = caps
         self._metadata = Metadata()
         self._last_ping = datetime.datetime.now()
@@ -124,9 +123,9 @@ class HttpPlayer(BasePlayer):
 
     def do_update_status(self, status):
         self._status = status
-        if status == STATUS_STOPPED:
+        if status == STATUS.STOPPED:
             self._timer.stop()
-        elif status == STATUS_PAUSED:
+        elif status == STATUS.PAUSED:
             self._timer.pause()
         else:
             self._timer.play()
@@ -182,7 +181,7 @@ class HttpPlayer(BasePlayer):
 
     def _add_cmd(self, cmd, params={}):
         self._cmds.append((int(time.time() * 10),
-                          {'cmd': cmd, 'params': params}))
+                           {'cmd': cmd, 'params': params}))
 
 
 if __name__ == '__main__':

@@ -15,16 +15,21 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with OSD Lyrics.  If not, see <http://www.gnu.org/licenses/>.
+# along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import re
-import httplib
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str, super
+
 # import urlparse
 import gettext
-import HTMLParser
+import html.parser
+import http.client
+import re
+
 from osdlyrics.lyricsource import BaseLyricSourcePlugin, SearchResult
-from osdlyrics.utils import ensure_utf8, http_download, get_proxy_settings
+from osdlyrics.utils import get_proxy_settings, http_download
 
 _ = gettext.gettext
 
@@ -40,32 +45,29 @@ TITLE_ATTR_PATTERN = re.compile(r'title="(.*?)"')
 gettext.bindtextdomain('osdlyrics')
 gettext.textdomain('osdlyrics')
 
+
 class XiamiSource(BaseLyricSourcePlugin):
     """ Lyric source from xiami.com
     """
 
     def __init__(self):
-        """
-        """
-
-        BaseLyricSourcePlugin.__init__(self, id='xiami', name=_('Xiami'))
-        self._search = {}
-        self._download = {}
+        super().__init__(id='xiami', name=_('Xiami'))
 
     def do_search(self, metadata):
+        # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
         keys = []
         if metadata.title:
             keys.append(metadata.title)
         if metadata.artist:
             keys.append(metadata.artist)
-        urlkey = ensure_utf8('+'.join(keys)).replace(' ', '+')
+        urlkey = '+'.join(keys).replace(' ', '+')
         url = XIAMI_HOST + XIAMI_SEARCH_URL
         status, content = http_download(url=url,
                                         params={'key': urlkey},
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status, '')
-        match = XIAMI_SEARCH_PATTERN.findall(content)
+            raise http.client.HTTPException(status, '')
+        match = XIAMI_SEARCH_PATTERN.findall(content.decode('utf8'))
         result = []
         if match:
             for title_elem, id, artist_elem, album_elem in match:
@@ -108,18 +110,16 @@ class XiamiSource(BaseLyricSourcePlugin):
             return None
 
     def do_download(self, downloadinfo):
-        if not isinstance(downloadinfo, str) and \
-                not isinstance(downloadinfo, unicode):
-            raise TypeError('Expect the downloadinfo as a string of url, but got type ',
-                            type(downloadinfo))
+        # type: (Any) -> bytes
         # parts = urlparse.urlparse(downloadinfo)
         status, content = http_download(downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         if status < 200 or status >= 400:
-            raise httplib.HTTPException(status)
+            raise http.client.HTTPException(status)
         if content:
-            content = HTMLParser.HTMLParser().unescape(content.decode('utf-8'))
+            content = html.parser.HTMLParser().unescape(content.decode('utf-8'))
         return content.encode('utf-8')
+
 
 if __name__ == '__main__':
     xiami = XiamiSource()
