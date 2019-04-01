@@ -404,7 +404,6 @@ class LyricsService(dbus.service.Object):
             try:
                 path = expand_path(path_pat, metadata)
             except osdlyrics.pattern.PatternException:
-                logger.exception('expand gg')
                 continue
             for file_pat in file_patterns:
                 try:
