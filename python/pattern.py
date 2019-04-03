@@ -113,7 +113,7 @@ def expand_file(pattern, metadata):
                     if not isinstance(value, str):
                         value = str(value)
                     has_tag = True
-                    parts.append(value)
+                    parts.append(value.replace('/', '_'))
             if has_tag:
                 start = end + 2
             else:
