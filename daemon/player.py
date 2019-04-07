@@ -120,7 +120,7 @@ class PlayerSupport(dbus.service.Object):
             path = proxy.ConnectPlayer(player_info['name'])
         except DBusException as e:
             if e._dbus_error_name != 'org.osdlyrics.Error.ConnectPlayer':
-                logger.exception('BugReport')
+                logging.exception('BugReport')
             return False
         player = self.connection.get_object(proxy.bus_name,
                                             path)
