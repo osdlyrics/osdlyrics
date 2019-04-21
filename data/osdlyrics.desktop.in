@@ -9,5 +9,4 @@ StartupNotify=true
 Terminal=false
 Type=Application
 Categories=GTK;AudioVideo;Audio;Player;X-Ximian-Main;X-Novell-Main;X-Red-Hat-Base;
-MimeType=
 X-Ubuntu-Gettext-Domain=osdlyrics
