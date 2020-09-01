@@ -620,9 +620,9 @@ _initialize (int argc, char **argv)
 #ifndef GLIB_VERSION_2_32
   g_thread_init(NULL);
 #endif
+  g_set_prgname (_(PROGRAM_NAME));
   gtk_init (&argc, &argv);
   _parse_cmd_args (&argc, &argv);
-  g_set_prgname (_(PROGRAM_NAME));
   initialized = FALSE;
   g_bus_own_name (G_BUS_TYPE_SESSION,
                   OL_CLIENT_BUS_NAME,
