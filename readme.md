@@ -9,14 +9,12 @@
 	修改：     src/ol_search_dialog.c
 
 ## install instruction:
----
-sudo apt install osdlyrics
-./autogen.sh
-./configure --prefix=/tmp PYTHON=/usr/bin/python3
-make
-sudo make install
-sudo cp /tmp/bin/osdlyrics /usr/bin/osdlyrics
----
+	sudo apt install osdlyrics
+	./autogen.sh
+	./configure --prefix=/tmp PYTHON=/usr/bin/python3
+	make
+	sudo make install
+	sudo cp /tmp/bin/osdlyrics /usr/bin/osdlyrics
 
 ## build required:(ubuntu20.04)
 
