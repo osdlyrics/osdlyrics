@@ -138,6 +138,54 @@ ol_metadata_new_from_variant (GVariant *variant)
     }
   }
   g_variant_iter_free (iter);
+
+  // add lakedai 2020/10/02，parse title to help search
+  // support title formats: %n.%a-%t, %n.%t, %a-%t
+  char * artist = "";
+  const char * title = ol_metadata_get_title (metadata);
+  if (title != NULL)
+  {
+    gchar **pathv = g_strsplit (title, "-", 0);
+    gchar **p;
+    if (g_strv_length (pathv) == 2)
+    {
+      p = pathv;
+      artist = g_strstrip(g_strdup(*p));
+      p++;
+      ol_metadata_set_title (metadata, g_strstrip(g_strdup(*p)));
+    }
+    else
+    {
+      gchar **pathv2 = g_strsplit (title, ".", 0);
+      gchar **p2;
+      if (g_strv_length (pathv2) == 2)
+      {
+        p2 = pathv2;
+        p2++;
+        ol_metadata_set_title (metadata, g_strstrip(g_strdup(*p2)));
+      }
+    }
+    if (! g_str_equal (artist, ""))
+    {
+      gchar **artistv = g_strsplit (artist, ".", 0);
+      gchar **p3;
+      if (g_strv_length (artistv) == 2)
+      {
+        p3 = artistv;
+        p3++;
+        artist = g_strstrip(g_strdup(*p3));
+      }
+    }
+    const char * oldartist = ol_metadata_get_artist (metadata);
+    if (g_str_equal (oldartist, "未知艺术家") 
+      || g_str_equal (oldartist, "Unknown Artist")
+      || (g_str_equal (oldartist, "群星") && ! g_str_equal (artist, "")))
+    {
+      ol_metadata_set_artist (metadata, artist);
+    }
+  }
+  // add end
+
   return metadata;
 }
 
