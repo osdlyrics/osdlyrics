@@ -19,3 +19,4 @@ libnotify-dev
 intltool
 libappindicator-dev
 
+by lakedai 2020/10/02
