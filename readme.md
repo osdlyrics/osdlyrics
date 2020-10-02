@@ -7,7 +7,7 @@
 - 修改：     src/ol_metadata.h
 - 修改：     src/ol_search_dialog.c
 
-## install instruction:
+### install instruction:
 	sudo apt install osdlyrics
 	./autogen.sh
 	./configure --prefix=/tmp PYTHON=/usr/bin/python3
@@ -15,7 +15,7 @@
 	sudo make install
 	sudo cp /tmp/bin/osdlyrics /usr/bin/osdlyrics
 
-## build required:(ubuntu20.04)
+### build required:(ubuntu20.04)
 - autoconf automake libtool
 - libglib2.0-dev
 - libgtk2.0-dev
