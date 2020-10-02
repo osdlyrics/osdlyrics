@@ -138,54 +138,6 @@ ol_metadata_new_from_variant (GVariant *variant)
     }
   }
   g_variant_iter_free (iter);
-
-  // add lakedai 2020/10/02，parse title to help search
-  // support title formats: %n.%p-%t, %n.%t, %p-%t
-  char * artist = "";
-  const char * title = ol_metadata_get_title (metadata);
-  if (title != NULL)
-  {
-    gchar **pathv = g_strsplit (title, "-", 0);
-    gchar **p;
-    if (g_strv_length (pathv) == 2)
-    {
-      p = pathv;
-      artist = g_strstrip(g_strdup(*p));
-      p++;
-      ol_metadata_set_title (metadata, g_strstrip(g_strdup(*p)));
-    }
-    else
-    {
-      gchar **pathv2 = g_strsplit (title, ".", 0);
-      gchar **p2;
-      if (g_strv_length (pathv2) == 2)
-      {
-        p2 = pathv2;
-        p2++;
-        ol_metadata_set_title (metadata, g_strstrip(g_strdup(*p2)));
-      }
-    }
-    if (! g_str_equal (artist, ""))
-    {
-      gchar **artistv = g_strsplit (artist, ".", 0);
-      gchar **p3;
-      if (g_strv_length (artistv) == 2)
-      {
-        p3 = artistv;
-        p3++;
-        artist = g_strstrip(g_strdup(*p3));
-      }
-    }
-    const char * oldartist = ol_metadata_get_artist (metadata);
-    if (g_str_equal (oldartist, "未知艺术家") 
-      || g_str_equal (oldartist, "Unknown Artist")
-      || (g_str_equal (oldartist, "群星") && ! g_str_equal (artist, "")))
-    {
-      ol_metadata_set_artist (metadata, artist);
-    }
-  }
-  // add end
-
   return metadata;
 }
 
@@ -549,3 +501,128 @@ ol_metadata_to_variant (OlMetadata *metadata)
   g_variant_builder_unref (builder);
   return ret;
 }
+
+// add lakedai 2020/10/02
+// get search title from meta title if no tag
+// support meta title formats: %n.%p-%t, %n.%t--%p, %n.%t, %p-%t, %t--%p, %t
+const char *
+ol_metadata_get_search_title (const OlMetadata *metadata)
+{
+  ol_assert_ret (metadata != NULL, NULL);
+
+  char * title1 = NULL;
+  char * title2 = NULL;
+  const char * title = metadata->title;
+  if (title != NULL)
+  {
+    gchar **pathv = g_strsplit (title, ".", 0);
+    gchar **p;
+    if (g_strv_length (pathv) == 2)
+    {
+      p = pathv;
+      p++;
+      title1 = g_strstrip(g_strdup(*p));
+    }
+    else
+    {
+      title1 = title;
+    }
+    g_strfreev(pathv);
+    gchar **pathv2 = g_strsplit (title1, "--", 0);
+    gchar **p2;
+    if (g_strv_length (pathv2) == 2)
+    {
+      p2 = pathv2;
+      title2 = g_strstrip(g_strdup(*p2));
+    }
+    else
+    {
+      gchar **pathv3 = g_strsplit (title1, "-", 0);
+      gchar **p3;
+      if (g_strv_length (pathv3) == 2)
+      {
+        p3 = pathv3;
+        p3++;
+        title2 = g_strstrip(g_strdup(*p3));
+      }
+      else
+      {
+        title2 = title1;
+      }
+      g_strfreev(pathv3);
+    }
+    g_strfreev(pathv2);
+
+    return title2;
+  }
+
+  return title;
+}
+
+// get search artist from meta title if no tag
+// support meta title formats: %n.%p-%t, %n.%t--%p, %n.%t, %p-%t, %t--%p, %t
+const char *
+ol_metadata_get_search_artist (const OlMetadata *metadata)
+{
+  ol_assert_ret (metadata != NULL, NULL);
+
+  const char * artist = metadata->artist;
+  if (! g_str_equal (artist, "未知艺术家") 
+    && ! g_str_equal (artist, "Unknown Artist")
+    && ! g_str_equal (artist, "群星"))
+  {
+    return artist;
+  }
+
+  char * title1 = NULL;
+  char * artist1 = "";
+  const char * title = metadata->title;
+  if (title != NULL)
+  {
+    gchar **pathv = g_strsplit (title, ".", 0);
+    gchar **p;
+    if (g_strv_length (pathv) == 2)
+    {
+      p = pathv;
+      p++;
+      title1 = g_strstrip(g_strdup(*p));
+    }
+    else
+    {
+      title1 = title;
+    }
+    g_strfreev(pathv);
+    gchar **pathv2 = g_strsplit (title1, "--", 0);
+    gchar **p2;
+    if (g_strv_length (pathv2) == 2)
+    {
+      p2 = pathv2;
+      p2++;
+      artist1 = g_strstrip(g_strdup(*p2));
+    }
+    else
+    {
+      gchar **pathv3 = g_strsplit (title1, "-", 0);
+      gchar **p3;
+      if (g_strv_length (pathv3) == 2)
+      {
+        p3 = pathv3;
+        artist1 = g_strstrip(g_strdup(*p3));
+      }
+      g_strfreev(pathv3);
+    }
+    g_strfreev(pathv2);
+  }
+
+  if (g_str_equal (artist, "未知艺术家") 
+    || g_str_equal (artist, "Unknown Artist")
+    || (g_str_equal (artist, "群星") && ! g_str_equal (artist1, "")))
+  {
+    return artist1;
+  }
+  else
+  {
+    return artist;
+  }
+}
+// add end

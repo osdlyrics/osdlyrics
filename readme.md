@@ -1,4 +1,12 @@
-edit src/ol_metadata.c to support title parse
+search text help
+if no tag, find title / artist from meta title
+support meta title formats:
+%n.%p-%t, %n.%t--%p, %n.%t, %p-%t, %t--%p, %t
+
+changed src files:
+	修改：     src/ol_metadata.c
+	修改：     src/ol_metadata.h
+	修改：     src/ol_search_dialog.c
 
 install instruction:
 
