@@ -1,4 +1,4 @@
-the osdlyrics at the root is the build result(ubuntu20.04)
+edit src/ol_metadata.c to support title parse
 
 install instruction:
 
@@ -9,7 +9,7 @@ make
 sudo make install
 sudo cp /tmp/bin/osdlyrics /usr/bin/osdlyrics
 
-build required:
+build required:(ubuntu20.04)
 
 autoconf automake libtool
 libglib2.0-dev
