@@ -140,7 +140,7 @@ ol_metadata_new_from_variant (GVariant *variant)
   g_variant_iter_free (iter);
 
   // add lakedai 2020/10/02，parse title to help search
-  // support title formats: %n.%a-%t, %n.%t, %a-%t
+  // support title formats: %n.%p-%t, %n.%t, %p-%t
   char * artist = "";
   const char * title = ol_metadata_get_title (metadata);
   if (title != NULL)
