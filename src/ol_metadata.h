@@ -193,8 +193,8 @@ int ol_metadata_deserialize (OlMetadata *metadata,
 GVariant *ol_metadata_to_variant (OlMetadata *metadata);
 #endif /* _OL_METADATA_H_ */
 
-// add lakedai 2020/10/02
+// get real title
 const char *ol_metadata_get_search_title (const OlMetadata *metadata);
 
+// get real artist
 const char *ol_metadata_get_search_artist (const OlMetadata *metadata);
-// add end

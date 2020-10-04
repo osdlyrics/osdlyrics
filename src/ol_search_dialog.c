@@ -283,18 +283,18 @@ ol_search_dialog_show ()
     global_metadata = ol_metadata_new ();
   ol_metadata_copy (global_metadata, ol_app_get_current_music ());
 
-/* rm lakedai 2020/10/02
+/* fill with real title and artist
   gtk_entry_set_text (widgets.title, 
                       ol_metadata_get_title (global_metadata));
   gtk_entry_set_text (widgets.artist,
                       ol_metadata_get_artist (global_metadata));
 */
-// add lakedai 2020/10/02
+//
   gtk_entry_set_text (widgets.title, 
                       ol_metadata_get_search_title (global_metadata));
   gtk_entry_set_text (widgets.artist,
                       ol_metadata_get_search_artist (global_metadata));
-// add end
+//
  
   gtk_widget_set_sensitive (widgets.download,
                             FALSE);
