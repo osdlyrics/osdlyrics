@@ -19,28 +19,16 @@ OSD Lyrics will detect and connect to the media player.
 
 ## How to install
 
-OSD Lyrics is available for Ubuntu in [our PPA](https://launchpad.net/~osd-lyrics/+archive/ubuntu/ppa) and for ArchLinux through [community repo](https://www.archlinux.org/packages/community/x86_64/osdlyrics) and through [AUR](https://aur.archlinux.org/packages/osdlyrics-git).
+OSD Lyrics is available for Ubuntu, Debian, Fedora, OpenSUSE, FreeBSD and ArchLinux.
+A list of packages' names, versions, and install instructions for each distribution is [available at pkgs.org](https://pkgs.org/search/?q=osdlyrics).
 
 ## Build instructions
 
 ### Requirements
 
-On Ubuntu, the following packages need to be installed to compile OSD Lyrics:
-
-- Python 2.6+/3.4+
-- `libdbus-glib-1-dev`
-- `intltool`
-- `libappindicator-dev` (optional)
-
-### Runtime Dependencies
-
-- Python (either one):
-    - Python 2: python (>= 2.6), python-future, python-gi (>= 3.11.1)
-    - Python 3: python3 (>= 3.4), python3-future, python3-gi (>= 3.11.1)
-- Supported players:
-    - MPRIS2
-    - MPRIS
-    - [MPD](https://www.musicpd.org): mpd (>= 0.16.0), python-mpd
+* On Ubuntu, dependencies are listed on the [Ubuntu Universe page](https://packages.ubuntu.com/source/focal/osdlyrics).
+* On Debian, dependencies are listed on the [Sid packages' page](https://packages.debian.org/sid/osdlyrics).
+* On ArchLinux, dependencies are listed on the [AUR package](https://aur.archlinux.org/packages/osdlyrics-git).
 
 ## Cloning repository
 
@@ -56,7 +44,7 @@ After cloning the repository and installing dependencies, issue the following co
 
 ```
 ./autogen.sh
-./configure --prefix=/usr PYTHON=/usr/bin/python2
+./configure --prefix=/usr PYTHON=/usr/bin/python3
 make
 sudo make install
 ```
