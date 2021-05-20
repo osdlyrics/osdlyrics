@@ -13,3 +13,4 @@ data/dialogs.glade
 data/osdlyrics.desktop.in
 lyricsources/netease/netease.py
 lyricsources/xiami/xiami.py
+lyricsources/subtitles4songs/subtitles4songs.py

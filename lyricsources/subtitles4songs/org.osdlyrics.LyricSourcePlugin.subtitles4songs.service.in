@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.osdlyrics.LyricSourcePlugin.subtitles4songs
+Exec=@PYTHON@ @pkglibdir@/lyricsources/subtitles4songs/subtitles4songs.py
