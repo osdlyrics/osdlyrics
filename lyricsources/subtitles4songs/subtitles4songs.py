@@ -66,8 +66,6 @@ class Subtitles4songsSource(BaseLyricSourcePlugin):
         urlkey = '+'.join(keys).replace(' ', '+')
         # Building the URL.
         url = S4S_HOST + S4S_SEARCH_PATH
-        print("urlkey:"+urlkey)
-        print("url:"+url)
         # Request the HTTP page, storing its status and content.
         status, content = http_download(url=url,
                                         params={'q': urlkey},
@@ -75,10 +73,8 @@ class Subtitles4songsSource(BaseLyricSourcePlugin):
         # Checking against HTTP response codes.
         if status < 200 or status >= 400:
             raise http.client.HTTPException(status, '')
-        print(status); print(content);
         # Filter all occurences of links belonging to search results.
         matches = S4S_SEARCH_RESULT_PATTERN.findall(content.decode('utf8'))
-        print(matches)
         # Populate osdlyrics' search results for the user to choose from.
         result = []
         if matches:
@@ -88,9 +84,6 @@ class Subtitles4songsSource(BaseLyricSourcePlugin):
                 artist = unquote(ARTIST_PATTERN.search(match).group(1))
                 # Build a download URL for this match.
                 url = S4S_HOST + S4S_SUBTITLE_PATH + match + "&type=lrc"
-                print(title)
-                print(artist)
-                print(url)
                 # Add the match metadata for the window with search results.
                 if url is not None:
                     result.append(SearchResult(title=title,
@@ -100,7 +93,6 @@ class Subtitles4songsSource(BaseLyricSourcePlugin):
         return result
 
     def do_download(self, downloadinfo):
-        print("downloadinfo"); print(downloadinfo);
         status, content = http_download(downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
         # Checking against HTTP response codes.
@@ -108,13 +100,11 @@ class Subtitles4songsSource(BaseLyricSourcePlugin):
             raise http.client.HTTPException(status)
         # Checking the presence of a HTTP payload.
         if content:
-            print('content:'); print(content)
             content = S4S_LRC_PATTERN.search(content.decode('utf8')).group(2)
             # Replacing html breaks with new lines.
             content = re.sub('<br />', "\n", content)
             # Debrand the lyrics.
             content = re.sub(BRAND_PATTERN, " ", content, 0, re.MULTILINE)
-            print('content:'); print(content)
         return content.encode('utf-8')
 
 
