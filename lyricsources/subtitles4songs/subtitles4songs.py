@@ -37,10 +37,12 @@ _ = gettext.gettext
 S4S_HOST = 'https://www.rentanadviser.com'
 S4S_SEARCH_PATH = '/en/subtitles/subtitles4songs.aspx'
 S4S_SUBTITLE_PATH = '/en/subtitles/getsubtitle.aspx'
+# Regexes to filter webpage content (search results page, and lyric page).
 S4S_SEARCH_RESULT_PATTERN = re.compile(r'<a [^<]*?href="getsubtitle\.aspx(\?artist=.*?song=.*?)">', re.DOTALL)
 S4S_LRC_PATTERN = re.compile(r'<span id="ctl00_ContentPlaceHolder1_lbllyrics"><h3>(.*?)<\/h3>(.*?)<\/span>', re.DOTALL)
 TITLE_PATTERN = re.compile(r'&song=(.*$)')
 ARTIST_PATTERN = re.compile(r'artist=(.*?)&')
+BRAND_PATTERN = r"^.*RentAnAdviser\.com.*$"
 
 gettext.bindtextdomain('osdlyrics')
 gettext.textdomain('osdlyrics')
@@ -54,33 +56,42 @@ class Subtitles4songsSource(BaseLyricSourcePlugin):
         super().__init__(id='subtitles4songs', name=_('subtitles4songs'))
 
     def do_search(self, metadata):
-        # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
+        # Preparing keywords for search.
         keys = []
         if metadata.artist:
             keys.append(metadata.artist)
         if metadata.title:
             keys.append(metadata.title)
+        # Joining search terms.
         urlkey = '+'.join(keys).replace(' ', '+')
+        # Building the URL.
         url = S4S_HOST + S4S_SEARCH_PATH
         print("urlkey:"+urlkey)
         print("url:"+url)
+        # Request the HTTP page, storing its status and content.
         status, content = http_download(url=url,
                                         params={'q': urlkey},
                                         proxy=get_proxy_settings(self.config_proxy))
+        # Checking against HTTP response codes.
         if status < 200 or status >= 400:
             raise http.client.HTTPException(status, '')
         print(status); print(content);
-        match = S4S_SEARCH_RESULT_PATTERN.findall(content.decode('utf8'))
-        print(match)
+        # Filter all occurences of links belonging to search results.
+        matches = S4S_SEARCH_RESULT_PATTERN.findall(content.decode('utf8'))
+        print(matches)
+        # Populate osdlyrics' search results for the user to choose from.
         result = []
-        if match:
-            for match_elem in match:
-                title = unquote(TITLE_PATTERN.search(match_elem).group(1))
-                artist = unquote(ARTIST_PATTERN.search(match_elem).group(1))
-                url = S4S_HOST + S4S_SUBTITLE_PATH + match_elem + "&type=lrc"
+        if matches:
+            for match in matches:
+                # Decompose the HTML matches into title, artist and url.
+                title = unquote(TITLE_PATTERN.search(match).group(1))
+                artist = unquote(ARTIST_PATTERN.search(match).group(1))
+                # Build a download URL for this match.
+                url = S4S_HOST + S4S_SUBTITLE_PATH + match + "&type=lrc"
                 print(title)
                 print(artist)
                 print(url)
+                # Add the match metadata for the window with search results.
                 if url is not None:
                     result.append(SearchResult(title=title,
                                                artist=artist,
@@ -90,16 +101,19 @@ class Subtitles4songsSource(BaseLyricSourcePlugin):
 
     def do_download(self, downloadinfo):
         print("downloadinfo"); print(downloadinfo);
-        # type: (Any) -> bytes
         status, content = http_download(downloadinfo,
                                         proxy=get_proxy_settings(self.config_proxy))
+        # Checking against HTTP response codes.
         if status < 200 or status >= 400:
             raise http.client.HTTPException(status)
+        # Checking the presence of a HTTP payload.
         if content:
             print('content:'); print(content)
             content = S4S_LRC_PATTERN.search(content.decode('utf8')).group(2)
             # Replacing html breaks with new lines.
             content = re.sub('<br />', "\n", content)
+            # Debrand the lyrics.
+            content = re.sub(BRAND_PATTERN, " ", content, 0, re.MULTILINE)
             print('content:'); print(content)
         return content.encode('utf-8')
 
