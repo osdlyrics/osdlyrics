@@ -1,1 +1,1 @@
-SUBDIRS = xiami subtitles4songs netease
+SUBDIRS = xiami megalobiz netease subtitles4songs

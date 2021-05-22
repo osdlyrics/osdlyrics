@@ -11,6 +11,7 @@ src/ol_app_info.c
 src/ol_scroll_window.c
 data/dialogs.glade
 data/osdlyrics.desktop.in
+lyricsources/megalobiz/megalobiz.py
 lyricsources/netease/netease.py
 lyricsources/xiami/xiami.py
 lyricsources/subtitles4songs/subtitles4songs.py

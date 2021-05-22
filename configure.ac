@@ -164,8 +164,9 @@ AC_CONFIG_FILES([
         python/dbusext/Makefile
         lyricsources/Makefile
         lyricsources/xiami/Makefile
-        lyricsources/subtitles4songs/Makefile
+        lyricsources/megalobiz/Makefile
         lyricsources/netease/Makefile
+        lyricsources/subtitles4songs/Makefile
         tools/Makefile
 ])
 
