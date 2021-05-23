@@ -61,6 +61,18 @@ class NeteaseSource(BaseLyricSourcePlugin):
         parsed = json.loads(content.decode('utf-8'))
         result = list(map(map_func, parsed['result']['songs']))
 
+        # If there are more than 10 songs we do a second request.
+        song_count = parsed['result']['songCount']
+        if song_count > 10:
+            params = params + '&offset=10'
+            status, content = http_download(url=url,
+                                            method='POST',
+                                            params=params.encode('utf-8'),
+                                            proxy=get_proxy_settings(self.config_proxy))
+        if status < 200 or status >= 400:
+            raise http.client.HTTPException(status, '')
+        parsed = json.loads(content.decode('utf-8'))
+        result = result + list(map(map_func, parsed['result']['songs']))
         return result
 
     def do_download(self, downloadinfo):
@@ -71,10 +83,12 @@ class NeteaseSource(BaseLyricSourcePlugin):
             raise http.client.HTTPException(status)
 
         parsed = json.loads(content.decode('utf-8'))
-        if 'nolyric' in parsed:
+        # Avoid processing results with no lyrics.
+        if 'nolyric' in parsed or 'uncollected' in parsed:
             raise ValueError('This item has no lyrics.')
         lyric = parsed['lrc']['lyric']
         return lyric.encode('utf-8')
+
 
 
 if __name__ == '__main__':
