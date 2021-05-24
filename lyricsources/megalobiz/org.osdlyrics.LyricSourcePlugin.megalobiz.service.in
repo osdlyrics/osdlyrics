@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.osdlyrics.LyricSourcePlugin.megalobiz
+Exec=@PYTHON@ @pkglibdir@/lyricsources/megalobiz/megalobiz.py
