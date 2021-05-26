@@ -30,29 +30,36 @@ AC_DEFUN([AM_ICONV_LINK],
   dnl Add $INCICONV to CPPFLAGS before performing the following checks,
   dnl because if the user has installed libiconv and not disabled its use
   dnl via --without-libiconv-prefix, he wants to use it. The first
-  dnl AC_TRY_LINK will then fail, the second AC_TRY_LINK will succeed.
+  dnl AC_LINK_IFELSE will then fail, the second AC_LINK_IFELSE will succeed.
   am_save_CPPFLAGS="$CPPFLAGS"
   AC_LIB_APPENDTOVAR([CPPFLAGS], [$INCICONV])
 
   AC_CACHE_CHECK([for iconv], am_cv_func_iconv, [
     am_cv_func_iconv="no, consider installing GNU libiconv"
     am_cv_lib_iconv=no
-    AC_TRY_LINK([#include <stdlib.h>
-#include <iconv.h>],
-      [iconv_t cd = iconv_open("","");
-       iconv(cd,NULL,NULL,NULL,NULL);
-       iconv_close(cd);],
-      am_cv_func_iconv=yes)
+      AC_LINK_IFELSE(
+            [AC_LANG_PROGRAM(
+               [#include <stdlib.h>
+               #include <iconv.h>],
+               [iconv_t cd = iconv_open("","");
+                iconv(cd,NULL,NULL,NULL,NULL);
+                iconv_close(cd);]
+            )],
+            am_cv_func_iconv=yes
+      )
     if test "$am_cv_func_iconv" != yes; then
       am_save_LIBS="$LIBS"
       LIBS="$LIBS $LIBICONV"
-      AC_TRY_LINK([#include <stdlib.h>
-#include <iconv.h>],
-        [iconv_t cd = iconv_open("","");
-         iconv(cd,NULL,NULL,NULL,NULL);
-         iconv_close(cd);],
-        am_cv_lib_iconv=yes
-        am_cv_func_iconv=yes)
+        AC_LINK_IFELSE(
+            [AC_LANG_PROGRAM([#include <stdlib.h>
+                #include <iconv.h>],
+                [iconv_t cd = iconv_open("","");
+                 iconv(cd,NULL,NULL,NULL,NULL);
+                 iconv_close(cd);]
+            )],
+            am_cv_lib_iconv=yes
+            am_cv_func_iconv=yes
+        )
       LIBS="$am_save_LIBS"
     fi
   ])
