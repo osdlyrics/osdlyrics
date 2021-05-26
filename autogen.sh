@@ -9,5 +9,5 @@ args=$@
 if [ -e /usr/bin/python2 ]; then
     args="$args PYTHON=/usr/bin/python2"
 fi
-AUTOPOINT='intltoolize' autoreconf --install --force --verbose --debug $DIR
+AUTOPOINT='intltoolize' autoreconf --install --force $DIR
 $DIR/configure $args
