@@ -3,7 +3,7 @@
  * Copyright (C) 2009-2011  Tiger Soldier <tigersoldier@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -163,7 +163,7 @@ ol_path_alloc(void)
   return ptr;
 }
 
-int 
+int
 ol_stricmp (const char *str1, const char *str2, const ssize_t count)
 {
   const char *ptr1 = str1;
@@ -228,7 +228,7 @@ ol_lcs (const char *str1, const char *str2)
 }
 
 char*
-ol_strnncpy (char *dest,
+ol_memcpy (char *dest,
              size_t dest_len,
              const char *src,
              size_t src_len)
@@ -243,7 +243,7 @@ ol_strnncpy (char *dest,
     dest[0] = '\0';
     return NULL;
   }
-  strncpy (dest, src, src_len);
+  memcpy (dest, src, src_len);
   dest[src_len] = '\0';
   return dest + src_len;
 }

@@ -84,7 +84,7 @@ ol_path_get_lrc_pathname (const char *path_pattern,
   current += offset;
   if (ol_stricmp (&pathname[current - 4], ".lrc", 4) != 0)
   {
-    char *end = ol_strnncpy (pathname + current, len - current,
+    char *end = ol_memcpy (pathname + current, len - current,
                              ".lrc", 4);
     if (end == NULL)
       return -1;
@@ -129,7 +129,7 @@ ol_path_expand_file_pattern (const char *pattern,
     const char *ptr2 = strchr (ptr1, '%'); /* find place holder */
     if (ptr2 == NULL)                    /* no more place holders */
       ptr2 = pat_end; 
-    current = ol_strnncpy (current, end - current, ptr1, ptr2 - ptr1);
+    current = ol_memcpy (current, end - current, ptr1, ptr2 - ptr1);
     if (current == NULL)        /* The buffer is not big enough */
       return -1;
     if (ptr2 < pat_end)
@@ -176,7 +176,7 @@ ol_path_expand_file_pattern (const char *pattern,
         ol_debugf ("  append is NULL, pattern: %c\n", *(ptr2 + 1));
         return -1;
       }
-      current = ol_strnncpy (current, end - current,
+      current = ol_memcpy (current, end - current,
                              append, strlen (append));
       if (free_append)
         g_free ((char*)append);
@@ -224,7 +224,7 @@ ol_uri_get_filename (char *dest,
     if (ext != NULL)
       *ext = '\0';
   }
-  char *ret = ol_strnncpy (dest, dest_len, file_name, strlen (file_name));
+  char *ret = ol_memcpy (dest, dest_len, file_name, strlen (file_name));
   g_free (file_name);
   return ret;
 }
@@ -254,7 +254,7 @@ ol_uri_get_path (char *dest,
     dirname = g_path_get_dirname (pathname);
     g_free (pathname);
   }
-  char *ret = ol_strnncpy (dest, dest_len, dirname, strlen (dirname));
+  char *ret = ol_memcpy (dest, dest_len, dirname, strlen (dirname));
   g_free (dirname);
   return ret;
 }
@@ -280,17 +280,17 @@ ol_path_expand_path_pattern (const char *pattern,
   {
     const char *home_dir;
     home_dir = g_get_home_dir ();
-    char *end = ol_strnncpy (filename, len, home_dir, strlen (home_dir));
+    char *end = ol_memcpy (filename, len, home_dir, strlen (home_dir));
     if (end == NULL)
       return -1;
-    end = ol_strnncpy (end, filename + len - end,
+    end = ol_memcpy (end, filename + len - end,
                        pattern + 1, strlen (pattern + 1));
     if (end == NULL)
       return -1;
     return end - filename;
   }
   /* Others, copy directly */
-  char *end = ol_strnncpy (filename, len, pattern, strlen (pattern));
+  char *end = ol_memcpy (filename, len, pattern, strlen (pattern));
   if (end == NULL)
     return -1;
   else
