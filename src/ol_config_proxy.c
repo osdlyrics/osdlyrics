@@ -24,6 +24,9 @@
 
 const int DEFAULT_SYNC_TIMEOUT = 500; /* 0.5s */
 
+#define OL_CONFIG_PROXY_GET_PRIVATE(obj) \
+    ((OlConfigProxyPrivate *)((OL_CONFIG_PROXY(obj))->priv))
+
 enum OlConfigProxySingals {
   SIGNAL_CHANGED = 0,
   LAST_SINGAL,
@@ -44,6 +47,8 @@ typedef struct {
 static guint _signals[LAST_SINGAL];
 static OlConfigProxy *config_proxy = NULL;
 
+G_DEFINE_TYPE (OlConfigProxy, ol_config_proxy, G_TYPE_DBUS_PROXY);
+
 static OlConfigProxy *ol_config_proxy_new (void);
 static void ol_config_proxy_finalize (GObject *object);
 static void ol_config_proxy_g_signal (GDBusProxy *proxy,
@@ -55,9 +60,6 @@ static void ol_config_proxy_value_changed_cb (OlConfigProxy *proxy,
 static GVariant *_str_list_to_variant (const gchar *const *value,
                                        gssize len);
 static gboolean _sync_default_cb (OlConfigProxy *config);
-
-G_DEFINE_TYPE_WITH_CODE (OlConfigProxy, ol_config_proxy, G_TYPE_DBUS_PROXY,
-                         G_ADD_PRIVATE (OlConfigProxy))
 
 static GVariant *
 _str_list_to_variant (const gchar *const *value,
@@ -79,7 +81,7 @@ _str_list_to_variant (const gchar *const *value,
 static gboolean
 _sync_default_cb (OlConfigProxy *config)
 {
-  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (config);
+  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (config);
   priv->default_sync_handler = 0;
   if (priv->default_builder != NULL)
   {
@@ -109,7 +111,7 @@ _sync_default_cb (OlConfigProxy *config)
 void
 ol_config_proxy_sync (OlConfigProxy *config)
 {
-  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (config);
+  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (config);
   if (priv->default_builder != NULL)
   {
     g_source_remove (priv->default_sync_handler);
@@ -120,9 +122,13 @@ ol_config_proxy_sync (OlConfigProxy *config)
 static void
 ol_config_proxy_class_init (OlConfigProxyClass *klass)
 {
+  GObjectClass *gobject_class;
   GDBusProxyClass *proxy_class;
 
   g_type_class_add_private (klass, sizeof (OlConfigProxyPrivate));
+
+  gobject_class = G_OBJECT_CLASS (klass);
+  gobject_class->finalize = ol_config_proxy_finalize;
 
   proxy_class = G_DBUS_PROXY_CLASS (klass);
   proxy_class->g_signal = ol_config_proxy_g_signal;
@@ -142,17 +148,41 @@ ol_config_proxy_class_init (OlConfigProxyClass *klass)
 static void
 ol_config_proxy_init (OlConfigProxy *proxy)
 {
-  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (proxy);
-  priv->temp_values = g_hash_table_new_full (g_str_hash,
-                                             g_str_equal,
-                                             g_free,
-                                             (GDestroyNotify) g_variant_unref);
+  /* Allocate Private data structure */
+  (OL_CONFIG_PROXY(proxy))->priv = \
+    (OlConfigProxyPrivate *) g_malloc0(sizeof(OlConfigProxyPrivate));
+  /* If correctly allocated, initialize parameters */
+  if((OL_CONFIG_PROXY(proxy))->priv != NULL)
+  {
+    OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (proxy);
+    priv->temp_values = g_hash_table_new_full (g_str_hash,
+                                               g_str_equal,
+                                               g_free,
+                                               (GDestroyNotify) g_variant_unref);
+  }
+}
+
+static void
+ol_config_proxy_dispose(GObject *object)
+{
+  OlConfigProxy *self = (OlConfigProxy *)object;
+  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE(self);
+  /* Check if not NULL! To avoid calling dispose multiple times */
+  if(priv != NULL)
+  {
+    /* Deallocate contents of the private data, if any */
+    /* Deallocate private data structure */
+    g_free(priv);
+    /* And finally set the opaque pointer back to NULL, so that
+     *  we don't deallocate it twice. */
+    (OL_CONFIG_PROXY(self))->priv = NULL;
+  }
 }
 
 static void
 ol_config_proxy_finalize (GObject *object)
 {
-  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (object);
+  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (object);
   g_hash_table_destroy (priv->temp_values);
   priv->temp_values = NULL;
   ol_config_proxy_sync (OL_CONFIG_PROXY (object));
@@ -238,7 +268,7 @@ ol_config_proxy_set (OlConfigProxy *config,
   ol_assert_ret (key != NULL && key[0] != '\0', FALSE);
   if (key[0] == '.')
   {
-    OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (config);
+    OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (config);
     g_variant_ref_sink (value);
     g_hash_table_insert (priv->temp_values,
                          g_strdup (key),
@@ -348,7 +378,7 @@ ol_config_proxy_set_default (OlConfigProxy *config,
                              GVariant *value)
 {
   ol_assert_ret (key != NULL && key[0] != '\0', FALSE);
-  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (config);
+  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (config);
   if (key[0] == '.' && !g_hash_table_lookup (priv->temp_values, key))
   {
     g_variant_ref_sink (value);
@@ -450,7 +480,7 @@ ol_config_proxy_get (OlConfigProxy *config,
   enum _GetResult ret = GET_RESULT_OK;
   GError *error = NULL;
   GVariant *value = NULL;
-  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (config);
+  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (config);
   if (key[0] == '.')
   {
     value = g_hash_table_lookup (priv->temp_values, key);

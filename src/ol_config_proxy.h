@@ -36,15 +36,19 @@
 #define OL_CONFIG_PROXY_GET_CLASS(obj)                                  \
   (G_TYPE_INSTANCE_GET_CLASS ((obj), OL_TYPE_CONFIG_PROXY, OlConfigProxyClass))
 
-typedef struct {
-  GObject object;
-  GDBusProxy parent;
-} OlConfigProxy;
+typedef struct _OlConfigProxy OlConfigProxy;
+typedef struct _OlConfigProxyClass OlConfigProxyClass;
 
-typedef struct {
-  GObjectClass gobject_class;
+struct _OlConfigProxy
+{
+  GDBusProxy parent;
+  gpointer priv;
+};
+
+struct _OlConfigProxyClass
+{
   GDBusProxyClass parent;
-} OlConfigProxyClass;
+};
 
 GType ol_config_proxy_get_type (void);
 
