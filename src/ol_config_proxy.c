@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <string.h>
@@ -23,12 +23,6 @@
 #include "ol_debug.h"
 
 const int DEFAULT_SYNC_TIMEOUT = 500; /* 0.5s */
-
-#define OL_CONFIG_PROXY_GET_PRIVATE(obj)                          \
-  (G_TYPE_INSTANCE_GET_PRIVATE                                    \
-   ((obj),                                                        \
-    OL_TYPE_CONFIG_PROXY,                                         \
-    OlConfigProxyPrivate))
 
 enum OlConfigProxySingals {
   SIGNAL_CHANGED = 0,
@@ -50,8 +44,6 @@ typedef struct {
 static guint _signals[LAST_SINGAL];
 static OlConfigProxy *config_proxy = NULL;
 
-G_DEFINE_TYPE (OlConfigProxy, ol_config_proxy, G_TYPE_DBUS_PROXY);
-
 static OlConfigProxy *ol_config_proxy_new (void);
 static void ol_config_proxy_finalize (GObject *object);
 static void ol_config_proxy_g_signal (GDBusProxy *proxy,
@@ -63,6 +55,9 @@ static void ol_config_proxy_value_changed_cb (OlConfigProxy *proxy,
 static GVariant *_str_list_to_variant (const gchar *const *value,
                                        gssize len);
 static gboolean _sync_default_cb (OlConfigProxy *config);
+
+G_DEFINE_TYPE_WITH_CODE (OlConfigProxy, ol_config_proxy, G_TYPE_DBUS_PROXY,
+                         G_ADD_PRIVATE (OlConfigProxy))
 
 static GVariant *
 _str_list_to_variant (const gchar *const *value,
@@ -84,7 +79,7 @@ _str_list_to_variant (const gchar *const *value,
 static gboolean
 _sync_default_cb (OlConfigProxy *config)
 {
-  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (config);
+  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (config);
   priv->default_sync_handler = 0;
   if (priv->default_builder != NULL)
   {
@@ -114,7 +109,7 @@ _sync_default_cb (OlConfigProxy *config)
 void
 ol_config_proxy_sync (OlConfigProxy *config)
 {
-  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (config);
+  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (config);
   if (priv->default_builder != NULL)
   {
     g_source_remove (priv->default_sync_handler);
@@ -125,19 +120,13 @@ ol_config_proxy_sync (OlConfigProxy *config)
 static void
 ol_config_proxy_class_init (OlConfigProxyClass *klass)
 {
-  GObjectClass *gobject_class;
   GDBusProxyClass *proxy_class;
 
   g_type_class_add_private (klass, sizeof (OlConfigProxyPrivate));
 
-  gobject_class = G_OBJECT_CLASS (klass);
-  gobject_class->finalize = ol_config_proxy_finalize;
-  /* gobject_class->get_property = org_osdlyrics_lyrics_proxy_get_property; */
-  /* gobject_class->set_property = org_osdlyrics_lyrics_proxy_set_property; */
-
   proxy_class = G_DBUS_PROXY_CLASS (klass);
   proxy_class->g_signal = ol_config_proxy_g_signal;
-  /* proxy_class->g_properties_changed = ol_lyrics_g_properties_changed; */
+
   _signals[SIGNAL_CHANGED] =
     g_signal_new ("changed",
                   G_TYPE_FROM_CLASS (klass),
@@ -153,7 +142,7 @@ ol_config_proxy_class_init (OlConfigProxyClass *klass)
 static void
 ol_config_proxy_init (OlConfigProxy *proxy)
 {
-  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (proxy);
+  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (proxy);
   priv->temp_values = g_hash_table_new_full (g_str_hash,
                                              g_str_equal,
                                              g_free,
@@ -163,7 +152,7 @@ ol_config_proxy_init (OlConfigProxy *proxy)
 static void
 ol_config_proxy_finalize (GObject *object)
 {
-  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (object);
+  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (object);
   g_hash_table_destroy (priv->temp_values);
   priv->temp_values = NULL;
   ol_config_proxy_sync (OL_CONFIG_PROXY (object));
@@ -249,7 +238,7 @@ ol_config_proxy_set (OlConfigProxy *config,
   ol_assert_ret (key != NULL && key[0] != '\0', FALSE);
   if (key[0] == '.')
   {
-    OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (config);
+    OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (config);
     g_variant_ref_sink (value);
     g_hash_table_insert (priv->temp_values,
                          g_strdup (key),
@@ -359,7 +348,7 @@ ol_config_proxy_set_default (OlConfigProxy *config,
                              GVariant *value)
 {
   ol_assert_ret (key != NULL && key[0] != '\0', FALSE);
-  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (config);
+  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (config);
   if (key[0] == '.' && !g_hash_table_lookup (priv->temp_values, key))
   {
     g_variant_ref_sink (value);
@@ -461,7 +450,7 @@ ol_config_proxy_get (OlConfigProxy *config,
   enum _GetResult ret = GET_RESULT_OK;
   GError *error = NULL;
   GVariant *value = NULL;
-  OlConfigProxyPrivate *priv = OL_CONFIG_PROXY_GET_PRIVATE (config);
+  OlConfigProxyPrivate *priv = ol_config_proxy_get_instance_private (config);
   if (key[0] == '.')
   {
     value = g_hash_table_lookup (priv->temp_values, key);
@@ -621,4 +610,3 @@ ol_config_proxy_get_str_list (OlConfigProxy *config,
     return retval;
   }
 }
-
