@@ -3,7 +3,7 @@
  * Copyright (C) 2009-2011  Tiger Soldier <tigersoldi@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <string.h>
 #include <math.h>
@@ -23,10 +23,8 @@
 #include "ol_utils.h"
 #include "ol_debug.h"
 
-#define OL_OSD_WINDOW_GET_PRIVATE(obj)   (G_TYPE_INSTANCE_GET_PRIVATE  \
-                                          ((obj),                      \
-                                           ol_osd_window_get_type (),  \
-                                           OlOsdWindowPrivate))
+#define OL_OSD_WINDOW_GET_PRIVATE(obj)  \
+    ((OlOsdWindowPrivate *)((OL_OSD_WINDOW(obj))->priv))
 
 enum {
   PROP_0,
@@ -273,7 +271,7 @@ ol_osd_window_paint_bg (OlOsdWindow *osd, cairo_t *cr)
                    sw - BORDER_WIDTH * 2, sh - BORDER_WIDTH * 2,
                    BORDER_WIDTH, BORDER_WIDTH,
                    w - BORDER_WIDTH * 2, h - BORDER_WIDTH * 2);
-    
+
     }
     else
     {
@@ -282,7 +280,7 @@ ol_osd_window_paint_bg (OlOsdWindow *osd, cairo_t *cr)
                      GTK_STATE_NORMAL, GTK_SHADOW_IN,
                      NULL, widget, "buttondefault",
                      0, 0, w, h);
-    
+
     }
   }
   return TRUE;
@@ -512,7 +510,7 @@ ol_osd_window_motion_notify (GtkWidget *widget, GdkEventMotion *event)
                                priv->old_width + priv->old_x - x,
                                height,
                                DRAG_WEST);
-                               
+
     break;
   case DRAG_NONE:
   {
@@ -888,7 +886,7 @@ ol_osd_window_compute_window_width (OlOsdWindow *osd)
   return w;
 }
 
-/** 
+/**
  * Computes the height of the OSD Window
  *
  * The computation relies on the height of OSD text and child widget. It should be
@@ -896,8 +894,8 @@ ol_osd_window_compute_window_width (OlOsdWindow *osd)
  * updated.
  *
  * Please note that the computed height does NOT consider the constrain of screen
- * @param osd 
- * 
+ * @param osd
+ *
  * @return The height of the widget
  */
 static int
@@ -918,7 +916,7 @@ ol_osd_window_compute_osd_height (OlOsdWindow *osd)
                  DEFAULT_HEIGHT);
   OlOsdWindowPrivate *priv = OL_OSD_WINDOW_GET_PRIVATE (osd);
   int font_height = ol_osd_render_get_font_height (osd->render_context);
-  
+
   int height = font_height *
     (osd->line_count + (osd->line_count - 1) * LINE_PADDING) +
     ol_osd_render_get_outline_width (osd->render_context);
@@ -1435,7 +1433,7 @@ ol_osd_window_set_input_shape_mask (OlOsdWindow *osd, gboolean disable_input)
   GtkWidget *widget = GTK_WIDGET (osd);
   ol_assert (GTK_WIDGET_REALIZED (widget));
   if (disable_input)
-  {    
+  {
     GdkRegion *region = gdk_region_new ();
     gdk_window_input_shape_combine_region (GTK_WIDGET (osd)->window, region, 0, 0);
     gdk_region_destroy (region);
@@ -1446,14 +1444,14 @@ ol_osd_window_set_input_shape_mask (OlOsdWindow *osd, gboolean disable_input)
   }
 }
 
-/** 
+/**
  * Computes the position and size when constraining the window to be inside a screen
- * 
- * @param osd 
- * @param x 
- * @param y 
- * @param width 
- * @param height 
+ *
+ * @param osd
+ * @param x
+ * @param y
+ * @param width
+ * @param height
  * @param drag_state The hint of drag type. If the window is outside the screen,
  *                   drag_type determines how to constrain the window:
  *                   DRAG_MOVE: constrain the window by change position
@@ -1528,16 +1526,16 @@ ol_osd_window_queue_resize (OlOsdWindow *osd)
                              DRAG_NONE);
 }
 
-/** 
+/**
  * Move and resize the OSD Window.
  *
  * The coordinations and size are raw values, which means does not honor the size
  * of the child widget.
- * 
- * @param osd 
- * @param raw_x 
- * @param raw_y 
- * @param width 
+ *
+ * @param osd
+ * @param raw_x
+ * @param raw_y
+ * @param width
  * @param drag_state See long comment of ol_osd_window_compute_constrain
 */
 static void
@@ -1625,7 +1623,7 @@ ol_osd_window_class_init (OlOsdWindowClass *klass)
   gobject_class->get_property = ol_osd_window_get_property;
 
   object_class->destroy = ol_osd_window_destroy;
-  
+
   widget_class->size_allocate = ol_osd_window_size_allocate;
   widget_class->size_request = ol_osd_window_size_request;
   widget_class->enter_notify_event = ol_osd_window_enter_notify;
@@ -1693,89 +1691,114 @@ ol_osd_window_get_property (GObject *object, guint prop_id,
     break;
   }
 }
-  
+
 static void
 ol_osd_window_init (OlOsdWindow *osd)
 {
-  ol_log_func ();
-  GtkWindow *window = GTK_WINDOW (osd);
-  OlOsdWindowPrivate *priv = OL_OSD_WINDOW_GET_PRIVATE (osd);
-  window->type = GTK_WINDOW_TOPLEVEL;
-  GValue allow_shrink = {0};
-  g_value_init (&allow_shrink, G_TYPE_BOOLEAN);
-  g_value_set_boolean (&allow_shrink, TRUE);
-  g_object_set_property (G_OBJECT (window), "allow-shrink", &allow_shrink);
-  g_value_unset (&allow_shrink);
-  
-  gtk_window_set_decorated (window, FALSE);
-  gtk_widget_set_app_paintable (GTK_WIDGET (osd), TRUE);
-  osd->current_line = 0;
-  osd->bg_pixbuf = NULL;
-  osd->line_count = 1;
-  int i;
-  for (i = 0; i < OL_OSD_WINDOW_MAX_LINE_COUNT; i++)
+  /* Allocate Private data structure */
+  (OL_OSD_WINDOW(osd))->priv = \
+      (OlOsdWindowPrivate *) g_malloc0(sizeof(OlOsdWindowPrivate));
+  /* If correctly allocated, initialize parameters */
+  if((OL_OSD_WINDOW(osd))->priv != NULL)
   {
-    osd->lyrics[i] = NULL;
-    osd->line_alignment[i] = 0.5;
-    osd->percentage[i] = 0.0;
-    priv->active_lyric_surfaces[i] = NULL;
-    priv->inactive_lyric_surfaces[i] = NULL;
-    osd->lyric_rects[i].x = 0;
-    osd->lyric_rects[i].y = 0;
-    osd->lyric_rects[i].width = 0;
-    osd->lyric_rects[i].height = 0;
+    ol_log_func ();
+    GtkWindow *window = GTK_WINDOW (osd);
+    OlOsdWindowPrivate *priv = OL_OSD_WINDOW_GET_PRIVATE(osd);
+
+    window->type = GTK_WINDOW_TOPLEVEL;
+    GValue allow_shrink = {0};
+    g_value_init (&allow_shrink, G_TYPE_BOOLEAN);
+    g_value_set_boolean (&allow_shrink, TRUE);
+    g_object_set_property (G_OBJECT (window), "allow-shrink", &allow_shrink);
+    g_value_unset (&allow_shrink);
+
+    gtk_window_set_decorated (window, FALSE);
+    gtk_widget_set_app_paintable (GTK_WIDGET (osd), TRUE);
+    osd->current_line = 0;
+    osd->bg_pixbuf = NULL;
+    osd->line_count = 1;
+    int i;
+    for (i = 0; i < OL_OSD_WINDOW_MAX_LINE_COUNT; i++)
+    {
+      osd->lyrics[i] = NULL;
+      osd->line_alignment[i] = 0.5;
+      osd->percentage[i] = 0.0;
+      priv->active_lyric_surfaces[i] = NULL;
+      priv->inactive_lyric_surfaces[i] = NULL;
+      osd->lyric_rects[i].x = 0;
+      osd->lyric_rects[i].y = 0;
+      osd->lyric_rects[i].width = 0;
+      osd->lyric_rects[i].height = 0;
+    }
+    for (i = 0; i < OL_LINEAR_COLOR_COUNT; i++)
+    {
+      osd->active_colors[i] = DEFAULT_ACTIVE_COLORS[i];
+      osd->inactive_colors[i] = DEFAULT_INACTIVE_COLORS[i];
+    }
+    osd->render_context = ol_osd_render_context_new ();
+    osd->translucent_on_mouse_over = FALSE;
+    /* initilaize private data */
+    priv->shape_pixmap = NULL;
+    priv->width = DEFAULT_WIDTH;
+    priv->locked = TRUE;
+    priv->composited = FALSE;
+    priv->visible = FALSE;
+    priv->mouse_timer_id = 0;
+    priv->configure_event = 0;
+    priv->child_requisition.width = 0;
+    priv->child_requisition.height = 0;
+    priv->mouse_over_lyrics = FALSE;
+    priv->composited_signal = 0;
+    priv->raw_x = 0;
+    priv->raw_y = 0;
+    priv->drag_state = DRAG_NONE;
+    priv->update_shape = FALSE;
+    priv->blur_radius = 0.0;
+    /* ol_osd_window_set_mode (osd, OL_OSD_WINDOW_DOCK); */
+    ol_osd_window_set_mode (osd, OL_OSD_WINDOW_NORMAL);
+    ol_osd_window_update_colormap (osd);
+    ol_osd_window_screen_composited_changed (gtk_widget_get_screen (GTK_WIDGET (osd)),
+                                             osd);
+    gtk_widget_add_events(GTK_WIDGET(osd),
+                          GDK_BUTTON_PRESS_MASK |
+                          GDK_BUTTON_RELEASE_MASK |
+                          GDK_POINTER_MOTION_MASK);
+    g_signal_connect (G_OBJECT (osd), "button-press-event",
+                      G_CALLBACK (ol_osd_window_button_press), osd);
+    g_signal_connect (G_OBJECT (osd), "button-release-event",
+                      G_CALLBACK (ol_osd_window_button_release), osd);
+    g_signal_connect (G_OBJECT (osd), "motion-notify-event",
+                      G_CALLBACK (ol_osd_window_motion_notify), osd);
+    g_signal_connect (G_OBJECT (osd), "expose-event",
+                      G_CALLBACK (ol_osd_window_expose_before), osd);
+    g_signal_connect_after (G_OBJECT (osd), "expose-event",
+                            G_CALLBACK (ol_osd_window_expose_after), osd);
+    g_signal_connect (G_OBJECT (osd), "map-event",
+                      G_CALLBACK (ol_osd_window_map_cb), osd);
+    g_signal_connect (G_OBJECT (osd), "unmap-event",
+                      G_CALLBACK (ol_osd_window_unmap_cb), osd);
+    g_signal_connect (G_OBJECT (osd), "realize",
+                      G_CALLBACK (ol_osd_window_realize_cb), osd);
+    g_signal_connect (G_OBJECT (osd), "unrealize",
+                      G_CALLBACK (ol_osd_window_unrealize_cb), osd);
   }
-  for (i = 0; i < OL_LINEAR_COLOR_COUNT; i++)
-  {
-    osd->active_colors[i] = DEFAULT_ACTIVE_COLORS[i];
-    osd->inactive_colors[i] = DEFAULT_INACTIVE_COLORS[i];
-  }
-  osd->render_context = ol_osd_render_context_new ();
-  osd->translucent_on_mouse_over = FALSE;
-  /* initilaize private data */
-  priv->shape_pixmap = NULL;
-  priv->width = DEFAULT_WIDTH;
-  priv->locked = TRUE;
-  priv->composited = FALSE;
-  priv->visible = FALSE;
-  priv->mouse_timer_id = 0;
-  priv->configure_event = 0;
-  priv->child_requisition.width = 0;
-  priv->child_requisition.height = 0;
-  priv->mouse_over_lyrics = FALSE;
-  priv->composited_signal = 0;
-  priv->raw_x = 0;
-  priv->raw_y = 0;
-  priv->drag_state = DRAG_NONE;
-  priv->update_shape = FALSE;
-  priv->blur_radius = 0.0;
-  /* ol_osd_window_set_mode (osd, OL_OSD_WINDOW_DOCK); */
-  ol_osd_window_set_mode (osd, OL_OSD_WINDOW_NORMAL);
-  ol_osd_window_update_colormap (osd);
-  ol_osd_window_screen_composited_changed (gtk_widget_get_screen (GTK_WIDGET (osd)),
-                                           osd);
-  gtk_widget_add_events(GTK_WIDGET(osd),
-                        GDK_BUTTON_PRESS_MASK |
-                        GDK_BUTTON_RELEASE_MASK |
-                        GDK_POINTER_MOTION_MASK);
-  g_signal_connect (G_OBJECT (osd), "button-press-event",
-                    G_CALLBACK (ol_osd_window_button_press), osd);
-  g_signal_connect (G_OBJECT (osd), "button-release-event",
-                    G_CALLBACK (ol_osd_window_button_release), osd);
-  g_signal_connect (G_OBJECT (osd), "motion-notify-event",
-                    G_CALLBACK (ol_osd_window_motion_notify), osd);
-  g_signal_connect (G_OBJECT (osd), "expose-event",
-                    G_CALLBACK (ol_osd_window_expose_before), osd);
-  g_signal_connect_after (G_OBJECT (osd), "expose-event",
-                          G_CALLBACK (ol_osd_window_expose_after), osd);
-  g_signal_connect (G_OBJECT (osd), "map-event",
-                    G_CALLBACK (ol_osd_window_map_cb), osd);
-  g_signal_connect (G_OBJECT (osd), "unmap-event",
-                    G_CALLBACK (ol_osd_window_unmap_cb), osd);
-  g_signal_connect (G_OBJECT (osd), "realize",
-                    G_CALLBACK (ol_osd_window_realize_cb), osd);
-  g_signal_connect (G_OBJECT (osd), "unrealize",
-                    G_CALLBACK (ol_osd_window_unrealize_cb), osd);
+}
+
+static void
+ol_osd_window_dispose(GObject *object)
+{
+    OlOsdWindow *self = (OlOsdWindow *)object;
+    OlOsdWindowPrivate *priv = OL_OSD_WINDOW_GET_PRIVATE(self);
+    /* Check if not NULL! To avoid calling dispose multiple times */
+    if(priv != NULL)
+    {
+        /* Deallocate contents of the private data, if any */
+        /* Deallocate private data structure */
+        g_free(priv);
+        /* And finally set the opaque pointer back to NULL, so that
+         *  we don't deallocate it twice. */
+        (OL_OSD_WINDOW(self))->priv = NULL;
+    }
 }
 
 GtkWidget*
@@ -1920,7 +1943,7 @@ void
 ol_osd_window_set_line_count (OlOsdWindow *osd,
                               guint line_count)
 {
-  ol_assert (OL_IS_OSD_WINDOW (osd)); 
+  ol_assert (OL_IS_OSD_WINDOW (osd));
   ol_assert (line_count >= 1 && line_count <= 2);
   osd->line_count = line_count;
   ol_osd_window_queue_resize (osd);
@@ -2020,7 +2043,7 @@ ol_osd_window_should_blur (OlOsdWindow *osd)
   return priv->composited || priv->mode == OL_OSD_WINDOW_NORMAL;
 }
 
-/** 
+/**
  * Sets the blur radius of renderer if possible.
  */
 static void
