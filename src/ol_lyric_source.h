@@ -3,7 +3,7 @@
  * Copyright (C) 2012  Tiger Soldier <tigersoldier@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #ifndef _OL_LYRIC_SOURCE_H_
@@ -158,14 +158,14 @@ typedef struct _OlLyricSourceCandidateClass OlLyricSourceCandidateClass;
 typedef struct _OlLyricSourceInfo OlLyricSourceInfo;
 struct _OlLyricSourceInfo;
 
-/** 
+/**
  * Prototype of callback function of 'complete' signal in
  * OlLyricSourceSearchTask.
- * 
+ *
  * @param task The task object that emits this signal.
  * @param status The status of the search task.
  * @param results A list of OlLyricSourceCandidate* objects.
- * @param userdata 
+ * @param userdata
  */
 typedef void (*OlSearchCompleteFunc) (OlLyricSourceSearchTask *task,
                                       enum OlLyricSourceStatus status,
@@ -176,16 +176,16 @@ typedef void (*OlSearchStartedFunc) (OlLyricSourceSearchTask *task,
                                      const gchar *sourcename,
                                      gpointer userdata);
 
-/** 
+/**
  * Prototype of callback function of 'complete' signal in
  * OlLyricSourceDownloadTask.
- * 
+ *
  * @param task The task that emits this signal.
  * @param status The status of the download task.
  * @param content If status is OL_LYRIC_SOURCE_STATUS_SUCCESS, this
  *        value is the content of the downloaded lyric file.
  * @param len The length of the content.
- * @param userdata 
+ * @param userdata
  */
 typedef void (*OlDownloadCompleteFunc) (OlLyricSourceDownloadTask *task,
                                         enum OlLyricSourceStatus status,
@@ -196,6 +196,7 @@ typedef void (*OlDownloadCompleteFunc) (OlLyricSourceDownloadTask *task,
 struct _OlLyricSourceTask
 {
   GObject parent;
+  gpointer priv;
 };
 
 struct _OlLyricSourceTaskClass
@@ -227,16 +228,19 @@ struct _OlLyricSourceDownloadTaskClass
 struct _OlLyricSource
 {
   GDBusProxy parent;
+  gpointer priv;
 };
 
 struct _OlLyricSourceClass
 {
   GDBusProxyClass parent_class;
+  gpointer priv;
 };
 
 struct _OlLyricSourceCandidate
 {
   GObject parent;
+  gpointer priv;
 };
 
 struct _OlLyricSourceCandidateClass
@@ -245,28 +249,28 @@ struct _OlLyricSourceCandidateClass
 };
 
 /* OlLyricSource */
-/** 
+/**
  * Creates a new lyric source proxy
- * 
+ *
  */
 OlLyricSource *ol_lyric_source_new (void);
 GType ol_lyric_source_get_type (void);
 /**
  * Lists all the available sources.
- * 
+ *
  * @param source The lyric source proxy.
- * 
+ *
  * @return A list of `OlLyricSourceInfo*`. Caller should free this list and its
  * elements.
  */
 GList *ol_lyric_source_list_sources (OlLyricSource* source);
 /**
  * Search lyrics for a given metadata.
- * 
+ *
  * @param source The lyric source proxy.
  * @param metadata The metadata to be searched for.
  * @param source_ids A list of gchar *. The ID of lyric sources.
- * 
+ *
  * @return An OlLyricSourceSearchTask object of the search task. The
  * lyric source proxy owns a reference of it. If you want to take a
  * reference to the returned object, use g_object_ref().
@@ -276,10 +280,10 @@ OlLyricSourceSearchTask *ol_lyric_source_search (OlLyricSource *source,
                                                  GList *source_ids);
 /**
  * Search for lyrics with default lyric sources.
- * 
+ *
  * @param source The lyric source proxy.
  * @param metadata The metadata to be searched for.
- * 
+ *
  * @return An OlLyricSourceSearchTask object of the search task. The
  * lyric source proxy owns a reference of it. If you want to take a
  * reference to the returned object, use g_object_ref().
@@ -288,10 +292,10 @@ OlLyricSourceSearchTask *ol_lyric_source_search_default (OlLyricSource *source,
                                                          OlMetadata *metadata);
 /**
  * Download a lyric file provided by a candidate.
- * 
+ *
  * @param source The lyric source proxy.
  * @param candidate The candidate.
- * 
+ *
  * @return An OlLyricSourceDownloadTask object of the search task. If
  * you want to take a reference to the returned object, use
  * g_object_ref().
