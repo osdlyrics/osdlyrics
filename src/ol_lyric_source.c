@@ -711,6 +711,32 @@ ol_lyric_source_candidate_class_init (OlLyricSourceCandidateClass *klass)
 static void
 ol_lyric_source_candidate_init (OlLyricSourceCandidate *source)
 {
+  /* Allocate Private data structure */
+  (OL_LYRIC_SOURCE_CANDIDATE(source))->priv = \
+    (OlLyricSourceCandidatePrivate *) g_malloc0(sizeof(OlLyricSourceCandidatePrivate));
+  /* If correctly allocated, initialize parameters */
+  if((OL_LYRIC_SOURCE_CANDIDATE(source))->priv != NULL)
+  {
+    OlLyricSourceCandidatePrivate *priv = OL_LYRIC_SOURCE_CANDIDATE_GET_PRIVATE(source);
+    /* Initialize private data, if any */
+  }
+}
+
+static void
+ol_lyric_source_candidate_dispose(GObject *object)
+{
+  OlLyricSourceCandidate *self = (OlLyricSourceCandidate *)object;
+  OlLyricSourceCandidatePrivate *priv = OL_LYRIC_SOURCE_CANDIDATE_GET_PRIVATE(self);
+  /* Check if not NULL! To avoid calling dispose multiple times */
+  if(priv != NULL)
+  {
+    /* Deallocate contents of the private data, if any */
+    /* Deallocate private data structure */
+    g_free(priv);
+    /* And finally set the opaque pointer back to NULL, so that
+     *  we don't deallocate it twice. */
+    (OL_LYRIC_SOURCE_CANDIDATE(self))->priv = NULL;
+  }
 }
 
 static OlLyricSourceCandidate *
@@ -967,6 +993,31 @@ ol_lyric_source_task_class_init (OlLyricSourceTaskClass *klass)
 static void
 ol_lyric_source_task_init (OlLyricSourceTask *task)
 {
+  /* Allocate Private data structure */
+  (OL_LYRIC_SOURCE_TASK(task))->priv = \
+    (OlLyricSourceTaskPrivate *) g_malloc0(sizeof(OlLyricSourceTaskPrivate));
+  /* If correctly allocated, initialize parameters */
+  if((OL_LYRIC_SOURCE_TASK(task))->priv != NULL)
+  {
+    OlLyricSourceTaskPrivate *priv = OL_LYRIC_SOURCE_TASK_GET_PRIVATE(task);
+  }
+}
+
+static void
+ol_lyric_source_task_dispose(GObject *object)
+{
+  OlLyricSourceTask *self = (OlLyricSourceTask *)object;
+  OlLyricSourceTaskPrivate *priv = OL_LYRIC_SOURCE_TASK_GET_PRIVATE(self);
+  /* Check if not NULL! To avoid calling dispose multiple times */
+  if(priv != NULL)
+  {
+    /* Deallocate contents of the private data, if any */
+    /* Deallocate private data structure */
+    g_free(priv);
+    /* And finally set the opaque pointer back to NULL, so that
+     *  we don't deallocate it twice. */
+    (OL_LYRIC_SOURCE_TASK(self))->priv = NULL;
+  }
 }
 
 static void
