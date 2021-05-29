@@ -5,7 +5,7 @@ m4_define([OL_MINOR_VER], [5])
 m4_define([OL_MICRO_VER], [5])
 m4_define([OL_BUILD], [-git])
 m4_define(OL_BUILD_VER,
-          m4_esyscmd_s([if test 'x]OL_BUILD[' = 'x-git'; then (git log -1 --format=format:%ad --date=short 2>/dev/null || date -u -r ChangeLog +%Y%m%d) | sed 's/-//g'; fi]))
+          m4_esyscmd_s([if test 'x]OL_BUILD[' = 'x-git'; then (git log -1 --format=format:%ad --date=short 2>/dev/null || date -u +%Y%m%d) | sed 's/-//g'; fi]))
 
 m4_define([OL_VERSION], [OL_MAJOR_VER.OL_MINOR_VER.OL_MICRO_VER[]OL_BUILD[]OL_BUILD_VER])
 AC_INIT([osdlyrics], [OL_VERSION], [https://github.com/osdlyrics/osdlyrics/issues])
@@ -138,7 +138,11 @@ GETTEXT_PACKAGE=osdlyrics
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE", [Gettext package])
 IT_PROG_INTLTOOL([0.35.0])
-AM_GLIB_GNU_GETTEXT
+AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.19])
+m4_ifdef([AM_GNU_GETTEXT_REQUIRE_VERSION],
+         [AM_GNU_GETTEXT_REQUIRE_VERSION([0.19])]
+)
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h string.h])
