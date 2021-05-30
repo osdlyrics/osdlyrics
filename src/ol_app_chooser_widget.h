@@ -21,7 +21,15 @@
 #ifndef _OL_APP_CHOOSER_WIDGET_H_
 #define _OL_APP_CHOOSER_WIDGET_H_
 
-#include <gtk/gtk.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtktable.h>
+#include <gtk/gtkicontheme.h>
+#include <gtk/gtklabel.h>
+#include <gtk/gtkimage.h>
+#include <gtk/gtkvbox.h>
+#include <gtk/gtkframe.h>
+#include <gtk/gtkbutton.h>
+#include <gtk/gtkaspectframe.h>
 
 typedef struct {
   GtkWidget widget;
