@@ -3,7 +3,7 @@
  * Copyright (C) 2011  Tiger Soldier <tigersoldi@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <gio/gio.h>
@@ -33,8 +33,8 @@
     }                                                           \
   } while (0);
 
-#define OL_PLAYER_GET_PRIVATE(object)                                   \
-  (G_TYPE_INSTANCE_GET_PRIVATE ((object), OL_TYPE_PLAYER, OlPlayerPrivate))
+#define OL_PLAYER_GET_PRIVATE(object) \
+  ((OlPlayerPrivate *)((OL_PLAYER(object))->priv))
 
 const int POSITION_ACCURACY_MS = 1000;
 
@@ -152,7 +152,7 @@ ol_player_class_init (OlPlayerClass *klass)
   /* gklass->set_property = ol_player_set_property; */
   /* gklass->get_property = ol_player_get_property; */
   gklass->finalize = ol_player_finalize;
-  
+
   signals[PLAYER_LOST] =
     g_signal_new ("player-lost",
                   G_TYPE_FROM_CLASS (klass),
@@ -210,16 +210,40 @@ ol_player_new (void)
 static void
 ol_player_init (OlPlayer *player)
 {
-  OlPlayerPrivate *private = OL_PLAYER_GET_PRIVATE (player);
-  private->metadata = ol_metadata_new ();
-  private->status = OL_PLAYER_UNKNOWN;
-  private->caps = 0;
-  private->initialized = FALSE;
-  /* TODO: Initialize player info */
-  private->timeline = ol_timeline_new ();
-  ol_player_init_proxy (player);
-  ol_player_init_mpris2_proxy (player);
-  ol_player_fetch_player_info_async (player);
+  /* Allocate Private data structure */
+  (OL_PLAYER(player))->priv = \
+      (OlPlayerPrivate *) g_malloc0(sizeof(OlPlayerPrivate));
+  /* If correctly allocated, initialize parameters */
+  if((OL_PLAYER(player))->priv != NULL)
+  {
+    OlPlayerPrivate *private = OL_PLAYER_GET_PRIVATE (player);
+    private->metadata = ol_metadata_new ();
+    private->status = OL_PLAYER_UNKNOWN;
+    private->caps = 0;
+    private->initialized = FALSE;
+    /* TODO: Initialize player info */
+    private->timeline = ol_timeline_new ();
+    ol_player_init_proxy (player);
+    ol_player_init_mpris2_proxy (player);
+    ol_player_fetch_player_info_async (player);
+  }
+}
+
+static void
+ol_player_dispose(GObject *object)
+{
+    OlPlayer *self = (OlPlayer *)object;
+    OlPlayerPrivate *priv = OL_PLAYER_GET_PRIVATE(self);
+    /* Check if not NULL! To avoid calling dispose multiple times */
+    if(priv != NULL)
+    {
+        /* Deallocate contents of the private data, if any */
+        /* Deallocate private data structure */
+        g_free(priv);
+        /* And finally set the opaque pointer back to NULL, so that
+         *  we don't deallocate it twice. */
+        (OL_PLAYER(self))->priv = NULL;
+    }
 }
 
 static void
@@ -527,7 +551,7 @@ ol_player_fetch_player_info_cb (GObject *source_object,
   if (private->cancel_player_info)
   {
     g_object_unref (private->cancel_player_info);
-    
+
   }
 }
 

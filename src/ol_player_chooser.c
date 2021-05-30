@@ -3,7 +3,7 @@
  * Copyright (C) 2011  Tiger Soldier <tigersoldier@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "ol_player_chooser.h"
 #include "ol_app_chooser_widget.h"
@@ -25,10 +25,9 @@
 #include "ol_config_proxy.h"
 #include "ol_debug.h"
 
-#define OL_PLAYER_CHOOSER_GET_PRIVATE(obj)   (G_TYPE_INSTANCE_GET_PRIVATE  \
-                                              ((obj),                   \
-                                               ol_player_chooser_get_type (), \
-                                               OlPlayerChooserPrivate))
+#define OL_PLAYER_CHOOSER_GET_PRIVATE(obj) \
+    ((OlPlayerChooserPrivate *)((OL_PLAYER_CHOOSER(obj))->priv))
+
 static const guint SUPPORT_CHOOSER_INDEX = 0;
 static const guint ALL_CHOOSER_INDEX = 1;
 static const guint MAX_CHOOSER_HEIGHT = 96 * 3; /* about 3 lines of apps */
@@ -109,10 +108,34 @@ ol_player_chooser_class_init (OlPlayerChooserClass *klass)
 static void
 ol_player_chooser_init (OlPlayerChooser *window)
 {
-  OlPlayerChooserPrivate *priv = OL_PLAYER_CHOOSER_GET_PRIVATE (window);
-  priv->pages = g_ptr_array_new_with_free_func (g_free);
-  priv->page_button_group = NULL;
-  _setup_ui (window);
+  /* Allocate Private data structure */
+  (OL_PLAYER_CHOOSER(window))->priv = \
+    (OlPlayerChooserPrivate *) g_malloc0(sizeof(OlPlayerChooserPrivate));
+  /* If correctly allocated, initialize parameters */
+  if((OL_PLAYER_CHOOSER(window))->priv != NULL)
+  {
+    OlPlayerChooserPrivate *priv = OL_PLAYER_CHOOSER_GET_PRIVATE (window);
+    priv->pages = g_ptr_array_new_with_free_func (g_free);
+    priv->page_button_group = NULL;
+    _setup_ui (window);
+  }
+}
+
+static void
+ol_player_chooser_dispose(GObject *object)
+{
+    OlPlayerChooser *self = (OlPlayerChooser *)object;
+    OlPlayerChooserPrivate *priv = OL_PLAYER_CHOOSER_GET_PRIVATE(self);
+    /* Check if not NULL! To avoid calling dispose multiple times */
+    if(priv != NULL)
+    {
+        /* Deallocate contents of the private data, if any */
+        /* Deallocate private data structure */
+        g_free(priv);
+        /* And finally set the opaque pointer back to NULL, so that
+         *  we don't deallocate it twice. */
+        (OL_PLAYER_CHOOSER(self))->priv = NULL;
+    }
 }
 
 static void
@@ -212,7 +235,7 @@ _set_apps_to_page (OlPlayerChooser *window,
   gint box_height;
   gtk_widget_size_request (GTK_WIDGET (chooser), &chooser_req);
   gtk_widget_get_size_request (GTK_WIDGET (priv->chooser_panel), NULL, &box_height);
-  gint height = MIN (MAX_CHOOSER_HEIGHT, 
+  gint height = MIN (MAX_CHOOSER_HEIGHT,
                      MAX (chooser_req.height, box_height));
   if (height != box_height)
     gtk_widget_set_size_request (GTK_WIDGET (priv->chooser_panel),

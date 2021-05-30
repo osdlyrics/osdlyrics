@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "ol_image_button.h"
 #include "ol_debug.h"
@@ -27,10 +27,9 @@ enum ImageIndex {
   STATE_DISABLED,
   SLICE_NUM,
 };
-#define OL_IMAGE_BUTTON_GET_PRIVATE(obj)   (G_TYPE_INSTANCE_GET_PRIVATE \
-                                            ((obj),                     \
-                                             ol_image_button_get_type (),  \
-                                             OlImageButtonPriv))
+#define OL_IMAGE_BUTTON_GET_PRIVATE(obj) \
+    ((OlImageButtonPriv *)((OL_IMAGE_BUTTON(obj))->priv))
+
 typedef struct _OlImageButtonPriv OlImageButtonPriv;
 struct _OlImageButtonPriv
 {
@@ -118,7 +117,7 @@ ol_image_button_expose (GtkWidget *widget,
     cairo_rectangle (cr, x, y,
                      sw, sh);
     cairo_clip (cr);
-    
+
     int img_index = STATE_NORMAL;
     GtkStateType state = GTK_WIDGET_STATE (widget);
     if (state == GTK_STATE_ACTIVE)
@@ -153,8 +152,32 @@ ol_image_button_class_init (OlImageButtonClass *klass)
 static void
 ol_image_button_init (OlImageButton *btn)
 {
-  OlImageButtonPriv *priv = OL_IMAGE_BUTTON_GET_PRIVATE (btn);
-  priv->image = NULL;
+  /* Allocate Private data structure */
+  (OL_IMAGE_BUTTON(btn))->priv = \
+      (OlImageButtonPriv *) g_malloc0(sizeof(OlImageButtonPriv));
+  /* If correctly allocated, initialize parameters */
+  if((OL_IMAGE_BUTTON(btn))->priv != NULL)
+  {
+    OlImageButtonPriv *priv = OL_IMAGE_BUTTON_GET_PRIVATE (btn);
+    priv->image = NULL;
+  }
+}
+
+static void
+ol_image_button_dispose(GObject *object)
+{
+    OlImageButton *self = (OlImageButton *)object;
+    OlImageButtonPriv *priv = OL_IMAGE_BUTTON_GET_PRIVATE(self);
+    /* Check if not NULL! To avoid calling dispose multiple times */
+    if(priv != NULL)
+    {
+        /* Deallocate contents of the private data, if any */
+        /* Deallocate private data structure */
+        g_free(priv);
+        /* And finally set the opaque pointer back to NULL, so that
+         *  we don't deallocate it twice. */
+        (OL_IMAGE_BUTTON(self))->priv = NULL;
+    }
 }
 
 static void

@@ -62,6 +62,7 @@ typedef struct _OlPlayerClass OlPlayerClass;
 struct _OlPlayer
 {
   GObject parent;
+  gpointer priv; /** Private data pointer */
 };
 
 struct _OlPlayerClass
@@ -71,11 +72,11 @@ struct _OlPlayerClass
 
 GType ol_player_get_type (void);
 
-/** 
+/**
  * Creates a new instance of OlPlayer
- * 
- * 
- * @return 
+ *
+ *
+ * @return
  */
 OlPlayer *ol_player_new (void);
 

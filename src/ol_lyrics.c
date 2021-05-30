@@ -16,8 +16,8 @@ enum {
 
 static guint signals[LAST_SIGNAL] = { 0 };
 
-#define OL_LYRICS_GET_PRIVATE(object)                                 \
-  (G_TYPE_INSTANCE_GET_PRIVATE ((object), OL_TYPE_LYRICS, OlLyricsPrivate))
+#define OL_LYRICS_GET_PRIVATE(object) \
+    ((OlLyricsPrivate *)((OL_LYRICS(object))->priv))
 
 static void ol_lyrics_finalize (GObject *object);
 static void ol_lyrics_g_signal (GDBusProxy *proxy,

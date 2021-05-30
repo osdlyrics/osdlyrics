@@ -3,7 +3,7 @@
  * Copyright (C) 2009-2011  Tiger Soldier <tigersoldi@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,17 +15,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "ol_osd_toolbar.h"
 #include "ol_image_button.h"
 #include "ol_stock.h"
 #include "ol_debug.h"
 
-#define OL_OSD_TOOLBAR_GET_PRIVATE(obj)   (G_TYPE_INSTANCE_GET_PRIVATE \
-                                            ((obj),                     \
-                                             ol_osd_toolbar_get_type (),  \
-                                             OlOsdToolbarPriv))
+#define OL_OSD_TOOLBAR_GET_PRIVATE(obj) \
+    ((OlOsdToolbarPriv *)((OL_OSD_TOOLBAR(obj))->priv))
+
 typedef struct _OlOsdToolbarPriv OlOsdToolbarPriv;
 struct _OlOsdToolbarPriv
 {
@@ -147,7 +146,7 @@ _add_button (OlOsdToolbar *toolbar,
                                                   btn_spec->stock,
                                                   16,
                                                   0);
-  
+
   GdkPixbuf *image = gdk_pixbuf_new_from_file (gtk_icon_info_get_filename (info),
                                                NULL);
   gtk_icon_info_free (info);
@@ -238,20 +237,44 @@ ol_osd_toolbar_class_init (OlOsdToolbarClass *klass)
 static void
 ol_osd_toolbar_init (OlOsdToolbar *toolbar)
 {
-  OlOsdToolbarPriv *priv = OL_OSD_TOOLBAR_GET_PRIVATE (toolbar);
-  gtk_alignment_set (GTK_ALIGNMENT (toolbar), 0.5, 0.5, 0.0, 0.0);
-  toolbar->center_box = GTK_HBOX (gtk_hbox_new (FALSE, 0));
-  gtk_container_add (GTK_CONTAINER (toolbar), GTK_WIDGET (toolbar->center_box));
-  
-  toolbar->prev_button = _add_button (toolbar, &btn_spec[BTN_PREV]);
-  toolbar->play_button = _add_button (toolbar, &btn_spec[BTN_PLAY]);
-  toolbar->pause_button = _add_button (toolbar, &btn_spec[BTN_PAUSE]);
-  toolbar->stop_button = _add_button (toolbar, &btn_spec[BTN_STOP]);
-  toolbar->next_button = _add_button (toolbar, &btn_spec[BTN_NEXT]);
+  /* Allocate Private data structure */
+  (OL_OSD_TOOLBAR(toolbar))->priv = \
+     (OlOsdToolbarPriv *) g_malloc0(sizeof(OlOsdToolbarPriv));
+  /* If correctly allocated, initialize parameters */
+  if((OL_OSD_TOOLBAR(toolbar))->priv != NULL)
+  {
+    OlOsdToolbarPriv *priv = OL_OSD_TOOLBAR_GET_PRIVATE (toolbar);
+    gtk_alignment_set (GTK_ALIGNMENT (toolbar), 0.5, 0.5, 0.0, 0.0);
+    toolbar->center_box = GTK_HBOX (gtk_hbox_new (FALSE, 0));
+    gtk_container_add (GTK_CONTAINER (toolbar), GTK_WIDGET (toolbar->center_box));
 
-  priv->player = NULL;
-  _update_status (toolbar);
-  _update_caps (toolbar);
+    toolbar->prev_button = _add_button (toolbar, &btn_spec[BTN_PREV]);
+    toolbar->play_button = _add_button (toolbar, &btn_spec[BTN_PLAY]);
+    toolbar->pause_button = _add_button (toolbar, &btn_spec[BTN_PAUSE]);
+    toolbar->stop_button = _add_button (toolbar, &btn_spec[BTN_STOP]);
+    toolbar->next_button = _add_button (toolbar, &btn_spec[BTN_NEXT]);
+
+    priv->player = NULL;
+    _update_status (toolbar);
+    _update_caps (toolbar);
+  }
+}
+
+static void
+my_gobject_dispose(GObject *object)
+{
+    OlOsdToolbar *toolbar = (OlOsdToolbar *)object;
+    OlOsdToolbarPriv *priv = OL_OSD_TOOLBAR_GET_PRIVATE (toolbar);
+    /* Check if not NULL! To avoid calling dispose multiple times */
+    if(priv != NULL)
+    {
+        /* Deallocate contents of the private data, if any */
+        /* Deallocate private data structure */
+        g_free(priv);
+        /* And finally set the opaque pointer back to NULL, so that
+         *  we don't deallocate it twice. */
+        (OL_OSD_TOOLBAR(toolbar))->priv = NULL;
+    }
 }
 
 static void

@@ -4,7 +4,7 @@
  * Copyright (C) 2011  Tiger Soldier <tigersoldier@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #ifndef __SCROLL_WINDOW_H_
 #define __SCROLL_WINDOW_H_
@@ -45,6 +45,7 @@ struct _OlScrollWindow
   double percentage;
   GPtrArray *whole_lyrics;
   gint current_lyric_id;
+  gpointer priv; /** Private data pointer */
 };
 
 
@@ -55,14 +56,14 @@ struct _OlScrollWindowClass
 
 GtkType ol_scroll_window_get_type (void);
 
-/** 
- * @brief create a new Scroll Window. 
+/**
+ * @brief create a new Scroll Window.
  * To destroy the Scroll Window, use g_object_unref
  */
 
 GtkWidget* ol_scroll_window_new (void);
 
-/** 
+/**
  * @brief Set the whole lyric of a song
  * If music changes,the whole lyrics of window will be changed.
  * @param scroll An OlScrollWindow
@@ -71,7 +72,7 @@ GtkWidget* ol_scroll_window_new (void);
  */
 void ol_scroll_window_set_whole_lyrics(OlScrollWindow *scroll,
                                        GPtrArray *whole_lyrics);
-/** 
+/**
  * @brief Sets the progress of the lyrics
  * @param scroll An OlScrollWindow
  * @param lyric_id The lyric_line which is currenty being displayed. -1  means the line has no lyric currently.
@@ -82,48 +83,48 @@ void ol_scroll_window_set_progress (OlScrollWindow *scroll,
                                     double percentage);
 
 
-/** 
+/**
  * @brief Gets the current line number
- * The current line is the lyric which is playing currently. 
+ * The current line is the lyric which is playing currently.
  * @param scroll An OlScrollWindow
  * @param line The line number of the current lyric, can be 0 or 1. 0 is the upper line and 1 is the lower
  */
 int ol_scroll_window_get_current_lyric_id (OlScrollWindow *scroll);
-/** 
+/**
  * @brief Sets the font family for an SCROLL Window
- * 
+ *
  * @param scroll An OlScrollWindow;
  * @param font_name Font family, must not be NULL. The font_name contains style and
  *        size information. Should be able to pass the value to
- *        pango_font_description_from_string() 
+ *        pango_font_description_from_string()
  */
 void ol_scroll_window_set_font_name (OlScrollWindow *scroll,
                                      const char *font_family);
-/** 
+/**
  * @brief Gets the font family for an SCROLL Window
- * 
+ *
  * @param scroll An OlScrollWindow
  * @return The font name, see the comment of ol_scroll_window_set_font_name
  */
 const char* ol_scroll_window_get_font_name (OlScrollWindow *scroll);
 
-/** 
+/**
  * Sets the text to be shown
  *
  * The text will be shown only if the lyrics are set to be NULL
- * @param scroll 
+ * @param scroll
  * @param text The text to be set, or NULL.
  */
 void ol_scroll_window_set_text (OlScrollWindow *scroll,
                                 const char *text);
 
-/** 
+/**
  * Sets the opacity of the background
- * 
- * @param scroll 
+ *
+ * @param scroll
  * @param opacity The opacity of the background. 0 being fully transparent
  *                and 1 meansfully opaque.
- * 
+ *
  */
 void ol_scroll_window_set_bg_opacity (OlScrollWindow *scroll,
                                       double opacity);

@@ -3,7 +3,7 @@
  * Copyright (C) 2011  Tiger Soldier
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,19 +15,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <math.h>
 #include <string.h>
 #include "ol_app_chooser_widget.h"
 #include "ol_debug.h"
-
-#define OL_APP_CHOOSER_WIDGET_GET_PRIVATE(obj)                         \
-  (G_TYPE_INSTANCE_GET_PRIVATE                                         \
-   ((obj),                                                             \
-    OL_TYPE_APP_CHOOSER_WIDGET,                                        \
-    OlAppChooserWidgetPrivate))
 
 static const char *DEFAULT_ICON_NAME = "media-playback-start";
 static const int DEFAULT_N_COLUMN = 4;
@@ -45,6 +39,7 @@ struct _OlAppChooserWidgetPrivate
   GPtrArray *app_list;
   guint n_columns;
 };
+
 
 static guint _signals[LAST_SIGNAL];
 
@@ -65,10 +60,6 @@ G_DEFINE_TYPE (OlAppChooserWidget,
 static void
 ol_app_chooser_widget_class_init (OlAppChooserWidgetClass *klass)
 {
-  GtkObjectClass *gtkobject_class;
-
-  gtkobject_class = GTK_OBJECT_CLASS (klass);
-  gtkobject_class->destroy = ol_app_chooser_widget_destroy;
   g_type_class_add_private (G_OBJECT_CLASS (klass),
                             sizeof (OlAppChooserWidgetPrivate));
   _signals[APP_ACTIVATE_SIGNAL] =
@@ -87,7 +78,7 @@ ol_app_chooser_widget_class_init (OlAppChooserWidgetClass *klass)
 static void
 ol_app_chooser_widget_init (OlAppChooserWidget *chooser)
 {
-  OlAppChooserWidgetPrivate *priv = OL_APP_CHOOSER_WIDGET_GET_PRIVATE (chooser);
+  OlAppChooserWidgetPrivate *priv = ol_app_chooser_widget_get_instance_private (chooser);
   priv->app_list = g_ptr_array_new_with_free_func (g_object_unref);
   priv->n_columns = -1;
 }
@@ -95,13 +86,8 @@ ol_app_chooser_widget_init (OlAppChooserWidget *chooser)
 static void
 ol_app_chooser_widget_destroy (GtkObject *object)
 {
-  OlAppChooserWidgetPrivate *priv = OL_APP_CHOOSER_WIDGET_GET_PRIVATE (object);
-  if (priv->app_list)
-  {
-    g_ptr_array_free (priv->app_list, TRUE);
-    priv->app_list = NULL;
-  }
-  GTK_OBJECT_CLASS (ol_app_chooser_widget_parent_class)->destroy (object);
+  GtkObjectClass *parent_class = GTK_OBJECT_CLASS(ol_app_chooser_widget_parent_class) ;
+  parent_class->destroy (object);
 }
 
 void
@@ -110,7 +96,7 @@ ol_app_chooser_widget_set_app_list (OlAppChooserWidget *chooser,
                                     guint n_columns)
 {
   ol_assert (OL_IS_APP_CHOOSER_WIDGET (chooser));
-  OlAppChooserWidgetPrivate *priv = OL_APP_CHOOSER_WIDGET_GET_PRIVATE (chooser);
+  OlAppChooserWidgetPrivate *priv = ol_app_chooser_widget_get_instance_private (chooser);
   if (priv->app_list->len > 0)
     g_ptr_array_remove_range (priv->app_list, 0, priv->app_list->len);
   GList *iter;
@@ -177,20 +163,20 @@ _calc_size (guint count, guint *n_rows, guint *n_columns)
 static GtkWidget *
 _new_app_button (OlAppChooserWidget *chooser, guint index)
 {
-  OlAppChooserWidgetPrivate *priv = OL_APP_CHOOSER_WIDGET_GET_PRIVATE (chooser);
+  OlAppChooserWidgetPrivate *priv = ol_app_chooser_widget_get_instance_private (chooser);
   GAppInfo *info = G_APP_INFO (g_ptr_array_index (priv->app_list, index));
   if (info == NULL)
     return NULL;
   GtkWidget *image = _image_from_app_info (info);
-  
+
   GtkWidget *label = gtk_label_new (g_app_info_get_display_name (info));
   gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
   gtk_widget_set_size_request (label, LABLE_WIDTH, -1);
-  
+
   GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), image, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
-  
+
   GtkWidget *frame = gtk_aspect_frame_new (NULL, 0.5, 0.5, 1.0, FALSE);
   gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
   gtk_container_add (GTK_CONTAINER (frame), vbox);
@@ -288,7 +274,6 @@ guint
 ol_app_chooser_widget_get_columns (OlAppChooserWidget *chooser)
 {
   ol_assert_ret (OL_IS_APP_CHOOSER_WIDGET (chooser), 0);
-  OlAppChooserWidgetPrivate *priv = OL_APP_CHOOSER_WIDGET_GET_PRIVATE (chooser);
+  OlAppChooserWidgetPrivate *priv = ol_app_chooser_widget_get_instance_private (chooser);
   return priv->n_columns;
 }
-

@@ -4,7 +4,7 @@
  * Copyright (C) 2011  Tiger Soldier <tigersoldier@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <math.h>
 #include <glib.h>
@@ -28,11 +28,8 @@
 #include "ol_color.h"
 #include "ol_debug.h"
 
-
-#define OL_SCROLL_WINDOW_GET_PRIVATE(obj)    (G_TYPE_INSTANCE_GET_PRIVATE \
-                                              ((obj),                   \
-                                               ol_scroll_window_get_type (), \
-                                               OlScrollWindowPrivate))
+#define OL_SCROLL_WINDOW_GET_PRIVATE(obj) \
+   ((OlScrollWindowPrivate *)((OL_SCROLL_WINDOW(obj))->priv))
 
 /*************default setting******************/
 static const gint DEFAULT_WIDTH = 600;
@@ -140,66 +137,90 @@ ol_scroll_window_new ()
 static void
 ol_scroll_window_init (OlScrollWindow *self)
 {
-  /*basic*/
-  self->percentage = 0.0;
-  self->whole_lyrics = NULL;
-  self->current_lyric_id = -1;
-  /*privat data*/
-  OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (self);
-  priv->line_count = DEFAULT_LINE_COUNT;
-  priv->active_color = DEFAULT_ACTIVE_COLOR;
-  priv->inactive_color = DEFAULT_INACTIVE_COLOR;
-  priv->bg_color = DEFAULT_BG_COLOR;
-  priv->font_name = g_strdup (DEFAULT_FONT_NAME);
-  priv->line_margin = DEFAULT_LINE_MARGIN;
-  priv->padding_x = DEFAULT_PADDING_X;
-  priv->padding_y = DEFAULT_PADDING_Y;
-  priv->corner_radius = DEFAULT_CORNER_RADIUS;
-  priv->bg_opacity = DEFAULT_BG_OPACITY;
-  priv->frame_width = DEFAULT_FRAME_WIDTH;
-  priv->text = NULL;
-  priv->scroll_mode = OL_SCROLL_WINDOW_ALWAYS;
-  priv->can_seek = FALSE;
-  priv->seeking = FALSE;
-  /*set allocation*/
-  gtk_window_resize(GTK_WINDOW(self), DEFAULT_WIDTH, DEFAULT_HEIGHT);
-  gtk_widget_add_events (GTK_WIDGET (self),
-                         GDK_BUTTON_PRESS_MASK |
-                         GDK_BUTTON_RELEASE_MASK |
-                         GDK_POINTER_MOTION_MASK |
-                         GDK_POINTER_MOTION_HINT_MASK |
-                         GDK_DESTROY);
-  /* Set RGBA Colormap */
-  GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET (self));
-  GdkColormap* colormap = gdk_screen_get_rgba_colormap (screen);
-  if (colormap == NULL)
-    colormap = gdk_screen_get_rgb_colormap (screen);
-  gtk_widget_set_colormap (GTK_WIDGET (self), colormap);
-  gtk_window_set_decorated (GTK_WINDOW(self), FALSE);
-  gtk_widget_set_app_paintable (GTK_WIDGET (self), TRUE);
-  /* We need an additional widget to paint on */
-  priv->window_container = gtk_alignment_new (0.0, 0.0, 1.0, 1.0);
-  gtk_widget_set_redraw_on_allocate(priv->window_container, TRUE);
-  gtk_container_add (GTK_CONTAINER (self), priv->window_container);
-  /* Set toolbar container */
-  priv->toolbar_container = GTK_CONTAINER (gtk_alignment_new (1.0, 0.0, 0.0, 0.0));
-  gtk_alignment_set_padding (GTK_ALIGNMENT (priv->toolbar_container),
-                             priv->padding_x, priv->padding_x,
-                             priv->padding_x, priv->padding_x);
-  gtk_container_add (GTK_CONTAINER (priv->window_container),
-                     GTK_WIDGET (priv->toolbar_container));
-  gtk_widget_show_all (priv->window_container);
-  /* Set tooltips */
-  ol_scroll_window_update_tooltip (self);
-  /* Connect signals */
-  g_signal_connect (G_OBJECT (priv->window_container), "expose-event",
-                    G_CALLBACK (ol_scroll_window_expose), self);
-  g_signal_connect (G_OBJECT (self), "button-press-event",
-                    G_CALLBACK (ol_scroll_window_button_press), self);
-  g_signal_connect (G_OBJECT (self), "button-release-event",
-                    G_CALLBACK (ol_scroll_window_button_release), self);
-  g_signal_connect (G_OBJECT (self), "motion-notify-event",
-                    G_CALLBACK (ol_scroll_window_motion_notify), self);
+  /* Allocate Private data structure */
+  (OL_SCROLL_WINDOW(self))->priv = \
+      (OlScrollWindowPrivate *) g_malloc0(sizeof(OlScrollWindowPrivate));
+  /* If correctly allocated, initialize parameters */
+  if((OL_SCROLL_WINDOW(self))->priv != NULL)
+  {
+    /*basic*/
+    self->percentage = 0.0;
+    self->whole_lyrics = NULL;
+    self->current_lyric_id = -1;
+    /*privat data*/
+    OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (self);
+    priv->line_count = DEFAULT_LINE_COUNT;
+    priv->active_color = DEFAULT_ACTIVE_COLOR;
+    priv->inactive_color = DEFAULT_INACTIVE_COLOR;
+    priv->bg_color = DEFAULT_BG_COLOR;
+    priv->font_name = g_strdup (DEFAULT_FONT_NAME);
+    priv->line_margin = DEFAULT_LINE_MARGIN;
+    priv->padding_x = DEFAULT_PADDING_X;
+    priv->padding_y = DEFAULT_PADDING_Y;
+    priv->corner_radius = DEFAULT_CORNER_RADIUS;
+    priv->bg_opacity = DEFAULT_BG_OPACITY;
+    priv->frame_width = DEFAULT_FRAME_WIDTH;
+    priv->text = NULL;
+    priv->scroll_mode = OL_SCROLL_WINDOW_ALWAYS;
+    priv->can_seek = FALSE;
+    priv->seeking = FALSE;
+    /*set allocation*/
+    gtk_window_resize(GTK_WINDOW(self), DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    gtk_widget_add_events (GTK_WIDGET (self),
+                           GDK_BUTTON_PRESS_MASK |
+                           GDK_BUTTON_RELEASE_MASK |
+                           GDK_POINTER_MOTION_MASK |
+                           GDK_POINTER_MOTION_HINT_MASK |
+                           GDK_DESTROY);
+    /* Set RGBA Colormap */
+    GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET (self));
+    GdkColormap* colormap = gdk_screen_get_rgba_colormap (screen);
+    if (colormap == NULL)
+      colormap = gdk_screen_get_rgb_colormap (screen);
+    gtk_widget_set_colormap (GTK_WIDGET (self), colormap);
+    gtk_window_set_decorated (GTK_WINDOW(self), FALSE);
+    gtk_widget_set_app_paintable (GTK_WIDGET (self), TRUE);
+    /* We need an additional widget to paint on */
+    priv->window_container = gtk_alignment_new (0.0, 0.0, 1.0, 1.0);
+    gtk_widget_set_redraw_on_allocate(priv->window_container, TRUE);
+    gtk_container_add (GTK_CONTAINER (self), priv->window_container);
+    /* Set toolbar container */
+    priv->toolbar_container = GTK_CONTAINER (gtk_alignment_new (1.0, 0.0, 0.0, 0.0));
+    gtk_alignment_set_padding (GTK_ALIGNMENT (priv->toolbar_container),
+                               priv->padding_x, priv->padding_x,
+                               priv->padding_x, priv->padding_x);
+    gtk_container_add (GTK_CONTAINER (priv->window_container),
+                       GTK_WIDGET (priv->toolbar_container));
+    gtk_widget_show_all (priv->window_container);
+    /* Set tooltips */
+    ol_scroll_window_update_tooltip (self);
+    /* Connect signals */
+    g_signal_connect (G_OBJECT (priv->window_container), "expose-event",
+                      G_CALLBACK (ol_scroll_window_expose), self);
+    g_signal_connect (G_OBJECT (self), "button-press-event",
+                      G_CALLBACK (ol_scroll_window_button_press), self);
+    g_signal_connect (G_OBJECT (self), "button-release-event",
+                      G_CALLBACK (ol_scroll_window_button_release), self);
+    g_signal_connect (G_OBJECT (self), "motion-notify-event",
+                      G_CALLBACK (ol_scroll_window_motion_notify), self);
+  }
+}
+
+static void
+ol_scroll_window_dispose(GObject *object)
+{
+    OlScrollWindow *self = (OlScrollWindow *)object;
+    OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (self);
+    /* Check if not NULL! To avoid calling dispose multiple times */
+    if(priv != NULL)
+    {
+        /* Deallocate contents of the private data, if any */
+        /* Deallocate private data structure */
+        g_free(priv);
+        /* And finally set the opaque pointer back to NULL, so that
+         *  we don't deallocate it twice. */
+        (OL_SCROLL_WINDOW(self))->priv = NULL;
+    }
 }
 
 static void
@@ -280,7 +301,7 @@ ol_scroll_window_expose (GtkWidget *widget,
   return FALSE;
 }
 
-void 
+void
 ol_scroll_window_set_whole_lyrics (OlScrollWindow *scroll,
                                    GPtrArray *whole_lyrics)
 {
@@ -480,7 +501,7 @@ _paint_lyrics (OlScrollWindow *scroll, cairo_t *cr)
   gint width, height;
   gdk_drawable_get_size (gtk_widget_get_window (GTK_WIDGET (scroll)),
                          &width, &height);
-  
+
   /* set the font */
   PangoLayout *layout = _get_pango (scroll, cr);
   pango_layout_set_alignment (layout, PANGO_ALIGN_LEFT);
@@ -526,7 +547,7 @@ _paint_lyrics (OlScrollWindow *scroll, cairo_t *cr)
         alpha = (height - line_height - priv->padding_y - ypos) * 1.0 / line_height * 2;
       if (alpha < 0.0) alpha = 0.0;
       cairo_set_source_rgba (cr,
-                             priv->active_color.r * ratio + 
+                             priv->active_color.r * ratio +
                              priv->inactive_color.r * (1 - ratio),
                              priv->active_color.g * ratio +
                              priv->inactive_color.g * (1 - ratio),
@@ -565,7 +586,7 @@ _paint_text (OlScrollWindow *scroll, cairo_t *cr)
   gint x, y;
   gdk_drawable_get_size (gtk_widget_get_window (widget),
                          &width, &height);
-  
+
   /* set the font */
   cairo_save (cr);
   cairo_set_source_rgb (cr,
@@ -629,7 +650,7 @@ ol_scroll_window_get_font_height (OlScrollWindow *scroll)
 {
   ol_assert_ret (OL_IS_SCROLL_WINDOW (scroll), 0);
   OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (scroll);
-  
+
   PangoContext *pango_context = gdk_pango_context_get ();
   PangoLayout *pango_layout = pango_layout_new (pango_context);
   PangoFontDescription *font_desc = pango_font_description_from_string (priv->font_name);
@@ -643,7 +664,7 @@ ol_scroll_window_get_font_height (OlScrollWindow *scroll)
   ascent = pango_font_metrics_get_ascent (metrics);
   descent = pango_font_metrics_get_descent (metrics);
   pango_font_metrics_unref (metrics);
-    
+
   height += PANGO_PIXELS (ascent + descent);
   pango_font_description_free (font_desc);
   g_object_unref (pango_layout);
@@ -651,7 +672,7 @@ ol_scroll_window_get_font_height (OlScrollWindow *scroll)
   return height;
 }
 
-int 
+int
 ol_scroll_window_get_current_lyric_id (OlScrollWindow *scroll)
 {
   ol_assert_ret (OL_IS_SCROLL_WINDOW (scroll), -1);
@@ -768,8 +789,8 @@ ol_scroll_window_begin_seek (OlScrollWindow *scroll,
   priv->saved_lyric_id = scroll->current_lyric_id;
 }
 
-static gboolean 
-ol_scroll_window_button_press (GtkWidget *widget, 
+static gboolean
+ol_scroll_window_button_press (GtkWidget *widget,
                                GdkEventButton *event)
 {
   ol_assert_ret (OL_IS_SCROLL_WINDOW (widget), FALSE);
@@ -796,8 +817,8 @@ ol_scroll_window_end_seek (OlScrollWindow *scroll)
   priv->seeking = FALSE;
 }
 
-static gboolean 
-ol_scroll_window_button_release (GtkWidget *widget, 
+static gboolean
+ol_scroll_window_button_release (GtkWidget *widget,
                                  GdkEventButton *event)
 {
   ol_assert_ret (OL_IS_SCROLL_WINDOW (widget), FALSE);

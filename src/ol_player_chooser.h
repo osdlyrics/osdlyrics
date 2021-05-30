@@ -3,7 +3,7 @@
  * Copyright (C) 2011  Tiger Soldier <tigersoldier@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #ifndef _OL_PLAYER_CHOOSER_H_
 #define _OL_PLAYER_CHOOSER_H_
@@ -42,6 +42,7 @@ typedef struct _OlPlayerChooserClass OlPlayerChooserClass;
 struct _OlPlayerChooser
 {
   GtkDialog parent;
+  gpointer priv;
 };
 
 struct _OlPlayerChooserClass
@@ -51,12 +52,12 @@ struct _OlPlayerChooserClass
 
 GtkType ol_player_chooser_get_type (void);
 
-/** 
+/**
  * Creates a new player chooser window.
- * 
+ *
  * @param supported_players List of *GAppInfo.
- * 
- * @return 
+ *
+ * @return
  */
 GtkWidget *ol_player_chooser_new (GList *supported_players);
 

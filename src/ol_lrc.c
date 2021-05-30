@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -56,8 +56,8 @@ struct SaveOffsetData
   int offset;
 };
 
-#define OL_LRC_GET_PRIVATE(object)                                   \
-  (G_TYPE_INSTANCE_GET_PRIVATE ((object), OL_TYPE_LRC, OlLrcPrivate))
+#define OL_LRC_GET_PRIVATE(object) \
+    ((OlLrcPrivate *)((OL_LRC(object))->priv))
 
 /* -------------- OlLrc private methods ------------------*/
 static void ol_lrc_finalize (GObject *object);
@@ -83,18 +83,42 @@ ol_lrc_class_init (OlLrcClass *klass)
 static void
 ol_lrc_init (OlLrc *lrc)
 {
-  OlLrcPrivate *priv = OL_LRC_GET_PRIVATE (lrc);
-  priv->items = g_ptr_array_new_with_free_func ((GDestroyNotify) ol_lrc_item_free);
-  /* ensure there is at lease one line */
-  g_ptr_array_add (priv->items, ol_lrc_item_new (0, ""));
+  /* Allocate Private data structure */
+  (OL_LRC(lrc))->priv = \
+      (OlLrcPrivate *) g_malloc0(sizeof(OlLrcPrivate));
+  /* If correctly allocated, initialize parameters */
+  if((OL_LRC(lrc))->priv != NULL)
+  {
+    OlLrcPrivate *priv = OL_LRC_GET_PRIVATE (lrc);
+    priv->items = g_ptr_array_new_with_free_func ((GDestroyNotify) ol_lrc_item_free);
+    /* ensure there is at lease one line */
+    g_ptr_array_add (priv->items, ol_lrc_item_new (0, ""));
 
-  priv->metadata = g_hash_table_new_full (g_str_hash,
-                                          g_str_equal,
-                                          (GDestroyNotify) g_free,
-                                          (GDestroyNotify) g_free);
-  priv->save_offset_timer = 0;
-  priv->offset = 0;
+    priv->metadata = g_hash_table_new_full (g_str_hash,
+                                            g_str_equal,
+                                            (GDestroyNotify) g_free,
+                                            (GDestroyNotify) g_free);
+    priv->save_offset_timer = 0;
+    priv->offset = 0;
+  }
 };
+
+static void
+ol_lrc_dispose(GObject *object)
+{
+  OlLrc *self = (OlLrc *)object;
+  OlLrcPrivate *priv = OL_LRC_GET_PRIVATE (self);
+  /* Check if not NULL! To avoid calling dispose multiple times */
+  if(priv != NULL)
+  {
+    /* Deallocate contents of the private data, if any */
+    /* Deallocate private data structure */
+    g_free(priv);
+    /* And finally set the opaque pointer back to NULL, so that
+     *  we don't deallocate it twice. */
+    (OL_LRC(self))->priv = NULL;
+  }
+}
 
 OlLrc *
 ol_lrc_new (OlLyrics *lyric_proxy,
