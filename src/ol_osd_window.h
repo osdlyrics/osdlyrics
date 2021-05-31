@@ -27,7 +27,9 @@
 #ifndef __OSD_WINDOW_H_
 #define __OSD_WINDOW_H_
 
-#include <gtk/gtk.h>
+#include <gtk/gtkwindow.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtktypeutils.h>
 #include "ol_osd_render.h"
 
 #define OL_OSD_WINDOW(obj)                  GTK_CHECK_CAST (obj, ol_osd_window_get_type (), OlOsdWindow)

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <gtk/gtkprivate.h>
+
 #include "ol_cell_renderer_button.h"
 #include "ol_marshal.h"
 #include "ol_debug.h"

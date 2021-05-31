@@ -19,12 +19,30 @@
  */
 #include <string.h>
 #include <gtk/gtkwidget.h>
+#include <gtk/gtkdialog.h>
+#include <gtk/gtkcellrenderertext.h>
 #include <gtk/gtktree.h>
+#include <gtk/gtktreeselection.h>
 #include <gtk/gtktreeview.h>
 #include <gtk/gtkcellrenderer.h>
 #include <gtk/gtktogglebutton.h>
+#include <gtk/gtkspinbutton.h>
+#include <gtk/gtkcolorbutton.h>
+#include <gtk/gtkfontbutton.h>
+#include <gtk/gtkrange.h>
+#include <gtk/gtkmenuitem.h>
 #include <gtk/gtkcombobox.h>
 #include <gtk/gtkbox.h>
+#include <gtk/gtkbbox.h>
+#include <gtk/gtklabel.h>
+#include <gtk/gtkstock.h>
+#include <gtk/gtkscale.h>
+#include <gtk/gtkfilechooser.h>
+#include <gtk/gtkfilechooserdialog.h>
+#include <gtk/gtkicontheme.h>
+#include <gtk/gtkversion.h>
+#include <gtk/gtkmain.h>
+
 #include "ol_option.h"
 #include "ol_about.h"
 #include "ol_gui.h"

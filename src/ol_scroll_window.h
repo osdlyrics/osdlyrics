@@ -21,7 +21,9 @@
 #ifndef __SCROLL_WINDOW_H_
 #define __SCROLL_WINDOW_H_
 
-#include <gtk/gtk.h>
+#include <gtk/gtkwindow.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtkalignment.h>
 #include <ol_debug.h>
 #include "ol_color.h"
 

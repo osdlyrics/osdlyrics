@@ -20,7 +20,11 @@
 #ifndef _OL_OSD_TOOLBAR_H_
 #define _OL_OSD_TOOLBAR_H_
 
-#include <gtk/gtk.h>
+#include <gtk/gtkbutton.h>
+#include <gtk/gtkhbox.h>
+#include <gtk/gtkvbox.h>
+#include <gtk/gtkicontheme.h>
+#include <gtk/gtkalignment.h>
 #include "ol_player.h"
 
 #define OL_OSD_TOOLBAR(obj)                  GTK_CHECK_CAST (obj, ol_osd_toolbar_get_type (), OlOsdToolbar)

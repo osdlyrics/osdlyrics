@@ -3,7 +3,7 @@
  * Copyright (C) 2009-2011  Tiger Soldier <tigersoldier@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,12 +15,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #ifndef _OL_CELLRENDERERBUTTON_H_
 #define _OL_CELLRENDERERBUTTON_H_
 
-#include <gtk/gtk.h>
+#include <gtk/gtkcellrenderer.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtkprivate.h>
 
 #define OL_TYPE_CELL_RENDERER_BUTTON		(ol_cell_renderer_button_get_type ())
 #define OL_CELL_RENDERER_BUTTON(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), OL_TYPE_CELL_RENDERER_BUTTON, OlCellRendererButton))
