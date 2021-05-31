@@ -20,7 +20,24 @@
 #ifndef _OL_PLAYER_CHOOSER_H_
 #define _OL_PLAYER_CHOOSER_H_
 
-#include <gtk/gtk.h>
+#include <gtk/gtkdialog.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtktogglebutton.h>
+#include <gtk/gtkradiobutton.h>
+#include <gtk/gtkscrolledwindow.h>
+#include <gtk/gtkentry.h>
+#include <gtk/gtklabel.h>
+#include <gtk/gtkimage.h>
+#include <gtk/gtkobject.h>
+#include <gtk/gtkbutton.h>
+#include <gtk/gtkentrycompletion.h>
+#include <gtk/gtkbox.h>
+#include <gtk/gtkhbox.h>
+#include <gtk/gtkvbox.h>
+#include <gtk/gtkliststore.h>
+#include <gtk/gtkstock.h>
+#include <gtk/gtkvseparator.h>
+
 #define OL_PLAYER_CHOOSER(obj)                  GTK_CHECK_CAST (obj, ol_player_chooser_get_type (), OlPlayerChooser)
 #define OL_PLAYER_CHOOSER_CLASS(klass)          GTK_CHECK_CLASS_CAST (klass, ol_player_chooser_get_type (), OlPlayerChooserClass)
 #define OL_IS_PLAYER_CHOOSER(obj)               GTK_CHECK_TYPE (obj, ol_player_chooser_get_type ())
