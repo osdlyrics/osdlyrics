@@ -3,7 +3,7 @@
  * Copyright (C) 2009-2011  Tiger Soldier <tigersoldi@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,10 +15,16 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <string.h>
-#include <gtk/gtk.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtktree.h>
+#include <gtk/gtktreeview.h>
+#include <gtk/gtkcellrenderer.h>
+#include <gtk/gtktogglebutton.h>
+#include <gtk/gtkcombobox.h>
+#include <gtk/gtkbox.h>
 #include "ol_option.h"
 #include "ol_about.h"
 #include "ol_gui.h"
@@ -405,7 +411,7 @@ ol_option_osd_alignment_changed (GtkRange *range,
       char buffer[24];
       sprintf (buffer, "OSD/lrc-align-%d", i);
       ol_config_proxy_set_double (ol_config_proxy_get_instance (),
-                                  buffer, 
+                                  buffer,
                                   gtk_range_get_value (range));
 
     }
@@ -578,7 +584,7 @@ ol_option_path_clicked (GtkButton *button,
   ol_assert (lrc_path_widgets.entry != NULL);
   const char *current_path = gtk_entry_get_text (GTK_ENTRY (lrc_path_widgets.entry));
   if (strcmp (current_path, "%s") != 0)
-  {  
+  {
     ol_debugf ("  current path:%s\n", current_path);
     char expanded_path[BUFFER_SIZE];
     /* expand `~' to home directory*/
@@ -768,7 +774,7 @@ init_signals ()
       continue;
     for (; value->widget_name != NULL && value->value != NULL; value++)
     {
-      GtkToggleButton *radio_button = GTK_TOGGLE_BUTTON (ol_gui_get_widget (value->widget_name)); 
+      GtkToggleButton *radio_button = GTK_TOGGLE_BUTTON (ol_gui_get_widget (value->widget_name));
       if (radio_button != NULL)
       {
         g_signal_connect (G_OBJECT (radio_button),
@@ -790,7 +796,7 @@ init_signals ()
                         &toggle_properties[i]);
     }
   }
-  
+
   for (i = 0; i < G_N_ELEMENTS (entry_str_options); i++)
   {
     GtkWidget *widget = ol_gui_get_widget (entry_str_options[i].widget_name);
@@ -813,7 +819,7 @@ init_signals ()
                         &spin_int_options[i]);
     }
   }
-  
+
   for (i = 0; i < G_N_ELEMENTS (scale_double_options); i++)
   {
     GtkWidget *widget = ol_gui_get_widget (scale_double_options[i].widget_name);
@@ -825,7 +831,7 @@ init_signals ()
                         &scale_double_options[i]);
     }
   }
-  
+
   for (i = 0; i < G_N_ELEMENTS (color_str_options); i++)
   {
     GtkWidget *widget = ol_gui_get_widget (color_str_options[i].widget_name);
@@ -837,7 +843,7 @@ init_signals ()
                         &color_str_options[i]);
     }
   }
-  
+
   for (i = 0; i < G_N_ELEMENTS (font_str_options); i++)
   {
     GtkWidget *widget = ol_gui_get_widget (font_str_options[i].widget_name);
@@ -849,7 +855,7 @@ init_signals ()
                         &font_str_options[i]);
     }
   }
-  
+
   for (i = 0; i < G_N_ELEMENTS (combo_str_options); i++)
   {
     GtkWidget *widget = ol_gui_get_widget (combo_str_options[i].widget_name);
@@ -1019,10 +1025,10 @@ load_check_button_options ()
     return;
   for (i = 0; i < G_N_ELEMENTS (check_button_options); i++)
   {
-    GtkToggleButton *check_button = GTK_TOGGLE_BUTTON (ol_gui_get_widget (check_button_options[i].widget_name)); 
+    GtkToggleButton *check_button = GTK_TOGGLE_BUTTON (ol_gui_get_widget (check_button_options[i].widget_name));
     if (check_button_options != NULL)
     {
-      gtk_toggle_button_set_active (check_button, 
+      gtk_toggle_button_set_active (check_button,
                                     ol_config_proxy_get_bool (config,
                                                               check_button_options[i].key));
 
@@ -1064,7 +1070,7 @@ load_radio_str_options ()
     }
     if (value->widget_name == NULL || value->value == NULL)
       value = radio_str_options[i].values;
-    GtkToggleButton *radio_button = GTK_TOGGLE_BUTTON (ol_gui_get_widget (value->widget_name)); 
+    GtkToggleButton *radio_button = GTK_TOGGLE_BUTTON (ol_gui_get_widget (value->widget_name));
     if (radio_button != NULL)
     {
       gtk_toggle_button_set_active (radio_button, TRUE);
@@ -1086,7 +1092,7 @@ load_entry_str_options ()
                                                      entry_str_options[i].key);
     if (config_value == NULL)
       continue;
-    GtkEntry *entry = GTK_ENTRY (ol_gui_get_widget (entry_str_options[i].widget_name)); 
+    GtkEntry *entry = GTK_ENTRY (ol_gui_get_widget (entry_str_options[i].widget_name));
     if (entry != NULL)
     {
       gtk_entry_set_text (entry, config_value);
@@ -1106,7 +1112,7 @@ load_spin_int_options ()
   {
     int config_value = ol_config_proxy_get_int (config,
                                                 spin_int_options[i].key);
-    GtkSpinButton *spin = GTK_SPIN_BUTTON (ol_gui_get_widget (spin_int_options[i].widget_name)); 
+    GtkSpinButton *spin = GTK_SPIN_BUTTON (ol_gui_get_widget (spin_int_options[i].widget_name));
     if (spin != NULL)
     {
       gtk_spin_button_set_value (spin, config_value);
@@ -1267,7 +1273,7 @@ set_list_content (GtkTreeView *view, char **list)
                         REMOVE_COLUMN, GTK_STOCK_REMOVE,
                         -1);
     GtkTreePath *path = gtk_tree_model_get_path (model, &iter);
-    
+
     gtk_tree_path_free (path);
   }
 }
@@ -1438,7 +1444,7 @@ init_list (struct ListExtraWidgets *widgets,
   GtkListStore *store = gtk_list_store_new (N_COLUMN,
                                             G_TYPE_STRING,
                                             G_TYPE_STRING);
-    
+
   /* gtk_tree_view_column_add_attribute (column, */
   /*                                     btncell, */
   /*                                     "stock", REMOVE_COLUMN); */
@@ -1689,7 +1695,7 @@ ol_option_show ()
       {NULL, NULL},
     };
     init_list (&lrc_path_widgets, path_buttons);
-    
+
     lrc_filename_widgets.entry = options.lrc_filename_text;
     lrc_filename_widgets.list = options.lrc_filename;
     lrc_filename_widgets.add_button = ol_gui_get_widget ("add-lrc-filename");
