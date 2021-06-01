@@ -47,7 +47,7 @@ typedef struct {
 static guint _signals[LAST_SINGAL];
 static OlConfigProxy *config_proxy = NULL;
 
-G_DEFINE_TYPE (OlConfigProxy, ol_config_proxy, G_TYPE_DBUS_PROXY);
+G_DEFINE_TYPE_WITH_PRIVATE (OlConfigProxy, ol_config_proxy, G_TYPE_DBUS_PROXY);
 
 static OlConfigProxy *ol_config_proxy_new (void);
 static void ol_config_proxy_finalize (GObject *object);
@@ -124,8 +124,6 @@ ol_config_proxy_class_init (OlConfigProxyClass *klass)
 {
   GObjectClass *gobject_class;
   GDBusProxyClass *proxy_class;
-
-  g_type_class_add_private (klass, sizeof (OlConfigProxyPrivate));
 
   gobject_class = G_OBJECT_CLASS (klass);
   gobject_class->finalize = ol_config_proxy_finalize;

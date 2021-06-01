@@ -33,6 +33,7 @@
 #define OL_OSD_TOOLBAR_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), ol_osd_toolbar_get_type (), OlOsdToolbarClass))
 
 typedef struct _OlOsdToolbar OlOsdToolbar;
+typedef struct _OlOsdToolbarPrivate OlOsdToolbarPrivate;
 typedef struct _OlOsdToolbarClass OlOsdToolbarClass;
 
 struct _OlOsdToolbar
@@ -45,6 +46,10 @@ struct _OlOsdToolbar
   GtkButton *next_button;
   GtkButton *stop_button;
   gpointer priv; /** Private data pointer */
+};
+
+struct _OlOsdToolbarPrivate
+{
 };
 
 struct _OlOsdToolbarClass

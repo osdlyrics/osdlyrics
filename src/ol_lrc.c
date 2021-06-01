@@ -70,14 +70,13 @@ static struct OlLrcItem *ol_lrc_iter_get_item (OlLrcIter *iter);
 /* ---------------Save offset functions ----------------- */
 static gboolean _save_offset_timeout (OlLrc *lrc);
 
-G_DEFINE_TYPE (OlLrc, ol_lrc, G_TYPE_OBJECT);
+G_DEFINE_TYPE_WITH_PRIVATE (OlLrc, ol_lrc, G_TYPE_OBJECT);
 
 static void
 ol_lrc_class_init (OlLrcClass *klass)
 {
   GObjectClass *gklass = G_OBJECT_CLASS (klass);
   gklass->finalize = ol_lrc_finalize;
-  g_type_class_add_private (klass, sizeof (OlLrcPrivate));
 }
 
 static void

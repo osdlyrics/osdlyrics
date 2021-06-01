@@ -104,7 +104,9 @@ struct _OlCellRendererButtonPrivate
   GtkWidget *entry;
 };
 
-G_DEFINE_TYPE (OlCellRendererButton, ol_cell_renderer_button, GTK_TYPE_CELL_RENDERER)
+G_DEFINE_TYPE_WITH_PRIVATE (OlCellRendererButton,
+                            ol_cell_renderer_button,
+                            GTK_TYPE_CELL_RENDERER)
 
 static void ol_cell_renderer_button_get_property (GObject *object,
                                            guint param_id,
@@ -224,8 +226,6 @@ ol_cell_renderer_button_class_init (OlCellRendererButtonClass *class)
                   g_cclosure_marshal_VOID__STRING,
                   G_TYPE_NONE, 1,
                   G_TYPE_STRING);
-
-  g_type_class_add_private (object_class, sizeof (OlCellRendererButtonPrivate));
 }
 
 static void

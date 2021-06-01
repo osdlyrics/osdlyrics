@@ -123,7 +123,7 @@ static void ol_scroll_window_seek (OlScrollWindow *scroll,
 static void ol_scroll_window_end_seek (OlScrollWindow *scroll);
 static void ol_scroll_window_update_tooltip (OlScrollWindow *scroll);
 
-G_DEFINE_TYPE (OlScrollWindow, ol_scroll_window, GTK_TYPE_WINDOW);
+G_DEFINE_TYPE_WITH_PRIVATE (OlScrollWindow, ol_scroll_window, GTK_TYPE_WINDOW);
 
 
 GtkWidget*
@@ -244,8 +244,6 @@ ol_scroll_window_class_init (OlScrollWindowClass *klass)
                   2,
                   G_TYPE_UINT,
                   G_TYPE_DOUBLE);
-  /*add private variables into OlScrollWindow*/
-  g_type_class_add_private (gobject_class, sizeof (OlScrollWindowPrivate));
 }
 
 void

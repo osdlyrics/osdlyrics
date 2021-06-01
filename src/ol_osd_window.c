@@ -95,7 +95,7 @@ struct OsdLrc
   gchar *lyric;
 };
 
-G_DEFINE_TYPE(OlOsdWindow, ol_osd_window, GTK_TYPE_WINDOW)
+G_DEFINE_TYPE_WITH_PRIVATE (OlOsdWindow, ol_osd_window, GTK_TYPE_WINDOW)
 static void ol_osd_window_destroy (GtkObject *object);
 static void ol_osd_window_set_property (GObject *object, guint prop_id,
                                         const GValue *value, GParamSpec *pspec);
@@ -1661,7 +1661,6 @@ ol_osd_window_class_init (OlOsdWindowClass *klass)
                   G_TYPE_NONE,
                   0,
                   NULL);
-  g_type_class_add_private (gobject_class, sizeof (OlOsdWindowPrivate));
 }
 
 static void

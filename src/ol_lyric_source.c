@@ -28,14 +28,14 @@
 G_DEFINE_TYPE (OlLyricSource, ol_lyric_source, G_TYPE_DBUS_PROXY);
 G_DEFINE_TYPE (OlLyricSourceTask, ol_lyric_source_task, G_TYPE_OBJECT);
 G_DEFINE_TYPE (OlLyricSourceSearchTask,
-               ol_lyric_source_search_task,
-               OL_TYPE_LYRIC_SOURCE_TASK);
+              ol_lyric_source_search_task,
+              OL_TYPE_LYRIC_SOURCE_TASK);
 G_DEFINE_TYPE (OlLyricSourceDownloadTask,
-               ol_lyric_source_download_task,
-               OL_TYPE_LYRIC_SOURCE_TASK);
+              ol_lyric_source_download_task,
+              OL_TYPE_LYRIC_SOURCE_TASK);
 G_DEFINE_TYPE (OlLyricSourceCandidate,
-               ol_lyric_source_candidate,
-               G_TYPE_OBJECT);
+              ol_lyric_source_candidate,
+              G_TYPE_OBJECT);
 
 #define OL_LYRIC_SOURCE_GET_PRIVATE(obj) \
   ((OlLyricSourcePrivate *)((OL_LYRIC_SOURCE(obj))->priv))
@@ -186,7 +186,6 @@ ol_lyric_source_class_init (OlLyricSourceClass *klass)
   proxy_class = G_DBUS_PROXY_CLASS (klass);
   object_class->finalize = ol_lyric_source_finalize;
   proxy_class->g_signal = ol_lyric_source_g_signal;
-  g_type_class_add_private (klass, sizeof (OlLyricSourcePrivate));
 }
 
 static void
@@ -662,7 +661,6 @@ ol_lyric_source_candidate_class_init (OlLyricSourceCandidateClass *klass)
   object_class->get_property = ol_lyric_source_candidate_get_property;
   object_class->set_property = ol_lyric_source_candidate_set_property;
   object_class->finalize = ol_lyric_source_candidate_finalize;
-  g_type_class_add_private (klass, sizeof (OlLyricSourceCandidatePrivate));
   g_object_class_install_property (object_class,
                                    CANDIDATE_PROP_TITLE,
                                    g_param_spec_string ("title",
@@ -971,7 +969,6 @@ ol_lyric_source_task_class_init (OlLyricSourceTaskClass *klass)
   object_class->get_property = ol_lyric_source_task_get_property;
   object_class->finalize = ol_lyric_source_task_finalize;
   klass->cancel = NULL;
-  g_type_class_add_private (klass, sizeof (OlLyricSourceTaskPrivate));
   g_object_class_install_property (object_class,
                                    TASK_PROP_SOURCE,
                                    g_param_spec_object ("source",

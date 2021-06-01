@@ -142,7 +142,7 @@ static void _cancel_call (GCancellable **cancellable);
 static GVariant *ol_player_get_property (GDBusProxy *proxy,
                                          const char *name);
 
-G_DEFINE_TYPE (OlPlayer, ol_player, G_TYPE_OBJECT);
+G_DEFINE_TYPE_WITH_PRIVATE (OlPlayer, ol_player, G_TYPE_OBJECT);
 
 static void
 ol_player_class_init (OlPlayerClass *klass)
@@ -198,7 +198,6 @@ ol_player_class_init (OlPlayerClass *klass)
                   g_cclosure_marshal_VOID__VOID,
                   G_TYPE_NONE,
                   0);
-  g_type_class_add_private (klass, sizeof (OlPlayerPrivate));
 }
 
 OlPlayer *

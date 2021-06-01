@@ -36,7 +36,7 @@ struct _OlImageButtonPriv
   GdkPixbuf *image;
 };
 
-G_DEFINE_TYPE (OlImageButton, ol_image_button, GTK_TYPE_BUTTON);
+G_DEFINE_TYPE_WITH_PRIVATE (OlImageButton, ol_image_button, GTK_TYPE_BUTTON);
 
 static void ol_image_button_destroy (GtkObject *object);
 static void ol_image_button_size_request (GtkWidget *widget,
@@ -138,7 +138,6 @@ ol_image_button_expose (GtkWidget *widget,
 static void
 ol_image_button_class_init (OlImageButtonClass *klass)
 {
-  g_type_class_add_private (klass, sizeof (OlImageButtonPriv));
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
 

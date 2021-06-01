@@ -33,7 +33,7 @@ static const guint ALL_CHOOSER_INDEX = 1;
 static const guint MAX_CHOOSER_HEIGHT = 96 * 3; /* about 3 lines of apps */
 static const guint DEFAULT_APP_COLUMNS = 4;
 
-G_DEFINE_TYPE(OlPlayerChooser, ol_player_chooser, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (OlPlayerChooser, ol_player_chooser, GTK_TYPE_DIALOG)
 
 typedef struct _OlPlayerChooserPage
 {
@@ -102,7 +102,6 @@ ol_player_chooser_class_init (OlPlayerChooserClass *klass)
   ol_player_chooser_parent_class = g_type_class_peek_parent (klass);
 
   object_class->destroy = _destroy;
-  g_type_class_add_private (gobject_class, sizeof (OlPlayerChooserPrivate));
 }
 
 static void

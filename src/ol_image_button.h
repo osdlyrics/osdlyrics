@@ -30,12 +30,18 @@
 #define OL_IMAGE_BUTTON_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), ol_image_button_get_type (), OlImageButtonClass))
 
 typedef struct _OlImageButton OlImageButton;
+typedef struct _OlImageButtonPrivate OlImageButtonPrivate;
 typedef struct _OlImageButtonClass OlImageButtonClass;
 
 struct _OlImageButton
 {
   GtkButton button;
   gpointer priv; /** Private data pointer */
+};
+
+struct _OlImageButtonPrivate
+{
+
 };
 
 struct _OlImageButtonClass
