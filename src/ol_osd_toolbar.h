@@ -25,11 +25,12 @@
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkicontheme.h>
 #include <gtk/gtkalignment.h>
+#include <gtk/gtktypeutils.h>
 #include "ol_player.h"
 
-#define OL_OSD_TOOLBAR(obj)                  GTK_CHECK_CAST (obj, ol_osd_toolbar_get_type (), OlOsdToolbar)
+#define OL_OSD_TOOLBAR(obj)                  G_TYPE_CHECK_INSTANCE_CAST (obj, ol_osd_toolbar_get_type (), OlOsdToolbar)
 #define OL_OSD_TOOLBAR_CLASS(klass)          GTK_CHECK_CLASS_CAST (klass, ol_osd_toolbar_get_type (), OlOsdToolbarClass)
-#define OL_IS_OSD_TOOLBAR(obj)               GTK_CHECK_TYPE (obj, ol_osd_toolbar_get_type ())
+#define OL_IS_OSD_TOOLBAR(obj)               G_TYPE_CHECK_INSTANCE_TYPE (obj, ol_osd_toolbar_get_type ())
 #define OL_OSD_TOOLBAR_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), ol_osd_toolbar_get_type (), OlOsdToolbarClass))
 
 typedef struct _OlOsdToolbar OlOsdToolbar;
@@ -57,7 +58,7 @@ struct _OlOsdToolbarClass
   GtkAlignmentClass parent_class;
 };
 
-GtkType ol_osd_toolbar_get_type (void);
+GType ol_osd_toolbar_get_type (void);
 
 GtkWidget *ol_osd_toolbar_new (void);
 void ol_osd_toolbar_set_player (OlOsdToolbar *toolbar, OlPlayer *player);

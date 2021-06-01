@@ -47,7 +47,7 @@ ol_about_close_clicked (GtkWidget *widget)
 {
   ol_log_func ();
   GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
-  if (GTK_WIDGET_TOPLEVEL (toplevel))
+  if (gtk_widget_is_toplevel (toplevel))
   {
     gtk_widget_hide (toplevel);
   }

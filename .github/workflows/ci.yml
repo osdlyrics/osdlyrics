@@ -21,7 +21,7 @@ jobs:
         run: ./autogen.sh
 
       - name: Configure
-        run: ./configure --prefix=/usr PYTHON=/usr/bin/python3
+        run: ./configure --prefix=/usr PYTHON=/usr/bin/python3 CFLAGS="-DGTK_DISABLE_DEPRECATED"
 
       - name: Make
         run: make

@@ -77,7 +77,7 @@ ol_image_button_size_allocate (GtkWidget     *widget,
   GtkButton *button = GTK_BUTTON (widget);
   widget->allocation = *allocation;
 
-  if (GTK_WIDGET_REALIZED (widget))
+  if (gtk_widget_get_realized (widget))
     gdk_window_move_resize (button->event_window,
 			    widget->allocation.x,
 			    widget->allocation.y,
@@ -119,7 +119,7 @@ ol_image_button_expose (GtkWidget *widget,
     cairo_clip (cr);
 
     int img_index = STATE_NORMAL;
-    GtkStateType state = GTK_WIDGET_STATE (widget);
+    GtkStateType state = gtk_widget_get_state (widget);
     if (state == GTK_STATE_ACTIVE)
       img_index = STATE_PRESSED;
     else if (state == GTK_STATE_PRELIGHT || state == GTK_STATE_SELECTED)

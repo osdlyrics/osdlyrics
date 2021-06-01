@@ -23,10 +23,11 @@
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkobject.h>
+#include <gtk/gtktypeutils.h>
 
-#define OL_IMAGE_BUTTON(obj)                  GTK_CHECK_CAST (obj, ol_image_button_get_type (), OlImageButton)
+#define OL_IMAGE_BUTTON(obj)                  G_TYPE_CHECK_INSTANCE_CAST (obj, ol_image_button_get_type (), OlImageButton)
 #define OL_IMAGE_BUTTON_CLASS(klass)          GTK_CHECK_CLASS_CAST (klass, ol_image_button_get_type (), OlImageButtonClass)
-#define OL_IS_IMAGE_BUTTON(obj)               GTK_CHECK_TYPE (obj, ol_image_button_get_type ())
+#define OL_IS_IMAGE_BUTTON(obj)               G_TYPE_CHECK_INSTANCE_TYPE (obj, ol_image_button_get_type ())
 #define OL_IMAGE_BUTTON_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), ol_image_button_get_type (), OlImageButtonClass))
 
 typedef struct _OlImageButton OlImageButton;
@@ -49,7 +50,7 @@ struct _OlImageButtonClass
   GtkButtonClass button_class;
 };
 
-GtkType ol_image_button_get_type (void);
+GType ol_image_button_get_type (void);
 
 /**
  * @brief Create a new image button

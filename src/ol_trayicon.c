@@ -3,7 +3,7 @@
  * Copyright (C) 2009-2011  Tiger Soldier <tigersoldier@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "config.h"
 #if HAVE_APP_INDICATOR
@@ -29,6 +29,8 @@
 #include "ol_player.h"
 #include "ol_config_proxy.h"
 #include "ol_debug.h"
+#include <gtk/gtkstatusicon.h>
+#include <gtk/gtktooltip.h>
 
 #if HAVE_APP_INDICATOR
 static AppIndicator *indicator = NULL;
@@ -97,7 +99,7 @@ internal_query_tooltip (GtkStatusIcon *status_icon,
     }
     gtk_tooltip_set_markup (tooltip, markup);
     g_free (markup);
-    
+
     OlPlayer *player = ol_app_get_player ();
     const char *icon_path = ol_player_get_icon_path (player);
     GdkPixbuf *icon = NULL;
@@ -113,7 +115,7 @@ internal_query_tooltip (GtkStatusIcon *status_icon,
   return TRUE;
 }
 
-static void 
+static void
 popup (GtkStatusIcon *status_icon,
        guint button,
        guint activate_time,
@@ -201,5 +203,5 @@ ol_trayicon_status_changed (enum OlPlayerStatus status)
 #else
   /* Do nothing */
 #endif
-  
+
 }

@@ -32,6 +32,7 @@
 #include <gtk/gtkrange.h>
 #include <gtk/gtkmenuitem.h>
 #include <gtk/gtkcombobox.h>
+#include <gtk/gtkcomboboxtext.h>
 #include <gtk/gtkbox.h>
 #include <gtk/gtkbbox.h>
 #include <gtk/gtklabel.h>
@@ -42,6 +43,7 @@
 #include <gtk/gtkicontheme.h>
 #include <gtk/gtkversion.h>
 #include <gtk/gtkmain.h>
+#include <gtk/gtkcomboboxtext.h>
 
 #include "ol_option.h"
 #include "ol_about.h"
@@ -1387,7 +1389,7 @@ void
 ol_option_close_clicked (GtkWidget *widget)
 {
   GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
-  if (GTK_WIDGET_TOPLEVEL (toplevel))
+  if (gtk_widget_is_toplevel (toplevel))
   {
     gtk_widget_hide (toplevel);
   }
@@ -1625,10 +1627,10 @@ _disconnect_download_engine_changed (GtkTreeView *list,
 static void
 init_startup_player (GtkWidget *widget)
 {
-  GtkComboBox *cb = GTK_COMBO_BOX (widget);
+  GtkComboBoxText *cb = GTK_COMBO_BOX_TEXT (widget);
   if (cb == NULL)
     return;
-  gtk_combo_box_append_text (cb, _("Choose on startup"));
+  gtk_combo_box_text_append_text (cb, _("Choose on startup"));
   GtkListStore *liststore = GTK_LIST_STORE (gtk_combo_box_get_model (GTK_COMBO_BOX (widget)));
   /* TODO: */
   GList *players = NULL;
@@ -1645,12 +1647,8 @@ init_startup_player (GtkWidget *widget)
                         -1);
     g_object_unref (G_OBJECT (app_info));
   }
-  /* gtk_list_store_append (liststore, &iter); */
-  /* gtk_list_store_set (liststore, &iter, */
-  /*                     0, "Customize", */
-  /*                     1, "", */
-  /*                     -1); */
-  gtk_combo_box_append_text (cb, _("Customize"));
+
+  gtk_combo_box_text_append_text (cb, _("Customize"));
 }
 
 static void

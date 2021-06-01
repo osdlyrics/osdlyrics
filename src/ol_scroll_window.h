@@ -24,12 +24,13 @@
 #include <gtk/gtkwindow.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkalignment.h>
+#include <gtk/gtktypeutils.h>
 #include <ol_debug.h>
 #include "ol_color.h"
 
-#define OL_SCROLL_WINDOW(obj)                   GTK_CHECK_CAST (obj, ol_scroll_window_get_type (), OlScrollWindow)
+#define OL_SCROLL_WINDOW(obj)                   G_TYPE_CHECK_INSTANCE_CAST (obj, ol_scroll_window_get_type (), OlScrollWindow)
 #define OL_SCROLL_WINDOW_CLASS(klass)           GTK_CHECK_CLASS_CAST (klass, ol_scroll_window_get_type (), OlScrollWindowClass)
-#define OL_IS_SCROLL_WINDOW(obj)                GTK_CHECK_TYPE (obj, ol_scroll_window_get_type ())
+#define OL_IS_SCROLL_WINDOW(obj)                G_TYPE_CHECK_INSTANCE_TYPE (obj, ol_scroll_window_get_type ())
 #define OL_SCROLL_WINDOW_GET_CLASS(obj)         (G_TYPE_INSTANCE_GET_CLASS ((obj), ol_scroll_window_get_type (), OlScrollWindowClass))
 
 typedef struct _OlScrollWindow                  OlScrollWindow;
@@ -56,7 +57,7 @@ struct _OlScrollWindowClass
   GtkWindowClass parent_class;
 };
 
-GtkType ol_scroll_window_get_type (void);
+GType ol_scroll_window_get_type (void);
 
 /**
  * @brief create a new Scroll Window.

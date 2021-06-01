@@ -30,6 +30,7 @@
 #include <gtk/gtkframe.h>
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkaspectframe.h>
+#include <gtk/gtktypeutils.h>
 
 typedef struct {
   GtkWidget widget;
@@ -44,11 +45,11 @@ typedef struct {
 #define OL_TYPE_APP_CHOOSER_WIDGET                                      \
   ol_app_chooser_widget_get_type ()
 #define OL_APP_CHOOSER_WIDGET(obj)                                      \
-  GTK_CHECK_CAST (obj, OL_TYPE_APP_CHOOSER_WIDGET, OlAppChooserWidget)
+  G_TYPE_CHECK_INSTANCE_CAST (obj, OL_TYPE_APP_CHOOSER_WIDGET, OlAppChooserWidget)
 #define OL_APP_CHOOSER_WIDGET_CLASS(klass)                              \
   GTK_CHECK_CLASS_CAST (klass, OL_TYPE_APP_CHOOSER_WIDGET, OlAppChooserWidgetClass)
 #define OL_IS_APP_CHOOSER_WIDGET(obj)               \
-  GTK_CHECK_TYPE (obj, OL_TYPE_APP_CHOOSER_WIDGET)
+  G_TYPE_CHECK_INSTANCE_TYPE (obj, OL_TYPE_APP_CHOOSER_WIDGET)
 #define OL_APP_CHOOSER_WIDGET_GET_CLASS(obj)                            \
   (G_TYPE_INSTANCE_GET_CLASS ((obj),                                    \
                               OL_TYPE_APP_CHOOSER_WIDGET,               \
