@@ -3,7 +3,7 @@
  * Copyright (C) 2009-2011  Tiger Soldier
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,9 +15,12 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <gtk/gtk.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtkdialog.h>
+#include <gtk/gtkaboutdialog.h>
+#include <gdk/gdkpixbuf.h>
 #include "config.h"
 #include "ol_intl.h"
 #include "ol_about.h"
@@ -44,7 +47,7 @@ ol_about_close_clicked (GtkWidget *widget)
 {
   ol_log_func ();
   GtkWidget *toplevel = gtk_widget_get_toplevel (widget);
-  if (GTK_WIDGET_TOPLEVEL (toplevel))
+  if (gtk_widget_is_toplevel (toplevel))
   {
     gtk_widget_hide (toplevel);
   }

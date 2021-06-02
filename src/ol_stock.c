@@ -3,7 +3,7 @@
  * Copyright (C) 2009-2011  Tiger Soldier <tigersoldier@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,9 +15,9 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <gtk/gtk.h>
+#include <gtk/gtkiconfactory.h>
 #include "ol_stock.h"
 
 
@@ -34,7 +34,7 @@ const char *ICON_LIST[] = {
   OL_STOCK_SCROLL_CLOSE,
 };
 
-void 
+void
 ol_stock_init ()
 {
   if (icon_factory == NULL)
@@ -45,15 +45,14 @@ ol_stock_init ()
     {
       GtkIconSet *icon_set = gtk_icon_set_new ();
       GtkIconSource *icon_source = gtk_icon_source_new ();
-      gtk_icon_source_set_icon_name (icon_source, 
+      gtk_icon_source_set_icon_name (icon_source,
                                      ICON_LIST[i]);
       gtk_icon_set_add_source (icon_set, icon_source);
       gtk_icon_source_free (icon_source);
-      gtk_icon_factory_add (icon_factory, 
-                            ICON_LIST[i], 
+      gtk_icon_factory_add (icon_factory,
+                            ICON_LIST[i],
                             icon_set);
     }
     gtk_icon_factory_add_default (icon_factory);
   }
 }
-

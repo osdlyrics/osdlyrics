@@ -53,15 +53,13 @@ static void _calc_size (guint count, guint *n_rows, guint *n_columns);
 static gint _app_info_cmp (GAppInfo **lhs, GAppInfo **rhs);
 static void ol_app_chooser_widget_destroy (GtkObject *object);
 
-G_DEFINE_TYPE (OlAppChooserWidget,
-               ol_app_chooser_widget,
-               GTK_TYPE_TABLE);
+G_DEFINE_TYPE_WITH_PRIVATE (OlAppChooserWidget,
+                            ol_app_chooser_widget,
+                            GTK_TYPE_TABLE);
 
 static void
 ol_app_chooser_widget_class_init (OlAppChooserWidgetClass *klass)
 {
-  g_type_class_add_private (G_OBJECT_CLASS (klass),
-                            sizeof (OlAppChooserWidgetPrivate));
   _signals[APP_ACTIVATE_SIGNAL] =
     g_signal_new ("app-activate",
                   OL_TYPE_APP_CHOOSER_WIDGET,

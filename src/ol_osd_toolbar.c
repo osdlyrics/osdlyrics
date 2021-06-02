@@ -32,7 +32,7 @@ struct _OlOsdToolbarPriv
   enum OlPlayerStatus status;
 };
 
-G_DEFINE_TYPE (OlOsdToolbar, ol_osd_toolbar, GTK_TYPE_ALIGNMENT);
+G_DEFINE_TYPE_WITH_PRIVATE (OlOsdToolbar, ol_osd_toolbar, GTK_TYPE_ALIGNMENT);
 
 enum {
   BTN_PLAY = 0,
@@ -231,7 +231,6 @@ ol_osd_toolbar_class_init (OlOsdToolbarClass *klass)
 {
   GtkObjectClass *gtk_class = GTK_OBJECT_CLASS (klass);
   gtk_class->destroy = ol_osd_toolbar_destroy;
-  g_type_class_add_private (klass, sizeof (OlOsdToolbarPriv));
 }
 
 static void

@@ -156,6 +156,7 @@ typedef struct _OlLyricSourceCandidate OlLyricSourceCandidate;
 typedef struct _OlLyricSourceCandidateClass OlLyricSourceCandidateClass;
 
 typedef struct _OlLyricSourceInfo OlLyricSourceInfo;
+
 struct _OlLyricSourceInfo;
 
 /**

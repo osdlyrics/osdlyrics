@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <stdio.h>
 #include <sys/types.h>
@@ -23,6 +23,7 @@
 #include <signal.h>
 #include <pwd.h>
 #include <gio/gio.h>
+#include <gtk/gtkmain.h>
 #include "config.h"
 #include "ol_lrc.h"
 #include "ol_player.h"

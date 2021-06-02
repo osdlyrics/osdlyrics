@@ -36,7 +36,7 @@ struct _OlImageButtonPriv
   GdkPixbuf *image;
 };
 
-G_DEFINE_TYPE (OlImageButton, ol_image_button, GTK_TYPE_BUTTON);
+G_DEFINE_TYPE_WITH_PRIVATE (OlImageButton, ol_image_button, GTK_TYPE_BUTTON);
 
 static void ol_image_button_destroy (GtkObject *object);
 static void ol_image_button_size_request (GtkWidget *widget,
@@ -77,7 +77,7 @@ ol_image_button_size_allocate (GtkWidget     *widget,
   GtkButton *button = GTK_BUTTON (widget);
   widget->allocation = *allocation;
 
-  if (GTK_WIDGET_REALIZED (widget))
+  if (gtk_widget_get_realized (widget))
     gdk_window_move_resize (button->event_window,
 			    widget->allocation.x,
 			    widget->allocation.y,
@@ -119,7 +119,7 @@ ol_image_button_expose (GtkWidget *widget,
     cairo_clip (cr);
 
     int img_index = STATE_NORMAL;
-    GtkStateType state = GTK_WIDGET_STATE (widget);
+    GtkStateType state = gtk_widget_get_state (widget);
     if (state == GTK_STATE_ACTIVE)
       img_index = STATE_PRESSED;
     else if (state == GTK_STATE_PRELIGHT || state == GTK_STATE_SELECTED)
@@ -138,7 +138,6 @@ ol_image_button_expose (GtkWidget *widget,
 static void
 ol_image_button_class_init (OlImageButtonClass *klass)
 {
-  g_type_class_add_private (klass, sizeof (OlImageButtonPriv));
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
 

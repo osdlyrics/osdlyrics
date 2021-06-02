@@ -3,7 +3,7 @@
  * Copyright (C) 2009-2011  Tiger Soldier <tigersoldier@gmail.com>
  *
  * This file is part of OSD Lyrics.
- * 
+ *
  * OSD Lyrics is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>. 
+ * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include "ol_search_dialog.h"
 #include "ol_gui.h"
@@ -47,13 +47,13 @@ struct
 static OlLyricSourceSearchTask *search_task = NULL;
 static OlMetadata *global_metadata = NULL;
 
-gboolean ol_search_dialog_search_click (GtkWidget *widget, 
+gboolean ol_search_dialog_search_click (GtkWidget *widget,
                                         gpointer data);
-gboolean ol_search_dialog_download_click (GtkWidget *widget, 
+gboolean ol_search_dialog_download_click (GtkWidget *widget,
                                           gpointer data);
 gboolean ol_search_dialog_cancel_click (GtkWidget *widget,
                                         gpointer data);
-static void internal_select_changed (GtkTreeSelection *selection, 
+static void internal_select_changed (GtkTreeSelection *selection,
                                      gpointer data);
 static gboolean internal_init ();
 static void ol_search_dialog_search_complete_cb (OlLyricSourceSearchTask *task,
@@ -75,13 +75,13 @@ internal_select_changed (GtkTreeSelection *selection, gpointer data)
 {
   if (widgets.download != NULL)
     gtk_widget_set_sensitive (GTK_WIDGET (widgets.download),
-                              gtk_tree_selection_get_selected (selection, 
-                                                               NULL, 
+                              gtk_tree_selection_get_selected (selection,
+                                                               NULL,
                                                                NULL));
 }
 
 gboolean
-ol_search_dialog_download_click (GtkWidget *widget, 
+ol_search_dialog_download_click (GtkWidget *widget,
                                  gpointer data)
 {
   ol_log_func ();
@@ -117,11 +117,11 @@ ol_search_dialog_search_click (GtkWidget *widget,
 {
   ol_log_func ();
   OlMetadata *metadata = ol_metadata_new ();
-  ol_metadata_copy (metadata, 
+  ol_metadata_copy (metadata,
                     ol_app_get_current_music ());
   if (widgets.title != NULL)
     ol_metadata_set_title (metadata,
-                           gtk_entry_get_text (widgets.title));  
+                           gtk_entry_get_text (widgets.title));
   if (widgets.artist != NULL)
     ol_metadata_set_artist (metadata,
                             gtk_entry_get_text (widgets.artist));
@@ -262,7 +262,7 @@ internal_init ()
     widgets.list = GTK_TREE_VIEW (ol_gui_get_widget ("search-candidates-list"));
     widgets.msg = GTK_LABEL (ol_gui_get_widget ("search-msg"));
     widgets.download = ol_gui_get_widget ("search-download");
-    ol_lyric_candidate_list_init (widgets.list, 
+    ol_lyric_candidate_list_init (widgets.list,
                                 G_CALLBACK (internal_select_changed));
     widgets.engine = ol_gui_get_widget ("search-engine");
     ol_lyric_source_list_init (GTK_TREE_VIEW (widgets.engine));
@@ -275,7 +275,7 @@ ol_search_dialog_show ()
 {
   if (!internal_init ())
     return;
-  if (GTK_WIDGET_VISIBLE (widgets.window))
+  if (gtk_widget_get_visible (widgets.window))
     return;
   ol_lyric_candidate_list_clear (widgets.list);
 
@@ -284,18 +284,18 @@ ol_search_dialog_show ()
   ol_metadata_copy (global_metadata, ol_app_get_current_music ());
 
 /* fill with real title and artist
-  gtk_entry_set_text (widgets.title, 
+  gtk_entry_set_text (widgets.title,
                       ol_metadata_get_title (global_metadata));
   gtk_entry_set_text (widgets.artist,
                       ol_metadata_get_artist (global_metadata));
 */
 //
-  gtk_entry_set_text (widgets.title, 
+  gtk_entry_set_text (widgets.title,
                       ol_metadata_get_search_title (global_metadata));
   gtk_entry_set_text (widgets.artist,
                       ol_metadata_get_search_artist (global_metadata));
 //
- 
+
   gtk_widget_set_sensitive (widgets.download,
                             FALSE);
   gtk_label_set_text (widgets.msg, "");

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <gtk/gtkprivate.h>
+
 #include "ol_cell_renderer_button.h"
 #include "ol_marshal.h"
 #include "ol_debug.h"
@@ -104,7 +104,9 @@ struct _OlCellRendererButtonPrivate
   GtkWidget *entry;
 };
 
-G_DEFINE_TYPE (OlCellRendererButton, ol_cell_renderer_button, GTK_TYPE_CELL_RENDERER)
+G_DEFINE_TYPE_WITH_PRIVATE (OlCellRendererButton,
+                            ol_cell_renderer_button,
+                            GTK_TYPE_CELL_RENDERER)
 
 static void ol_cell_renderer_button_get_property (GObject *object,
                                            guint param_id,
@@ -224,8 +226,6 @@ ol_cell_renderer_button_class_init (OlCellRendererButtonClass *class)
                   g_cclosure_marshal_VOID__STRING,
                   G_TYPE_NONE, 1,
                   G_TYPE_STRING);
-
-  g_type_class_add_private (object_class, sizeof (OlCellRendererButtonPrivate));
 }
 
 static void
@@ -385,7 +385,7 @@ ol_cell_renderer_button_render (GtkCellRenderer      *cell,
   }
   else if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
   {
-    if (GTK_WIDGET_HAS_FOCUS (widget))
+    if (gtk_widget_has_focus (widget))
       state |= GTK_STATE_SELECTED;
     else
       state |= GTK_STATE_ACTIVE;
@@ -396,7 +396,7 @@ ol_cell_renderer_button_render (GtkCellRenderer      *cell,
   }
   else
   {
-    if (GTK_WIDGET_STATE (widget) == GTK_STATE_INSENSITIVE)
+    if (gtk_widget_get_state (widget) == GTK_STATE_INSENSITIVE)
       state = GTK_STATE_INSENSITIVE;
     else
       state = GTK_STATE_NORMAL;

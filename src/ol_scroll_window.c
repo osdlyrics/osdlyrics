@@ -123,7 +123,7 @@ static void ol_scroll_window_seek (OlScrollWindow *scroll,
 static void ol_scroll_window_end_seek (OlScrollWindow *scroll);
 static void ol_scroll_window_update_tooltip (OlScrollWindow *scroll);
 
-G_DEFINE_TYPE (OlScrollWindow, ol_scroll_window, GTK_TYPE_WINDOW);
+G_DEFINE_TYPE_WITH_PRIVATE (OlScrollWindow, ol_scroll_window, GTK_TYPE_WINDOW);
 
 
 GtkWidget*
@@ -244,8 +244,6 @@ ol_scroll_window_class_init (OlScrollWindowClass *klass)
                   2,
                   G_TYPE_UINT,
                   G_TYPE_DOUBLE);
-  /*add private variables into OlScrollWindow*/
-  g_type_class_add_private (gobject_class, sizeof (OlScrollWindowPrivate));
 }
 
 void
@@ -431,7 +429,7 @@ _calc_lrc_ypos (OlScrollWindow *scroll, double percentage)
   ol_assert_ret (OL_IS_SCROLL_WINDOW (scroll), -1);
   GtkWidget *widget = GTK_WIDGET (scroll);
   OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (scroll);
-  if (!GTK_WIDGET_REALIZED (widget))
+  if (!gtk_widget_get_realized (widget))
     return -1;
   gint line_height;
   line_height = ol_scroll_window_get_font_height (scroll) + priv->line_margin;
@@ -494,7 +492,7 @@ _paint_lyrics (OlScrollWindow *scroll, cairo_t *cr)
 {
   ol_assert (OL_IS_SCROLL_WINDOW (scroll));
   GtkWidget *widget = GTK_WIDGET (scroll);
-  ol_assert (GTK_WIDGET_REALIZED (widget));
+  ol_assert (gtk_widget_get_realized (widget));
   OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (scroll);
   int line_height = ol_scroll_window_get_font_height (scroll) + priv->line_margin;
   int count = ol_scroll_window_compute_line_count (scroll);
