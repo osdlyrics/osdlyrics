@@ -17,5 +17,3 @@ $(service_DATA): $(service_in_files)
 CLEANFILES = \
 	org.osdlyrics.LyricSourcePlugin.netease.service \
 	$(NULL)
-
-SUBDIRS = translation_attempt

@@ -13,6 +13,6 @@ data/dialogs.glade
 data/osdlyrics.desktop.in
 lyricsources/megalobiz/megalobiz.py
 lyricsources/netease/netease.py
-lyricsources/netease/translation_attempt/netease.py
+lyricsources/netease-tr/netease.py
 lyricsources/xiami/xiami.py
 lyricsources/subtitles4songs/subtitles4songs.py
