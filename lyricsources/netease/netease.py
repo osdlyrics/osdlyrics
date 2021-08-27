@@ -24,8 +24,9 @@ class NeteaseSource(BaseLyricSourcePlugin):
     """ Lyric source from music.163.com
     """
 
-    def __init__(self):
+    def __init__(self, attempt_use_translation=False):
         super().__init__(id='netease', name=_('Netease'))
+        self.attempt_use_translation = attempt_use_translation
 
     def do_search(self, metadata):
         # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
@@ -86,10 +87,19 @@ class NeteaseSource(BaseLyricSourcePlugin):
         # Avoid processing results with no lyrics.
         if 'nolyric' in parsed or 'uncollected' in parsed:
             raise ValueError('This item has no lyrics.')
-        lyric = parsed['lrc']['lyric']
+
+        if self.attempt_use_translation:
+            lyric = parsed['tlyric']['lyric']
+            if not lyric:
+                lyric = parsed['lrc']['lyric']
+        else:
+            lyric = parsed['lrc']['lyric']
+
         return lyric.encode('utf-8')
 
-
+class NeteaseTranslatedSource(NeteaseSource):
+    def __init__(self):
+        super().__init__(attempt_use_translation=True)
 
 if __name__ == '__main__':
     netease = NeteaseSource()
