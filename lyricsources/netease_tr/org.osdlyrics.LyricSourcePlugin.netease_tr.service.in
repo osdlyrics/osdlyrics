@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.osdlyrics.LyricSourcePlugin.netease_tr
+Exec=@PYTHON@ @pkglibdir@/lyricsources/netease_tr/netease_tr.py
