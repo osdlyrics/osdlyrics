@@ -25,7 +25,10 @@ class NeteaseSource(BaseLyricSourcePlugin):
     """
 
     def __init__(self, attempt_use_translation=False):
-        super().__init__(id='netease', name=_('Netease'))
+        if attempt_use_translation:
+            super().__init__(id='netease', name=_('Netease'))
+        else:
+            super().__init__(id='netease-tr', name=_('Netease (TR)'))
         self.attempt_use_translation = attempt_use_translation
 
     def do_search(self, metadata):
@@ -97,9 +100,6 @@ class NeteaseSource(BaseLyricSourcePlugin):
 
         return lyric.encode('utf-8')
 
-class NeteaseTranslatedSource(NeteaseSource):
-    def __init__(self):
-        super().__init__(attempt_use_translation=True)
 
 if __name__ == '__main__':
     netease = NeteaseSource()
