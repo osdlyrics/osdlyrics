@@ -1,4 +1,4 @@
-from lyricsources.netease import NeteaseSource
+from osdlyrics.lyricsources.netease import NeteaseSource
 
 class NeteaseTranslatedSource(NeteaseSource):
     def __init__(self):
