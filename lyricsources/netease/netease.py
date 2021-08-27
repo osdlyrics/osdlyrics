@@ -28,7 +28,7 @@ class NeteaseSource(BaseLyricSourcePlugin):
         if attempt_use_translation:
             super().__init__(id='netease', name=_('Netease'))
         else:
-            super().__init__(id='netease-tr', name=_('Netease (TR)'))
+            super().__init__(id='netease_tr', name=_('Netease (TR)'))
         self.attempt_use_translation = attempt_use_translation
 
     def do_search(self, metadata):

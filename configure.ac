@@ -170,7 +170,7 @@ AC_CONFIG_FILES([
         lyricsources/xiami/Makefile
         lyricsources/megalobiz/Makefile
         lyricsources/netease/Makefile
-        lyricsources/netease-tr/Makefile
+        lyricsources/netease_tr/Makefile
         lyricsources/subtitles4songs/Makefile
         tools/Makefile
 ])
