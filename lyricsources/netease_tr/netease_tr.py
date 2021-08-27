@@ -20,7 +20,7 @@ gettext.bindtextdomain('osdlyrics')
 gettext.textdomain('osdlyrics')
 
 
-class NeteaseSource(BaseLyricSourcePlugin):
+class NeteaseTranslatedSource(BaseLyricSourcePlugin):
     """ Lyric source from music.163.com
     """
 
@@ -102,5 +102,5 @@ class NeteaseSource(BaseLyricSourcePlugin):
 
 
 if __name__ == '__main__':
-    netease = NeteaseSource()
+    netease = NeteaseTranslatedSource()
     netease._app.run()
