@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 m4_define([OL_MAJOR_VER], [0])
 m4_define([OL_MINOR_VER], [5])
-m4_define([OL_MICRO_VER], [5])
+m4_define([OL_MICRO_VER], [10])
 m4_define([OL_BUILD], [-git])
 m4_define(OL_BUILD_VER,
           m4_esyscmd_s([if test 'x]OL_BUILD[' = 'x-git'; then (git log -1 --format=format:%ad --date=short 2>/dev/null || date -u +%Y%m%d) | sed 's/-//g'; fi]))
