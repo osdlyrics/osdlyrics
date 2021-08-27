@@ -25,7 +25,7 @@ class NeteaseSource(BaseLyricSourcePlugin):
     """
 
     def __init__(self):
-        super().__init__(id='netease', name=_('Netease'))
+        super().__init__(id='netease', name=_('Netease (tr)'))
 
     def do_search(self, metadata):
         # type: (osdlyrics.metadata.Metadata) -> List[SearchResult]
