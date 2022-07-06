@@ -11,9 +11,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 1
-
+      
       - name: Install dependencies
         run: sudo apt-get install dh-python intltool lib{dbus-glib-1,gtk2.0,notify,x11}-dev python3{,-dbus,-future,-gi}
 
