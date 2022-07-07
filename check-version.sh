@@ -7,8 +7,7 @@ GIT="${GIT:-git}"
 OL_VERSION="${OL_VERSION:-0.5.11}"
 
 if test -d '.git' && command -v "$GIT" &> /dev/null; then
-	#"$GIT" describe --always --tags
-	echo "$OL_VERSION"
+	"$GIT" describe --always --tags
 else
 	echo "$OL_VERSION"
 fi
