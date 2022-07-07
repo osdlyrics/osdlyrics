@@ -1,7 +1,6 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-m4_define([OL_VERSION], [m4_esyscmd([./check-version.sh])])
-AC_INIT([osdlyrics], [OL_VERSION], [https://github.com/osdlyrics/osdlyrics/issues])
+AC_INIT([osdlyrics], m4_esyscmd_s([./check-version.sh]), [https://github.com/osdlyrics/osdlyrics/issues])
 AM_INIT_AUTOMAKE([foreign subdir-objects -Wall -Werror])
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
