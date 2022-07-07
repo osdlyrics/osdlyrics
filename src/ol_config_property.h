@@ -125,6 +125,8 @@ static const OlConfigIntValue config_int[] = {
   {"Download/proxy-port", 1, 65535, 7070},
   {"ScrollMode/width", 1, 10000, 500},
   {"ScrollMode/height", 1, 10000, 400},
+  {"ScrollMode/x", 0, 10000, 0},
+  {"ScrollMode/y", 0, 10000, 0},
 };
 
 static const OlConfigDoubleValue config_double[] = {

@@ -64,4 +64,7 @@ GtkWidget *ol_osd_toolbar_new (void);
 void ol_osd_toolbar_set_player (OlOsdToolbar *toolbar, OlPlayer *player);
 void ol_osd_toolbar_set_status (OlOsdToolbar *toolbar, enum OlPlayerStatus status);
 
+void ol_osd_toolbar_set_window_visibility(OlOsdToolbar *toolbar,
+                                          gboolean window_visible);
+
 #endif /* _OL_OSD_TOOLBAR_H_ */
