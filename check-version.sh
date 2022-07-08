@@ -1,14 +1,9 @@
 #!/usr/bin/env sh
 
-set -e
-
 DIR=`dirname $0`
 GIT="${GIT:-git}"
 OL_VERSION="${OL_VERSION:-0.5.11}"
 
-if test -d '.git' && command -v "$GIT" &> /dev/null; then
-	exec "$GIT" describe --always --tags
-else
-	exec echo "$OL_VERSION"
+if ! "$GIT" describe --always --tags 2>/dev/null; then
+	echo "$OL_VERSION"
 fi
-
