@@ -11,9 +11,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       
       - name: Install dependencies
         run: sudo apt-get install dh-python intltool lib{dbus-glib-1,gtk2.0,notify,x11}-dev python3{,-dbus,-future,-gi}
+
+      - name: Version
+        run: ./check-version.sh
 
       - name: Autogen
         run: ./autogen.sh
