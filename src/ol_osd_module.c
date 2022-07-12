@@ -172,7 +172,7 @@ static void _blur_changed_cb (OlConfigProxy *config,
                               OlOsdModule *osd);
 
 static struct _ConfigMapping _config_mapping[] = {
-  { ".visible", _visible_changed_cb },
+  { "OSD/visible", _visible_changed_cb },
   { "OSD/width", _width_changed_cb },
   { "OSD/osd-window-mode", _mode_changed_cb },
   { "OSD/locked", _locked_changed_cb },

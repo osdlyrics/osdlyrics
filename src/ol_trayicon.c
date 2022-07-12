@@ -55,8 +55,8 @@ activate (GtkStatusIcon* status_icon,
           gpointer user_data)
 {
   OlConfigProxy *config = ol_config_proxy_get_instance ();
-  ol_config_proxy_set_bool (config, ".visible",
-                            !ol_config_proxy_get_bool (config, ".visible"));
+  ol_config_proxy_set_bool (config, "OSD/visible",
+                            !ol_config_proxy_get_bool (config, "OSD/visible"));
 }
 
 static gboolean

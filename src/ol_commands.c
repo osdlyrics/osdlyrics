@@ -34,6 +34,6 @@ ol_show_hide ()
 {
   OlConfigProxy *config = ol_config_proxy_get_instance ();
   ol_assert (config != NULL);
-  ol_config_proxy_set_bool (config, "General/visible",
-                            !ol_config_proxy_get_bool (config, "General/visible"));
+  ol_config_proxy_set_bool (config, "OSD/visible",
+                            !ol_config_proxy_get_bool (config, "OSD/visible"));
 }

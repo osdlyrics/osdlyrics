@@ -219,7 +219,7 @@ ol_menu_hide (GtkWidget *widget, gpointer data)
   OlConfigProxy *config = ol_config_proxy_get_instance ();
   ol_assert (config != NULL);
   gboolean hide = gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (widget));
-  ol_config_proxy_set_bool (config, ".visible", !hide);
+  ol_config_proxy_set_bool (config, "OSD/visible", !hide);
 }
 
 void
@@ -342,7 +342,7 @@ ol_menu_init ()
   
   gtk_widget_show_all (popup_menu);
   _locked_changed_cb (config, "OSD/locked", NULL);
-  _visible_changed_cb (config, ".visible", NULL);
+  _visible_changed_cb (config, "OSD/visible", NULL);
   _display_mode_osd_changed_cb (config, "General/display-mode-osd", NULL);
   _display_mode_scroll_changed_cb (config, "General/display-mode-scroll", NULL);
   g_signal_connect (config,
@@ -350,7 +350,7 @@ ol_menu_init ()
                     G_CALLBACK (_locked_changed_cb),
                     NULL);
   g_signal_connect (config,
-                    "changed::.visible",
+                    "changed::OSD/visible",
                     G_CALLBACK (_visible_changed_cb),
                     NULL);
   g_signal_connect (config,
