@@ -61,7 +61,7 @@ The official source repository is on Github: https://github.com/osdlyrics/osdlyr
 
 If there is any feature request, suggestion, or bug, feel free to report them in [issues page](https://github.com/osdlyrics/osdlyrics/issues).
 
-You can contact the developers for fast support through [our discord server](https://discord.gg/anUy3K).
+You can contact the developers for fast support through [our Discord server](https://discord.gg/vHC2Q3YUuA).
 
 ## How to contribute
 
