@@ -378,6 +378,7 @@ _toolbar_new (OlScrollModule *module)
                      GTK_WIDGET (button));
   gtk_icon_info_free (info);
 
+  gtk_widget_set_can_focus(GTK_WIDGET (button), FALSE);
   gtk_widget_show_all (toolbar);
   return toolbar;
 }
