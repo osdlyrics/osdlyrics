@@ -50,6 +50,7 @@ struct _OlOsdModule
   OlOsdToolbar *toolbar;
   guint message_source;
   GList *config_bindings;
+  gboolean visible_when_stopped;
 };
 
 typedef void (*_ConfigSetFunc) (OlConfigProxy *config,
@@ -75,7 +76,10 @@ static OlOsdModule* ol_osd_module_new (struct OlDisplayModule *module,
 static void ol_osd_module_free (struct OlDisplayModule *module);
 static void _metadata_changed_cb (OlPlayer *player,
                                   OlOsdModule *module);
+static void _status_changed_cb (OlPlayer *player,
+                                OlOsdModule *module);
 static void _update_metadata (OlOsdModule *module);
+static void _update_status (OlOsdModule *module);
 static gboolean _advance_to_nonempty_lyric (OlLrcIter *iter);
 
 static void ol_osd_module_set_played_time (struct OlDisplayModule *module,
@@ -172,7 +176,7 @@ static void _blur_changed_cb (OlConfigProxy *config,
                               OlOsdModule *osd);
 
 static struct _ConfigMapping _config_mapping[] = {
-  { "OSD/visible", _visible_changed_cb },
+  { "OSD/visible_when_stopped", _visible_changed_cb },
   { "OSD/width", _width_changed_cb },
   { "OSD/osd-window-mode", _mode_changed_cb },
   { "OSD/locked", _locked_changed_cb },
@@ -268,10 +272,8 @@ _visible_changed_cb (OlConfigProxy *config,
                      const char *key,
                      OlOsdModule *osd)
 {
-  gboolean visible = ol_config_proxy_get_bool (config, key);
-  gtk_widget_set_visible (GTK_WIDGET (osd->window), visible);
-  if (osd->toolbar != NULL)
-    ol_osd_toolbar_set_window_visibility(osd->toolbar, visible);
+  osd->visible_when_stopped = ol_config_proxy_get_bool (config, key);
+  _update_status (osd);
 }
 
 static void
@@ -538,12 +540,18 @@ ol_osd_module_new (struct OlDisplayModule *module,
   data->message_source = 0;
   data->metadata = ol_metadata_new ();
   data->config_bindings = NULL;
+  data->visible_when_stopped = TRUE;
   ol_osd_module_init_osd (data);
   g_signal_connect (player,
                     "track-changed",
                     G_CALLBACK (_metadata_changed_cb),
                     data);
+  g_signal_connect (player,
+                    "status-changed",
+                    G_CALLBACK (_status_changed_cb),
+                    data);
   _update_metadata (data);
+  _update_status (data);
   return data;
 }
 
@@ -582,6 +590,9 @@ ol_osd_module_free (struct OlDisplayModule *module)
   g_signal_handlers_disconnect_by_func (priv->player,
                                         _metadata_changed_cb,
                                         priv);
+  g_signal_handlers_disconnect_by_func (priv->player,
+                                        _status_changed_cb,
+                                        priv);
   g_object_unref (priv->player);
   priv->player = NULL;
   while (priv->config_bindings != NULL)
@@ -603,11 +614,37 @@ _metadata_changed_cb (OlPlayer *player,
 }
 
 static void
+_status_changed_cb (OlPlayer *player,
+                    OlOsdModule *module)
+{
+  _update_status (module);
+}
+
+static void
 _update_metadata (OlOsdModule *module)
 {
   ol_log_func ();
   ol_assert (module != NULL);
   ol_player_get_metadata (module->player, module->metadata);
+}
+
+static void
+_update_status (OlOsdModule *module)
+{
+  ol_log_func ();
+
+  enum OlPlayerStatus status;
+  if (module->player)
+    status = ol_player_get_status (module->player);
+  else
+    status = OL_PLAYER_UNKNOWN;
+
+  gboolean visible = (status != OL_PLAYER_STOPPED ||
+                      module->visible_when_stopped);
+
+  gtk_widget_set_visible (GTK_WIDGET (module->window), visible);
+  if (module->toolbar != NULL && visible)
+    ol_osd_toolbar_set_status (module->toolbar, status);
 }
 
 static void

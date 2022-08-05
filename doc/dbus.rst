@@ -301,7 +301,7 @@ The interface is ``org.osdlyrics.config``.
 
 The name of configure options
 -----------------------------
-All the name used in configure options MUST be in the format of "group_name/options_name". For example, the visibility of OSD Window should be configured in "OSD/visible".
+All the name used in configure options MUST be in the format of "group_name/options_name". For example, the visibility of the OSD Window when the player is stopped should be configured in "OSD/visible_when_stopped".
 
 Methods
 -------

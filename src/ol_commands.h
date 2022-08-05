@@ -36,9 +36,9 @@
 void ol_osd_lock_unlock ();
 
 /** 
- * @brief switch show/hide status
+ * @brief switch show/hide OSD
  * 
  */
-void ol_show_hide ();
+void ol_osd_switch_display ();
 
 #endif /* _OL_COMMANDS_H_ */

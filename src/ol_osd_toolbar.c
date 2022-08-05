@@ -30,7 +30,6 @@ struct _OlOsdToolbarPriv
 {
   OlPlayer *player;
   enum OlPlayerStatus status;
-  gboolean window_visible;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (OlOsdToolbar, ol_osd_toolbar, GTK_TYPE_ALIGNMENT);
@@ -60,11 +59,8 @@ static void _next_clicked (GtkButton *button, OlOsdToolbar *toolbar);
 static GtkButton *_add_button (OlOsdToolbar *toolbar,
                                const struct ButtonSpec *btn_spec);
 static void _update_caps (OlOsdToolbar *toolbar);
-static void _update_status (OlOsdToolbar *toolbar);
 static void _caps_changed_cb (OlPlayer *player,
                               OlOsdToolbar *toolbar);
-static void _status_changed_cb (OlPlayer *player,
-                                OlOsdToolbar *toolbar);
 static void ol_osd_toolbar_destroy (GtkObject *obj);
 
 const static struct ButtonSpec btn_spec[] = {
@@ -170,13 +166,6 @@ _caps_changed_cb (OlPlayer *player,
 }
 
 static void
-_status_changed_cb (OlPlayer *player,
-                    OlOsdToolbar *toolbar)
-{
-  _update_status (toolbar);
-}
-
-static void
 _update_caps (OlOsdToolbar *toolbar)
 {
   ol_assert (OL_IS_OSD_TOOLBAR (toolbar));
@@ -196,37 +185,6 @@ _update_caps (OlOsdToolbar *toolbar)
                             caps & OL_PLAYER_PREV);
   gtk_widget_set_sensitive (GTK_WIDGET (toolbar->next_button),
                             caps & OL_PLAYER_NEXT);
-}
-
-static void
-_update_status (OlOsdToolbar *toolbar)
-{
-  ol_log_func ();
-  OlOsdToolbarPriv *priv = OL_OSD_TOOLBAR_GET_PRIVATE (toolbar);
-  if (!priv->window_visible)
-    return;
-
-  enum OlPlayerStatus status;
-  if (priv->player)
-    status = ol_player_get_status (priv->player);
-  else
-    status = OL_PLAYER_UNKNOWN;
-  switch (status)
-  {
-  case OL_PLAYER_PLAYING:
-    gtk_widget_show (GTK_WIDGET (toolbar->pause_button));
-    gtk_widget_hide (GTK_WIDGET (toolbar->play_button));
-    break;
-  case OL_PLAYER_PAUSED:
-  case OL_PLAYER_STOPPED:
-    gtk_widget_hide (GTK_WIDGET (toolbar->pause_button));
-    gtk_widget_show (GTK_WIDGET (toolbar->play_button));
-    break;
-  default:
-    gtk_widget_show (GTK_WIDGET (toolbar->pause_button));
-    gtk_widget_show (GTK_WIDGET (toolbar->play_button));
-    break;
-  }
 }
 
 static void
@@ -257,8 +215,6 @@ ol_osd_toolbar_init (OlOsdToolbar *toolbar)
     toolbar->next_button = _add_button (toolbar, &btn_spec[BTN_NEXT]);
 
     priv->player = NULL;
-    priv->window_visible = FALSE;
-    _update_status (toolbar);
     _update_caps (toolbar);
   }
 }
@@ -306,10 +262,6 @@ ol_osd_toolbar_set_player (OlOsdToolbar *toolbar,
   {
     g_object_ref (player);
     g_signal_connect (player,
-                      "status-changed",
-                      G_CALLBACK (_status_changed_cb),
-                      toolbar);
-    g_signal_connect (player,
                       "caps-changed",
                       G_CALLBACK (_caps_changed_cb),
                       toolbar);
@@ -317,25 +269,32 @@ ol_osd_toolbar_set_player (OlOsdToolbar *toolbar,
   if (priv->player != NULL)
   {
     g_signal_handlers_disconnect_by_func (priv->player,
-                                          _status_changed_cb,
-                                          toolbar);
-    g_signal_handlers_disconnect_by_func (priv->player,
                                           _caps_changed_cb,
                                           toolbar);
     g_object_unref (priv->player);
   }
   priv->player = player;
   _update_caps (toolbar);
-  _update_status (toolbar);
 }
 
-void ol_osd_toolbar_set_window_visibility(OlOsdToolbar *toolbar,
-                                          gboolean window_visible)
+void
+ol_osd_toolbar_set_status (OlOsdToolbar *toolbar, enum OlPlayerStatus status)
 {
-  ol_assert (OL_IS_OSD_TOOLBAR (toolbar));
-  OlOsdToolbarPriv *priv = OL_OSD_TOOLBAR_GET_PRIVATE (toolbar);
-
-  priv->window_visible = window_visible;
-  if (window_visible)
-    _update_status(toolbar);
+  switch (status)
+  {
+  case OL_PLAYER_PLAYING:
+    gtk_widget_show (GTK_WIDGET (toolbar->pause_button));
+    gtk_widget_hide (GTK_WIDGET (toolbar->play_button));
+    break;
+  case OL_PLAYER_PAUSED:
+  case OL_PLAYER_STOPPED:
+    gtk_widget_hide (GTK_WIDGET (toolbar->pause_button));
+    gtk_widget_show (GTK_WIDGET (toolbar->play_button));
+    break;
+  default:
+    gtk_widget_show (GTK_WIDGET (toolbar->pause_button));
+    gtk_widget_show (GTK_WIDGET (toolbar->play_button));
+    break;
+  }
 }
+

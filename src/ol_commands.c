@@ -30,10 +30,10 @@ ol_osd_lock_unlock ()
 }
 
 void
-ol_show_hide ()
+ol_osd_switch_display ()
 {
   OlConfigProxy *config = ol_config_proxy_get_instance ();
   ol_assert (config != NULL);
-  ol_config_proxy_set_bool (config, "OSD/visible",
-                            !ol_config_proxy_get_bool (config, "OSD/visible"));
+  ol_config_proxy_set_bool (config, "General/display-mode-osd",
+                            !ol_config_proxy_get_bool (config, "General/display-mode-osd"));
 }

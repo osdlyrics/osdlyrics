@@ -219,7 +219,7 @@ ol_menu_hide (GtkWidget *widget, gpointer data)
   OlConfigProxy *config = ol_config_proxy_get_instance ();
   ol_assert (config != NULL);
   gboolean hide = gtk_check_menu_item_get_active (GTK_CHECK_MENU_ITEM (widget));
-  ol_config_proxy_set_bool (config, "OSD/visible", !hide);
+  ol_config_proxy_set_bool (config, "OSD/visible_when_stopped", !hide);
 }
 
 void
@@ -321,12 +321,6 @@ ol_menu_init ()
   }
 
   menu.hide = ol_gui_get_widget ("menu-hide");
-  if (menu.hide)
-  {
-    gtk_menu_item_set_accel_path (GTK_MENU_ITEM (menu.hide),
-                                  "<OSD Lyrics>/Hide");
-  }
-
   menu.preference = ol_gui_get_widget ("menu-prefernce");
   menu.about = ol_gui_get_widget ("menu-about");
   menu.quit = ol_gui_get_widget ("menu-quit");
@@ -338,11 +332,17 @@ ol_menu_init ()
   menu.next = ol_gui_get_widget ("menu-next");
 
   menu.switch_osd = ol_gui_get_widget ("menu-switch-osd");
+  if (menu.switch_osd)
+  {
+    gtk_menu_item_set_accel_path (GTK_MENU_ITEM (menu.switch_osd),
+                                  "<OSD Lyrics>/Switch OSD");
+  }
+
   menu.switch_scroll = ol_gui_get_widget ("menu-switch-scroll");
   
   gtk_widget_show_all (popup_menu);
   _locked_changed_cb (config, "OSD/locked", NULL);
-  _visible_changed_cb (config, "OSD/visible", NULL);
+  _visible_changed_cb (config, "OSD/visible_when_stopped", NULL);
   _display_mode_osd_changed_cb (config, "General/display-mode-osd", NULL);
   _display_mode_scroll_changed_cb (config, "General/display-mode-scroll", NULL);
   g_signal_connect (config,
@@ -350,7 +350,7 @@ ol_menu_init ()
                     G_CALLBACK (_locked_changed_cb),
                     NULL);
   g_signal_connect (config,
-                    "changed::OSD/visible",
+                    "changed::OSD/visible_when_stopped",
                     G_CALLBACK (_visible_changed_cb),
                     NULL);
   g_signal_connect (config,

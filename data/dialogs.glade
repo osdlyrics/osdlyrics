@@ -2013,8 +2013,8 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
     <child>
       <object class="GtkCheckMenuItem" id="menu-hide">
         <property name="visible">True</property>
-        <property name="tooltip_text" translatable="yes">Hide the OSD Window</property>
-        <property name="label" translatable="yes">_Hide OSD</property>
+        <property name="tooltip_text" translatable="yes">Hide the OSD window when the player is stopped</property>
+        <property name="label" translatable="yes">_Hide OSD when stopped</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="ol_menu_hide"/>
       </object>
