@@ -28,6 +28,7 @@
 #include "ol_stock.h"
 #include "ol_player.h"
 #include "ol_config_proxy.h"
+#include "ol_commands.h"
 #include "ol_debug.h"
 #include <gtk/gtkstatusicon.h>
 #include <gtk/gtktooltip.h>
@@ -54,9 +55,7 @@ static void
 activate (GtkStatusIcon* status_icon,
           gpointer user_data)
 {
-  OlConfigProxy *config = ol_config_proxy_get_instance ();
-  ol_config_proxy_set_bool (config, "OSD/visible",
-                            !ol_config_proxy_get_bool (config, "OSD/visible"));
+  ol_osd_switch_display ();
 }
 
 static gboolean

@@ -39,19 +39,19 @@ ol_keybinding_init ()
   GClosure *hide_closure = g_cclosure_new ((GCallback)ol_hide_accel,
                                            NULL,
                                            NULL);
-  gtk_accel_map_add_entry ("<OSD Lyrics>/Hide",
+  gtk_accel_map_add_entry ("<OSD Lyrics>/Switch OSD",
                            gdk_keyval_from_name ("h"),
                            GDK_CONTROL_MASK | GDK_SHIFT_MASK);
   gtk_accel_group_connect_by_path (accel,
-                                   "<OSD Lyrics>/Hide",
+                                   "<OSD Lyrics>/Switch OSD",
                                    hide_closure);
   gtk_accel_map_add_entry ("<OSD Lyrics>/Lock",
                            gdk_keyval_from_name ("l"),
                            GDK_CONTROL_MASK | GDK_SHIFT_MASK);
   gtk_accel_group_connect_by_path (accel,
-                                   "<OSD Lyrics>/Hide",
+                                   "<OSD Lyrics>/Switch OSD",
                                    hide_closure);
-  ol_keybinder_bind ("<Ctrl><Shift>H", ol_show_hide, NULL);
+  ol_keybinder_bind ("<Ctrl><Shift>H", ol_osd_switch_display, NULL);
   ol_keybinder_bind ("<Ctrl><Shift>L", ol_osd_lock_unlock, NULL);
 }
 
