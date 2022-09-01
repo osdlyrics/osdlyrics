@@ -752,10 +752,10 @@ class BasePlayer(DBusObject):
                 if cap in orig_caps != cap in self._caps:
                     setattr(self, method, cap in self._caps)
 
-    def position_changed(self):
+    def position_changed(self, position):
         """
         Notify that the position has been changed
         """
         if self._timer is not None:
-            self._timer.time = self.get_position()
-        self.Seeked(self._timer.time * 1000)
+            self._timer.time = position
+        self.Seeked(position * 1000)

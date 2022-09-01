@@ -140,7 +140,7 @@ class Mpris2Player(BasePlayer):
                 getattr(self, method)()
 
     def _player_seeked(self, position):
-        self.position_changed()
+        self.position_changed(position // 1000)
 
     @property
     def object_path(self):

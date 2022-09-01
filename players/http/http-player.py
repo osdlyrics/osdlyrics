@@ -132,8 +132,7 @@ class HttpPlayer(BasePlayer):
         self.status_changed()
 
     def do_update_position(self, pos):
-        if self._timer.set_time(pos):
-            self.position_changed()
+        self.position_changed(pos)
 
     def get_metadata(self):
         return self._metadata
