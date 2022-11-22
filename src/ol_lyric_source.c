@@ -547,21 +547,7 @@ ol_lyric_source_search_default (OlLyricSource *source,
     ol_lyric_source_info_free (info);
   }
   source_ids = g_list_reverse (source_ids);
-
-  // create a new metadata with real title and artist to search
-  OlMetadata * search_metadata = ol_metadata_dup (metadata);
-  ol_metadata_set_artist (search_metadata,
-                          ol_metadata_get_search_artist(metadata));
-  ol_metadata_set_title (search_metadata,
-                         ol_metadata_get_search_title(metadata));
-  task = ol_lyric_source_search (source, search_metadata, source_ids);
-
-  // comment out original call
-  // task = ol_lyric_source_search (source, metadata, source_ids);
-
-  // free created metadata
-  ol_metadata_free (search_metadata);
-
+  task = ol_lyric_source_search (source, metadata, source_ids);
   for (; source_ids; source_ids = g_list_delete_link (source_ids, source_ids))
   {
     g_free (source_ids->data);
