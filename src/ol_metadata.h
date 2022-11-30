@@ -141,6 +141,21 @@ void ol_metadata_set_duration (OlMetadata *metadata,
 guint64 ol_metadata_get_duration (const OlMetadata *metadata);
 
 /**
+ * @brief Sanitize the title and artist fields
+ *
+ * @param metadata A Metadata
+ *
+ * If the artist field is absent or looks invalid, check if the title field
+ * actually contains multiple tags, and if so update the artist and title
+ * fields in place. Supported formats (whitespace ignored):
+ *
+ *     [<track>.]<artist>SEP<title>
+ *
+ * where SEP can be either "-" or "--".
+ */
+void ol_metadata_sanitize_title_artist (OlMetadata *metadata);
+
+/**
  * @brief Check whether two Metadatas are equal
  * Two Metadatas are equal if and only if all their fields are equal
  *

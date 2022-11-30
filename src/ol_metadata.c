@@ -316,6 +316,97 @@ ol_metadata_get_duration (const OlMetadata *metadata)
   return metadata->duration;
 }
 
+static gboolean artist_valid (const OlMetadata *metadata)
+{
+  ol_assert_ret (metadata != NULL, FALSE);
+
+  /* List of invalid artist names */
+  static const char * const invalid_arts[] = {"unknown", "未知", "群星", NULL};
+
+  if (metadata->artist == NULL || strlen (metadata->artist) == 0)
+  {
+    return FALSE;
+  }
+
+  gboolean valid = TRUE;
+  char * artist = g_ascii_strdown (metadata->artist, -1);
+  for (const char * const *a = invalid_arts; *a; a++)
+  {
+    /* 
+     * To minimise the risks of false positives, only consider it a match if
+     * the artist field starts with the string
+     */
+    if (g_strstr_len (artist, -1, *a) == artist)
+    {
+      valid = FALSE;
+      break;
+    }
+  }
+  g_free(artist);
+
+  return valid;
+}
+
+void
+ol_metadata_sanitize_title_artist (OlMetadata *metadata)
+{
+  ol_assert (metadata != NULL);
+
+  if (metadata->title == NULL || artist_valid (metadata))
+  {
+    return;
+  }
+
+  char *orig_title = metadata->title;
+  char *orig_artist = metadata->artist;
+  char *new_title = orig_title;
+  char *new_artist = orig_artist;
+  char *tmp, *rhs;
+
+  /* Remove track number, if any */
+  if ((tmp = strstr (new_title, ".")))
+  {
+      rhs = g_strstrip (tmp + 1);
+      if (strlen (rhs) > 0)
+      {
+        new_title = rhs;
+      }
+  }
+  
+  /*
+   * If any separator is that found in the title (in that order), set the
+   * artist to the LHS and the title to the RHS
+   */
+  static const char * const separators[] = {"--", " - ", "-", NULL};
+
+  for (const char * const *sep = separators; *sep; sep++)
+  {
+    if ((tmp = strstr (new_title, *sep)))
+    {
+      rhs = g_strstrip (tmp + strlen (*sep));
+      if (strlen (rhs) > 0)
+      {
+        *tmp = '\0';
+        new_artist = new_title;
+        new_title = rhs;
+        break;
+      }
+    }
+  }
+
+  if (new_artist != orig_artist)
+  {
+    metadata->artist = g_strdup (new_artist);
+    g_free (orig_artist);
+  }
+
+  if (new_title != orig_title)
+  {
+    metadata->title = g_strdup (new_title);
+    g_free (orig_title);
+  }
+}
+
 static int
 internal_snprint (void *buffer,
                   size_t count,
