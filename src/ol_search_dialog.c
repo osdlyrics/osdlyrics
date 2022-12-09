@@ -281,24 +281,19 @@ ol_search_dialog_show ()
 
   if (global_metadata == NULL)
     global_metadata = ol_metadata_new ();
-  ol_metadata_copy (global_metadata, ol_app_get_current_music ());
 
-/* fill with real title and artist
+  OlMetadata *search_metadata = ol_metadata_dup (ol_app_get_current_music ());
+  ol_metadata_copy (global_metadata, search_metadata);
+  ol_metadata_sanitize_title_artist (search_metadata);
   gtk_entry_set_text (widgets.title,
-                      ol_metadata_get_title (global_metadata));
+                      ol_metadata_get_title (search_metadata));
   gtk_entry_set_text (widgets.artist,
-                      ol_metadata_get_artist (global_metadata));
-*/
-//
-  gtk_entry_set_text (widgets.title,
-                      ol_metadata_get_search_title (global_metadata));
-  gtk_entry_set_text (widgets.artist,
-                      ol_metadata_get_search_artist (global_metadata));
-//
-
+                      ol_metadata_get_artist (search_metadata));
   gtk_widget_set_sensitive (widgets.download,
                             FALSE);
   gtk_label_set_text (widgets.msg, "");
+  ol_metadata_free (search_metadata);
+
   OlLyricSource *lyric_source = ol_app_get_lyric_source ();
   GList *info_list = ol_lyric_source_list_sources (lyric_source);
   ol_lyric_source_list_set_info_list (GTK_TREE_VIEW (widgets.engine),
