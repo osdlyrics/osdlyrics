@@ -1,7 +1,7 @@
 #h!/usr/bin/env sh
 
 GIT="${GIT:-git}"
-OL_VERSION="${OL_VERSION:-0.5.11}"
+OL_VERSION="${OL_VERSION:-0.5.13}"
 
 if [ ! "$("$GIT" rev-parse --show-prefix 2>/dev/null)" ]; then
   _GIT_VERSION="$("$GIT" describe --always --tags 2>/dev/null)"
