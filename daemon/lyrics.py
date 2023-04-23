@@ -118,12 +118,18 @@ def decode_by_charset(content):
         logging.warning('Failed to detect encoding, use utf-8 as fallback')
         encoding = 'utf-8'
 
+    encoding = encoding.lower()
     # When we take half of the content to determine the encoding, chardet may
     # think it be encoded with ascii, however the full content is probably
     # encoded with utf-8. As ascii is an subset of utf-8, decoding an ascii
     # string with utf-8 will always be right.
     if encoding == 'ascii':
         encoding = 'utf-8'
+    # Upgrade the Chinese encodings to their extended sets.
+    elif encoding in ('gb2312', 'gbk'):
+        encoding = 'gb18030'
+    elif encoding == 'big5':
+        encoding = 'big5hkscs'
     return content.decode(encoding, 'replace')
 
 
