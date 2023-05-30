@@ -542,8 +542,11 @@ ol_lyric_source_search_default (OlLyricSource *source,
   for (; sources; sources = g_list_delete_link (sources, sources))
   {
     OlLyricSourceInfo *info = sources->data;
-    source_ids = g_list_prepend (source_ids,
-                                 g_strdup (ol_lyric_source_info_get_id (info)));
+    if (ol_lyric_source_info_get_enabled (info))
+    {
+      source_ids = g_list_prepend (source_ids,
+                                   g_strdup (ol_lyric_source_info_get_id (info)));
+    }
     ol_lyric_source_info_free (info);
   }
   source_ids = g_list_reverse (source_ids);
