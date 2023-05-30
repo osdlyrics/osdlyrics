@@ -133,7 +133,7 @@ def get_proxy_settings(config=None, conn=None):
         host = config.get_string('Download/proxy-host')
         port = config.get_int('Download/proxy-port')
         username = config.get_string('Download/proxy-username')
-        passwd = config.get_string('Download/proxy-passwd')
+        passwd = config.get_string('Download/proxy-password')
         return ProxySettings(protocol=protocol, host=host, port=port,
                              username=username, password=passwd)
     if proxy_type == 'system':
