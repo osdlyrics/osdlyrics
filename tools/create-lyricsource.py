@@ -18,9 +18,6 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from __future__ import print_function
-from builtins import input
-
 import os
 import os.path
 import re
@@ -56,10 +53,6 @@ Exec=@PYTHON@ @pkglibdir@/lyricsources/${name}/${name}.py
 """
 
 PYTHON = r"""# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
 
 import http.client
 

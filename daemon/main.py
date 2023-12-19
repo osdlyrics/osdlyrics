@@ -17,9 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-from __future__ import print_function
-from builtins import super
-
 import logging
 
 import dbus

@@ -18,8 +18,6 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from builtins import object
-
 from optparse import OptionParser
 
 import dbus
@@ -42,7 +40,7 @@ class AlreadyRunningException(Exception):
     pass
 
 
-class App(object):
+class App:
     """ Basic class to create a component application for OSD Lyrics.
 
     The application creates a mainloop, owns a DBus name, and exits when the bus

@@ -18,10 +18,6 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from builtins import super
-from future import standard_library
-standard_library.install_aliases()
-
 import logging
 import os
 import os.path

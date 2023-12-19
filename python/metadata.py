@@ -17,9 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-from __future__ import unicode_literals
-from builtins import object
-
 import logging
 import re
 
@@ -28,7 +25,7 @@ import dbus
 from .consts import METADATA_ALBUM, METADATA_ARTIST, METADATA_TITLE
 
 
-class Metadata(object):
+class Metadata:
     """
     Metadata of a track
 
