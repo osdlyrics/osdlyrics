@@ -30,10 +30,7 @@ from gi.repository import GLib
 
 from .property import Property
 
-# Use the default encoding in ElementTree.tostring under Python 2, but prefer
-# Unicode under Python 3 to obtain a 'str', not 'bytes' instance.
-# TODO: remove once we have fully migrated to Python 3
-INTROSPECT_ENCODING = 'unicode' if sys.version_info >= (3, 0) else 'us-ascii'
+INTROSPECT_ENCODING = 'unicode'
 
 
 class ObjectTypeCls(dbus.service.InterfaceType, ABCMeta):

@@ -18,10 +18,6 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from future import standard_library
-standard_library.install_aliases()
-from builtins import str, super
-
 # import urlparse
 import gettext
 import html.parser

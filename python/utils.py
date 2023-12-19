@@ -17,11 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import object, str
-
 import io
 import os
 import os.path
@@ -42,14 +37,8 @@ __all__ = (
 
 pycurl.global_init(pycurl.GLOBAL_DEFAULT)
 
-if sys.version_info < (3, 0):
-    # make sure the default encoding is utf-8
-    if sys.getdefaultencoding() != 'utf-8':
-        reload(sys)
-        sys.setdefaultencoding('utf-8')
 
-
-class ProxySettings(object):
+class ProxySettings:
     """
     """
 

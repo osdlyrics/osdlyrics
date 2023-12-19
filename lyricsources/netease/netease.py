@@ -1,8 +1,3 @@
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import map, str, super
-
 import gettext
 import http.client
 import json

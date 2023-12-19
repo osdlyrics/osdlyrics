@@ -17,11 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-from __future__ import unicode_literals
-from future import standard_library
-standard_library.install_aliases()
-from builtins import object
-
 import logging
 import os.path
 import sqlite3
@@ -48,7 +43,7 @@ def query_param_from_metadata(metadata):
     return param
 
 
-class LrcDb(object):
+class LrcDb:
     """ Database to store location of LRC files that have been manually assigned
     """
 

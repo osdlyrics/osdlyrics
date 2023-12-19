@@ -17,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-from __future__ import unicode_literals
-from builtins import object, super
 from future.utils import raise_from
 
 from abc import abstractmethod
@@ -34,7 +32,7 @@ from .consts import (MPRIS2_PLAYER_INTERFACE, PLAYER_PROXY_INTERFACE,
 from .dbusext.service import Object as DBusObject, property as dbus_property
 
 
-class CAPS(object):
+class CAPS:
     NEXT = 1 << 0
     PREV = 1 << 1
     PAUSE = 1 << 2
@@ -43,13 +41,13 @@ class CAPS(object):
     PROVIDE_METADATA = 1 << 5
 
 
-class REPEAT(object):
+class REPEAT:
     NONE = 0
     TRACK = 1
     ALL = 2
 
 
-class STATUS(object):
+class STATUS:
     PLAYING = 0
     PAUSED = 1
     STOPPED = 2
@@ -172,7 +170,7 @@ class BasePlayerProxy(dbus.service.Object):
         raise NotImplementedError()
 
 
-class PlayerInfo(object):
+class PlayerInfo:
     """Information about a supported player
     """
 

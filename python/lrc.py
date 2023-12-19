@@ -18,9 +18,6 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from __future__ import print_function
-from builtins import object
-
 import re
 
 import dbus.types
@@ -39,7 +36,7 @@ TIMESTAMP_PATTERN = re.compile(r'^\[(\d+(:\d+){0,2}(\.\d+)?)\]$')
 ATTR_PATTERN = re.compile(r'^\[([\w\d]+):(.*)\]$')
 
 
-class AttrToken(object):
+class AttrToken:
     """
     Represents tags with the form of ``[key:value]``
     """

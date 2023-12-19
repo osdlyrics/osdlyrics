@@ -18,10 +18,6 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from future import standard_library
-standard_library.install_aliases()
-from builtins import chr, object, range, str, super
-
 import logging
 import threading
 
@@ -52,7 +48,7 @@ def onmainthread(func):
     return decfunc
 
 
-class SearchResult(object):
+class SearchResult:
     """ Lyrics that match the metadata to be searched.
     """
 

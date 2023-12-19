@@ -18,8 +18,6 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from builtins import object, str
-
 import dbus.exceptions
 
 
@@ -28,7 +26,7 @@ class AccessDeniedError(dbus.exceptions.DBusException):
         dbus.exceptions.DBusException.__init__(self, dbus_error_name='org.osdlyrics.Error.AccessDenied', *args)
 
 
-class Property(object):
+class Property:
     """ DBus property class
     """
 

@@ -20,9 +20,6 @@
 
 """MPD support for OSD Lyrics. Requires MPD >= 0.16 and mpd-python >= 0.3
 """
-from __future__ import unicode_literals
-from builtins import object, super
-
 import logging
 import os
 import select
@@ -54,7 +51,7 @@ class NoConnectionError(Exception):
     pass
 
 
-class CommandCallback(object):
+class CommandCallback:
     def __init__(self, command, callback):
         self.command = command
         self.callback = callback
@@ -64,7 +61,7 @@ class CommandCallback(object):
             self.callback(*args)
 
 
-class Cmds(object):
+class Cmds:
     CONFIG = 'config'
     CURRENTSONG = 'currentsong'
     IDLE = 'idle'

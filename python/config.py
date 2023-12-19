@@ -18,8 +18,6 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from builtins import object
-
 import logging
 
 import dbus
@@ -29,7 +27,7 @@ from .consts import CONFIG_BUS_NAME, CONFIG_OBJECT_PATH
 CONFIG_INTERFACE = 'org.osdlyrics.Config'
 
 
-class Config(object):
+class Config:
     """ Helper class to retrive configs from OSD Lyrics through DBus
 
     It provides a set of get_<type> functions to get config values with default

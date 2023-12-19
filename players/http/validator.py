@@ -18,8 +18,6 @@
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from builtins import object
-
 from error import BadRequestError
 
 __all__ = (
@@ -32,7 +30,7 @@ __all__ = (
 )
 
 
-class baseparam(object):
+class baseparam:
     def __init__(self, optional=False):
         self.optional = optional
 
