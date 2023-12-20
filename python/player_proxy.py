@@ -17,7 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
 #
-from future.utils import raise_from
 
 from abc import abstractmethod
 import logging
@@ -112,9 +111,9 @@ class BasePlayerProxy(dbus.service.Object):
         try:
             player = self.do_connect_player(player_name)
         except TypeError as e:
-            raise_from(errors.BaseError(
+            raise errors.BaseError(
                 '%s cannot instantiate Player[%s, %s]' % (type(self).__name__, self.name, player_name)
-            ), e)
+            ) from e
         if player and player.connected:
             player.set_disconnect_cb(self._player_lost_cb)
             self._connected_players[player_name] = player
