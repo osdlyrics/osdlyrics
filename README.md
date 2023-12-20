@@ -51,6 +51,8 @@ sudo make install
 
 You can read more at [Building wiki page](https://github.com/osdlyrics/osdlyrics/wiki/Building).
 
+Since version `0.5.15` Python 2 is no longer supported. Please upgrade to Python 3.12+.
+
 ## Troubleshooting
 
 Check [Troubleshooting wiki page](https://github.com/osdlyrics/osdlyrics/wiki/Troubleshooting) for more detailed help.
