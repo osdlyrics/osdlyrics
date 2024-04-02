@@ -33,7 +33,6 @@
 
 static const char *OL_CONFIG_DEFAULT_DOWNLOAD_ENGINE[] = {
   "ttPlayer",
-  "xiami",
   NULL,
 };
 

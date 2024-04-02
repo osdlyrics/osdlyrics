@@ -106,10 +106,6 @@ msgstr "Selectați un director"
 msgid "ttPlayer"
 msgstr "ttPlayer"
 
-#: ../src/ol_lrc_fetch_xiami.c:237
-msgid "Xiami"
-msgstr "Xiami"
-
 #: ../src/ol_lrc_candidate_list.c:43
 msgid "Title"
 msgstr "Titlu"

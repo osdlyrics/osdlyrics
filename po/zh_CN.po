@@ -672,10 +672,6 @@ msgstr "歌词秀"
 msgid "Download and show lyrics for your favorite media player"
 msgstr "让你的音乐播放器支持下载和显示歌词"
 
-#: ../lyricsources/xiami/xiami.py:50
-msgid "Xiami"
-msgstr "虾米"
-
 #~ msgid "Cannot create the lyric directory"
 #~ msgstr "无法创建歌词目录"
 

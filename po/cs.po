@@ -666,7 +666,3 @@ msgstr "Přehrávač textů"
 #: ../data/osdlyrics.desktop.in.h:3
 msgid "Download and show lyrics for your favorite media player"
 msgstr "Stahuje a zobrazuje časovaný text k přehrávaným skladbám"
-
-#: ../lyricsources/xiami/xiami.py:49
-msgid "Xiami"
-msgstr ""
