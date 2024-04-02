@@ -420,7 +420,7 @@ Lyric Source Plugins
 
 To write a plugin to support a new lyric source to download or upload(optional), the plugins should follow the specification here.
 
-A lyric source plugin Must have a unique name, linke ``ttplayer`` or ``xiami``. The well-known bus name should be ``org.osdlyrics.LyricSourcePlugin.<pluginname>``. The object path should be ``/org/osdlyrics/LyricSourcePlugin/<pluginname>``. ``<pluginname>`` here stands for the unique name of the plugin.
+A lyric source plugin Must have a unique name, like ``ttplayer``. The well-known bus name should be ``org.osdlyrics.LyricSourcePlugin.<pluginname>``. The object path should be ``/org/osdlyrics/LyricSourcePlugin/<pluginname>``. ``<pluginname>`` here stands for the unique name of the plugin.
 
 All lyric source plugin should implement ``org.osdlyrics.LyricSourcePlugin`` interface. The interface is defined below:
 

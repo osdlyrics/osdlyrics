@@ -159,7 +159,6 @@ AC_CONFIG_FILES([
         python/Makefile
         python/dbusext/Makefile
         lyricsources/Makefile
-        lyricsources/xiami/Makefile
         lyricsources/megalobiz/Makefile
         lyricsources/netease/Makefile
         lyricsources/netease_tr/Makefile

@@ -106,10 +106,6 @@ msgstr "Seleccione una carpeta"
 msgid "ttPlayer"
 msgstr ""
 
-#: ../src/ol_lrc_fetch_xiami.c:237
-msgid "Xiami"
-msgstr ""
-
 #: ../src/ol_lrc_candidate_list.c:43
 msgid "Title"
 msgstr "Título"

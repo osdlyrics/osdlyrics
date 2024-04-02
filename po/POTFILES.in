@@ -14,5 +14,4 @@ data/osdlyrics.desktop.in
 lyricsources/megalobiz/megalobiz.py
 lyricsources/netease/netease.py
 lyricsources/netease_tr/netease_tr.py
-lyricsources/xiami/xiami.py
 lyricsources/subtitles4songs/subtitles4songs.py
