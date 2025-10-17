@@ -364,13 +364,28 @@ ol_metadata_sanitize_title_artist (OlMetadata *metadata)
   char *tmp, *rhs;
 
   /* Remove track number, if any */
-  if ((tmp = strstr (new_title, ".")))
+  tmp = strstr (new_title, ".");
+  if (tmp != NULL && tmp != new_title)
   {
+    gboolean is_track_number = TRUE;
+    char *p;
+    for (p = new_title; p < tmp; p++)
+    {
+      if (!g_ascii_isdigit (*p) && !g_ascii_isspace(*p))
+      {
+        is_track_number = FALSE;
+        break;
+      }
+    }
+
+    if (is_track_number)
+    {
       rhs = g_strstrip (tmp + 1);
       if (strlen (rhs) > 0)
       {
         new_title = rhs;
       }
+    }
   }
   
   /*
