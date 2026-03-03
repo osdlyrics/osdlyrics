@@ -51,8 +51,8 @@ ol_keybinding_init ()
   gtk_accel_group_connect_by_path (accel,
                                    "<OSD Lyrics>/Switch OSD",
                                    hide_closure);
-  ol_keybinder_bind ("<Ctrl><Shift>H", ol_osd_switch_display, NULL);
-  ol_keybinder_bind ("<Ctrl><Shift>L", ol_osd_lock_unlock, NULL);
+  ol_keybinder_bind ("<Ctrl><Shift>H", (OlBindkeyHandler)ol_osd_switch_display, NULL);
+  ol_keybinder_bind ("<Ctrl><Shift>L", (OlBindkeyHandler)ol_osd_lock_unlock, NULL);
 }
 
 GtkAccelGroup*
