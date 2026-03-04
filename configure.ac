@@ -163,6 +163,7 @@ AC_CONFIG_FILES([
         lyricsources/netease/Makefile
         lyricsources/netease_tr/Makefile
         lyricsources/subtitles4songs/Makefile
+        lyricsources/lrclib/Makefile
         tools/Makefile
 ])
 

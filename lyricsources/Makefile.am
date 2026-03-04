@@ -1,1 +1,1 @@
-SUBDIRS = megalobiz netease netease_tr subtitles4songs
+SUBDIRS = megalobiz netease netease_tr subtitles4songs lrclib

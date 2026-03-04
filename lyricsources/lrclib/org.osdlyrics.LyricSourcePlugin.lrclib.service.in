@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.osdlyrics.LyricSourcePlugin.lrclib
+Exec=@PYTHON@ @pkglibdir@/lyricsources/lrclib/lrclib.py
