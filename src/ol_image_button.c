@@ -38,7 +38,7 @@ struct _OlImageButtonPriv
 
 G_DEFINE_TYPE_WITH_PRIVATE (OlImageButton, ol_image_button, GTK_TYPE_BUTTON);
 
-static void ol_image_button_destroy (GtkObject *object);
+static void ol_image_button_destroy (GtkWidget *object);
 static void ol_image_button_size_request (GtkWidget *widget,
                                           GtkRequisition *requisition);
 static void ol_image_button_size_allocate (GtkWidget     *widget,
@@ -139,7 +139,7 @@ static void
 ol_image_button_class_init (OlImageButtonClass *klass)
 {
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-  GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
+  GtkWidgetClass *object_class = GTK_WIDGET_CLASS (klass);
 
   object_class->destroy = ol_image_button_destroy;
 
@@ -180,7 +180,7 @@ ol_image_button_dispose(GObject *object)
 }
 
 static void
-ol_image_button_destroy (GtkObject *object)
+ol_image_button_destroy (GtkWidget *object)
 {
   OlImageButton *btn = OL_IMAGE_BUTTON (object);
   OlImageButtonPriv *priv = OL_IMAGE_BUTTON_GET_PRIVATE (btn);
@@ -189,7 +189,7 @@ ol_image_button_destroy (GtkObject *object)
     g_object_unref (priv->image);
     priv->image = NULL;
   }
-  GTK_OBJECT_CLASS (ol_image_button_parent_class)->destroy (object);
+  GTK_WIDGET_CLASS (ol_image_button_parent_class)->destroy (object);
 }
 
 GtkWidget *

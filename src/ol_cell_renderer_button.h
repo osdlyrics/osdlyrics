@@ -20,9 +20,7 @@
 #ifndef _OL_CELLRENDERERBUTTON_H_
 #define _OL_CELLRENDERERBUTTON_H_
 
-#include <gtk/gtkcellrenderer.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkprivate.h>
+#include <gtk/gtk.h>
 
 #define OL_TYPE_CELL_RENDERER_BUTTON		(ol_cell_renderer_button_get_type ())
 #define OL_CELL_RENDERER_BUTTON(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), OL_TYPE_CELL_RENDERER_BUTTON, OlCellRendererButton))

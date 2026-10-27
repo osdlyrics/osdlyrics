@@ -34,8 +34,7 @@
 #include "ol_config_proxy.h"
 #include "ol_commands.h"
 #include "ol_debug.h"
-#include <gtk/gtkstatusicon.h>
-#include <gtk/gtktooltip.h>
+#include <gtk/gtk.h>
 
 #if HAVE_APP_INDICATOR
 static AppIndicator *indicator = NULL;

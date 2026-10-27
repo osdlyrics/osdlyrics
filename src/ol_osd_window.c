@@ -96,7 +96,7 @@ struct OsdLrc
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (OlOsdWindow, ol_osd_window, GTK_TYPE_WINDOW)
-static void ol_osd_window_destroy (GtkObject *object);
+static void ol_osd_window_destroy (GtkWidget *object);
 static void ol_osd_window_set_property (GObject *object, guint prop_id,
                                         const GValue *value, GParamSpec *pspec);
 static void ol_osd_window_get_property (GObject *object, guint prop_id,
@@ -215,7 +215,8 @@ ol_osd_window_paint_bg (OlOsdWindow *osd, cairo_t *cr)
   GtkWidget *widget = GTK_WIDGET (osd);
   OlOsdWindowPrivate *priv = OL_OSD_WINDOW_GET_PRIVATE (osd);
   int w, h;
-  gdk_drawable_get_size (widget->window, &w, &h);
+  w = gdk_window_get_width (widget->window);
+  h = gdk_window_get_height (widget->window);
   ol_osd_window_clear_cairo (cr);
   if (ol_osd_window_panel_visible(osd))
   {
@@ -1365,7 +1366,8 @@ ol_osd_window_reset_shape_pixmap (OlOsdWindow *osd)
   if (priv->shape_pixmap != NULL)
   {
     gint w, h;
-    gdk_drawable_get_size (priv->shape_pixmap, &w, &h);
+    w = gdk_window_get_width (priv->shape_pixmap);
+  h = gdk_window_get_height (priv->shape_pixmap);
     if (w == width && h == height)
     {
       return;
@@ -1611,11 +1613,11 @@ ol_osd_window_class_init (OlOsdWindowClass *klass)
 {
   ol_log_func ();
   GObjectClass *gobject_class;
-  GtkObjectClass *object_class;
+  GtkWidgetClass *object_class;
   GtkWidgetClass *widget_class;
 
   gobject_class = G_OBJECT_CLASS (klass);
-  object_class = (GtkObjectClass*)klass;
+  object_class = (GtkWidgetClass*)klass;
   widget_class = (GtkWidgetClass*)klass;
   ol_osd_window_parent_class = g_type_class_peek_parent (klass);
 
@@ -1810,7 +1812,7 @@ ol_osd_window_new ()
 }
 
 static void
-ol_osd_window_destroy (GtkObject *object)
+ol_osd_window_destroy (GtkWidget *object)
 {
   ol_log_func ();
   ol_assert (OL_IS_OSD_WINDOW (object));
@@ -1855,7 +1857,7 @@ ol_osd_window_destroy (GtkObject *object)
     g_object_unref (osd->bg_pixbuf);
     osd->bg_pixbuf = NULL;
   }
-  GTK_OBJECT_CLASS (ol_osd_window_parent_class)->destroy (object);
+  GTK_WIDGET_CLASS (ol_osd_window_parent_class)->destroy (object);
 }
 
 void

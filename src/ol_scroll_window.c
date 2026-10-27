@@ -96,7 +96,7 @@ static void _calc_paint_pos (OlScrollWindow *scroll,
 
 static void ol_scroll_window_init (OlScrollWindow *self);
 static void ol_scroll_window_class_init (OlScrollWindowClass *klass);
-static void ol_scroll_window_destroy (GtkObject *object);
+static void ol_scroll_window_destroy (GtkWidget *object);
 static gboolean ol_scroll_window_expose (GtkWidget *widget,
                                          GdkEventExpose *event,
                                          gpointer userdata);
@@ -227,9 +227,9 @@ static void
 ol_scroll_window_class_init (OlScrollWindowClass *klass)
 {
   GObjectClass *gobject_class;
-  GtkObjectClass *gtkobject_class;
+  GtkWidgetClass *gtkobject_class;
   gobject_class = G_OBJECT_CLASS (klass);
-  gtkobject_class = GTK_OBJECT_CLASS (klass);
+  gtkobject_class = GTK_WIDGET_CLASS (klass);
   gtkobject_class->destroy = ol_scroll_window_destroy;
   /* install signals */
   _signals[SEEK_SIGNAL] =
@@ -265,7 +265,7 @@ ol_scroll_window_remove_toolbar (OlScrollWindow *scroll,
 }
 
 static void
-ol_scroll_window_destroy (GtkObject *object)
+ol_scroll_window_destroy (GtkWidget *object)
 {
   OlScrollWindow *scroll = OL_SCROLL_WINDOW (object);
   OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (object);
@@ -277,7 +277,7 @@ ol_scroll_window_destroy (GtkObject *object)
   {
     scroll->current_lyric_id = -1;
   }
-  GTK_OBJECT_CLASS (ol_scroll_window_parent_class)->destroy (object);
+  GTK_WIDGET_CLASS (ol_scroll_window_parent_class)->destroy (object);
 }
 
 
@@ -385,8 +385,8 @@ _paint_bg (OlScrollWindow *scroll, cairo_t *cr)
   ol_assert (cr != NULL);
   OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (scroll);
   gint width, height;
-  gdk_drawable_get_size (gtk_widget_get_window (GTK_WIDGET (scroll)),
-                         &width, &height);
+  width = gdk_window_get_width (gtk_widget_get_window (GTK_WIDGET (scroll)));
+  height = gdk_window_get_height (gtk_widget_get_window (GTK_WIDGET (scroll)));
   cairo_save (cr);
   cairo_new_path (cr);
   /* Top-left */
@@ -497,8 +497,8 @@ _paint_lyrics (OlScrollWindow *scroll, cairo_t *cr)
   int line_height = ol_scroll_window_get_font_height (scroll) + priv->line_margin;
   int count = ol_scroll_window_compute_line_count (scroll);
   gint width, height;
-  gdk_drawable_get_size (gtk_widget_get_window (GTK_WIDGET (scroll)),
-                         &width, &height);
+  width = gdk_window_get_width (gtk_widget_get_window (GTK_WIDGET (scroll)));
+  height = gdk_window_get_height (gtk_widget_get_window (GTK_WIDGET (scroll)));
 
   /* set the font */
   PangoLayout *layout = _get_pango (scroll, cr);
@@ -582,8 +582,8 @@ _paint_text (OlScrollWindow *scroll, cairo_t *cr)
   PangoRectangle extent;
   PangoLayout *layout;
   gint x, y;
-  gdk_drawable_get_size (gtk_widget_get_window (widget),
-                         &width, &height);
+  width = gdk_window_get_width (gtk_widget_get_window (widget));
+  height = gdk_window_get_height (gtk_widget_get_window (widget));
 
   /* set the font */
   cairo_save (cr);

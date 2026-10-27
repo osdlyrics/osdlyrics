@@ -20,13 +20,10 @@
 #ifndef _OL_IMAGE_BUTTON_H_
 #define _OL_IMAGE_BUTTON_H_
 
-#include <gtk/gtkbutton.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkobject.h>
-#include <gtk/gtktypeutils.h>
+#include <gtk/gtk.h>
 
 #define OL_IMAGE_BUTTON(obj)                  G_TYPE_CHECK_INSTANCE_CAST (obj, ol_image_button_get_type (), OlImageButton)
-#define OL_IMAGE_BUTTON_CLASS(klass)          GTK_CHECK_CLASS_CAST (klass, ol_image_button_get_type (), OlImageButtonClass)
+#define OL_IMAGE_BUTTON_CLASS(klass)          G_TYPE_CHECK_CLASS_CAST (klass, ol_image_button_get_type (), OlImageButtonClass)
 #define OL_IS_IMAGE_BUTTON(obj)               G_TYPE_CHECK_INSTANCE_TYPE (obj, ol_image_button_get_type ())
 #define OL_IMAGE_BUTTON_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), ol_image_button_get_type (), OlImageButtonClass))
 
