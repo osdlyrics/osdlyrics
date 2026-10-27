@@ -176,7 +176,7 @@ static struct ListExtraWidgets
 
 struct ListExtraButton
 {
-  char *stock_name;
+  char *icon_name;
   void (*click_func) (GtkCellRenderer *cell,
                       gchar *path,
                       GtkTreeView *view);
@@ -1377,17 +1377,10 @@ append_button_to_column (GtkTreeViewColumn *column,
 {
   if (column == NULL)
     return;
-  if (button == NULL || button->click_func == NULL || button->stock_name == NULL)
+  if (button == NULL || button->click_func == NULL || button->icon_name == NULL)
     return;
   GtkCellRenderer *btncell;
-  btncell = ol_cell_renderer_button_new ();
-  GValue remove_stock = {0};
-  g_value_init (&remove_stock, G_TYPE_STRING);
-  g_value_set_static_string (&remove_stock, button->stock_name);
-  g_object_set_property (G_OBJECT (btncell),
-                         "stock",
-                         &remove_stock);
-  g_value_unset (&remove_stock);
+  btncell = ol_cell_renderer_button_new (button->icon_name);
   g_signal_connect (G_OBJECT (btncell), "clicked",
                     G_CALLBACK (button->click_func),
                     (gpointer) list);
@@ -1415,13 +1408,13 @@ get_list_column (GtkWidget *list,
                          &text_editable);
   g_value_unset (&text_editable);
 
-  while (buttons != NULL && buttons->stock_name != NULL && buttons->click_func != NULL)
+  while (buttons != NULL && buttons->icon_name != NULL && buttons->click_func != NULL)
   {
     append_button_to_column (column, list, buttons);
     buttons++;
   }
   struct ListExtraButton remove_button = {
-    GTK_STOCK_REMOVE,
+    "list-remove",
     list_remove_clicked,
   };
   append_button_to_column (column, list, &remove_button);
@@ -1682,7 +1675,7 @@ ol_option_show ()
     lrc_path_widgets.extra_button = ol_gui_get_widget ("lrc-path-browse");
     lrc_path_widgets.save_func = ol_option_save_path_pattern;
     struct ListExtraButton path_buttons[] = {
-      /* {GTK_STOCK_DIRECTORY, list_browse_clicked}, */
+      /* {"folder", list_browse_clicked}, */
       {NULL, NULL},
     };
     init_list (&lrc_path_widgets, path_buttons);
@@ -1693,7 +1686,7 @@ ol_option_show ()
     lrc_filename_widgets.extra_button = ol_gui_get_widget ("lrc-filename-pattern");
     lrc_filename_widgets.save_func = ol_option_save_file_pattern;
     struct ListExtraButton file_buttons[] = {
-      /* {GTK_STOCK_INFO, list_pattern_clicked}, */
+      /* {"dialog-information", list_pattern_clicked}, */
       {NULL, NULL},
     };
     init_list (&lrc_filename_widgets, file_buttons);

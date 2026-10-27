@@ -34,31 +34,18 @@ typedef struct _OlCellRendererButtonClass OlCellRendererButtonClass;
 
 struct _OlCellRendererButton
 {
-  GtkCellRenderer parent;
-
-  /*< private >*/
-  gchar *GSEAL (text);
-  gchar *GSEAL (stock_id);
-
-  PangoFontDescription *GSEAL (font);
-  /* gint GSEAL (rise); */
-  /* gint GSEAL (fixed_height_rows); */
-
+  GtkCellRendererPixbuf parent;
 };
 
 struct _OlCellRendererButtonClass
 {
-  GtkCellRendererClass parent_class;
+  GtkCellRendererPixbufClass parent_class;
 
-  void (* edited) (OlCellRendererButton *cell_renderer_button,
-		   const gchar         *path,
-		   const gchar         *new_text);
   void (* clicked) (OlCellRendererButton *cell_renderer_button,
-		   const gchar         *path);
-
+                    const gchar *path);
 };
 
 GType ol_cell_renderer_button_get_type (void) G_GNUC_CONST;
-GtkCellRenderer *ol_cell_renderer_button_new (void);
+GtkCellRenderer *ol_cell_renderer_button_new (const gchar *icon_name);
 
 #endif /* _OL_CELLRENDERERBUTTON_H_ */

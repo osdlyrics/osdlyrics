@@ -32,7 +32,7 @@ struct _OlOsdToolbarPriv
   enum OlPlayerStatus status;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (OlOsdToolbar, ol_osd_toolbar, GTK_TYPE_ALIGNMENT);
+G_DEFINE_TYPE (OlOsdToolbar, ol_osd_toolbar, GTK_TYPE_ALIGNMENT);
 
 enum {
   BTN_PLAY = 0,

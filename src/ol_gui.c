@@ -33,7 +33,12 @@ internal_init ()
     builder = gtk_builder_new ();
     ol_assert (builder != NULL);
     gtk_builder_set_translation_domain (builder, PACKAGE);
-    gtk_builder_add_from_file (builder, BUILDER_FILE, NULL);
+    GError *error = NULL;
+    if (!gtk_builder_add_from_file (builder, BUILDER_FILE, &error))
+    {
+      ol_errorf ("Failed to load %s: %s\n", BUILDER_FILE, error->message);
+      g_error_free (error);
+    }
     gtk_builder_connect_signals (builder, NULL);
   }
 }
