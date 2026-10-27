@@ -4,7 +4,7 @@ bin_PROGRAMS = osdlyrics
 #TEST = $(check_PROGRAMS)
 
 AM_CPPFLAGS = \
-	@GTK2_CFLAGS@ \
+	@GTK_CFLAGS@ \
 	@DBUS_GLIB_CFLAGS@ \
 	@NOTIFY_CFLAGS@ \
 	@X11_CFLAGS@ \
@@ -13,7 +13,7 @@ AM_CPPFLAGS = \
 	-DICONDIR='"$(OL_ICONDIR)"' \
 	-DGUIDIR='"$(OL_GUIDIR)"'
 LDADD = \
-	@GTK2_LIBS@ \
+	@GTK_LIBS@ \
 	@DBUS_GLIB_LIBS@ \
 	@NOTIFY_LIBS@ \
 	@X11_LIBS@ \
@@ -124,7 +124,7 @@ osdlyrics_SOURCES = \
 	ol_player_chooser.c \
 	ol_gussian_blur.c
 
-#osd_lyrics_CXXFLAGS = @GTK2_CFLAGS@
+#osd_lyrics_CXXFLAGS = @GTK_CFLAGS@
 
 
 # Librarys

@@ -19,7 +19,11 @@
  */
 #include "config.h"
 #if HAVE_APP_INDICATOR
+#if HAVE_AYATANA_APP_INDICATOR
+#include <libayatana-appindicator/app-indicator.h>
+#else
 #include <libappindicator/app-indicator.h>
+#endif
 #endif  /* HAVE_APP_INDICATOR */
 #include "ol_trayicon.h"
 #include "ol_app.h"
