@@ -121,10 +121,13 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
         <property name="spacing">2</property>
         <child>
           <object class="GtkNotebook" id="notebook1">
+            <property name="show_border">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <child>
               <object class="GtkVBox" id="vbox5">
+                <property name="spacing">3</property>
+                <property name="margin_top">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkHBox" id="hbox-display-mode">
@@ -309,6 +312,8 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
             <child>
               <object class="GtkVBox" id="vbox1">
+                <property name="spacing">3</property>
+                <property name="margin_top">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkHBox" id="hbox2">
@@ -574,6 +579,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                 </child>
                 <child>
                   <object class="GtkFrame" id="lrc-align-frame">
+                    <property name="margin_top">8</property>
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <property name="shadow_type">none</property>
@@ -665,6 +671,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                 </child>
                 <child>
                   <object class="GtkFrame" id="frame1">
+                    <property name="margin_top">8</property>
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <property name="shadow_type">none</property>
@@ -950,6 +957,8 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
             <child>
               <object class="GtkVBox" id="vbox10">
+                <property name="spacing">3</property>
+                <property name="margin_top">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkFrame" id="frame4">
@@ -1124,6 +1133,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                 </child>
                 <child>
                   <object class="GtkFrame" id="frame5">
+                    <property name="margin_top">8</property>
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <property name="shadow_type">none</property>
@@ -1278,6 +1288,8 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
             <child>
               <object class="GtkVBox" id="vbox4">
+                <property name="spacing">3</property>
+                <property name="margin_top">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkFrame" id="lrc-path-frame1">
@@ -1287,12 +1299,13 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                     <child>
                       <object class="GtkAlignment" id="alignment5">
                         <property name="visible">True</property>
-                        <property name="left_padding">12</property>
                         <child>
                           <object class="GtkVBox" id="vbox6">
+                            <property name="spacing">3</property>
                             <property name="visible">True</property>
                             <child>
                               <object class="GtkScrolledWindow" id="scrolledwindow1">
+                                <property name="shadow_type">in</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="hscrollbar_policy">automatic</property>
@@ -1405,18 +1418,21 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                 </child>
                 <child>
                   <object class="GtkFrame" id="lrc-path-frame">
+                    <property name="margin_top">8</property>
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <property name="shadow_type">none</property>
                     <child>
                       <object class="GtkAlignment" id="alignment4">
                         <property name="visible">True</property>
-                        <property name="left_padding">12</property>
                         <child>
                           <object class="GtkVBox" id="vbox7">
+                            <property name="spacing">3</property>
                             <property name="visible">True</property>
                             <child>
                               <object class="GtkScrolledWindow" id="scrolledwindow2">
+                                <property name="height_request">72</property>
+                                <property name="shadow_type">in</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="hscrollbar_policy">automatic</property>
@@ -1549,6 +1565,8 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
             <child>
               <object class="GtkVBox" id="vbox3">
+                <property name="spacing">3</property>
+                <property name="margin_top">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkFrame" id="frame3">
@@ -1630,6 +1648,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                 </child>
                 <child>
                   <object class="GtkFrame" id="frame-proxy">
+                    <property name="margin_top">8</property>
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <property name="shadow_type">none</property>
@@ -1928,6 +1947,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
             <property name="position">2</property>
           </packing>
         </child>
