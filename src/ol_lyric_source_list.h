@@ -20,9 +20,7 @@
 #ifndef _OL_LYRIC_SOURCE_LIST_H_
 #define _OL_LYRIC_SOURCE_LIST_H_
 
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkcellrenderertoggle.h>
-#include <gtk/gtkcellrenderertext.h>
+#include <gtk/gtk.h>
 
 void ol_lyric_source_list_init (GtkTreeView *list);
 

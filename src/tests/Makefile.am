@@ -1,4 +1,5 @@
 check_PROGRAMS = \
+	ol_gtk3_ui_test \
 	ol_osd_window_test \
 	ol_player_test \
 	ol_config_test \
@@ -17,18 +18,18 @@ AM_CPPFLAGS = \
 	-DDATADIR='"$(datadir)"' \
 	-DICONDIR='"$(OL_ICONDIR)"' \
 	-DGUIDIR='"$(OL_GUIDIR)"' \
-	@GTK2_CFLAGS@ \
+	@GTK3_CFLAGS@ \
 	@DBUS_GLIB_CFLAGS@ \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/tests \
 	$(NULL)
 
 AM_CFLAGS = \
-	-Werror -Wall \
+	-Wall -Wno-deprecated-declarations \
 	$(NULL)
 
 LDADD = \
-	@GTK2_LIBS@ \
+	@GTK3_LIBS@ \
 	@DBUS_GLIB_LIBS@ \
 	-lm \
 	$(NULL)
@@ -111,3 +112,23 @@ ol_lyric_source_test_SOURCES = \
 	$(top_srcdir)/src/ol_metadata.c \
 	$(top_srcdir)/src/ol_utils.c \
 	$(NULL)
+
+# GUI regression tests require an X11 display (use xvfb-run in CI).
+TESTS = ol_gtk3_ui_test
+ol_gtk3_ui_test_CPPFLAGS = $(AM_CPPFLAGS) -DTEST_UI_FILE='"$(abs_top_srcdir)/data/dialogs.glade"'
+ol_gtk3_ui_test_LDADD = $(LDADD) @X11_LIBS@ -lXext
+ol_gtk3_ui_test_SOURCES = ol_gtk3_ui_test.c \
+	$(top_srcdir)/src/ol_player_chooser.c \
+	$(top_srcdir)/src/ol_app_info.c \
+	$(top_srcdir)/src/ol_config_proxy.c \
+	$(top_srcdir)/src/ol_osd_window.c \
+	$(top_srcdir)/src/ol_osd_render.c \
+	$(top_srcdir)/src/ol_scroll_window.c \
+	$(top_srcdir)/src/ol_image_button.c \
+	$(top_srcdir)/src/ol_app_chooser_widget.c \
+	$(top_srcdir)/src/ol_cell_renderer_button.c \
+	$(top_srcdir)/src/ol_color.c \
+	$(top_srcdir)/src/ol_gussian_blur.c \
+	$(top_srcdir)/src/ol_marshal.c \
+	$(top_srcdir)/src/ol_debug.c \
+	$(top_srcdir)/src/ol_utils.c

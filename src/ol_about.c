@@ -17,9 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkdialog.h>
-#include <gtk/gtkaboutdialog.h>
+#include <gtk/gtk.h>
 #include <gdk/gdkpixbuf.h>
 #include "config.h"
 #include "ol_intl.h"

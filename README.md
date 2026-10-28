@@ -26,6 +26,25 @@ A list of packages' names, versions, and install instructions for each distribut
 
 ### Requirements
 
+The C frontend requires GTK **3.22 or newer** (including the X11 backend),
+GLib/GIO, dbus-glib, libnotify, Xlib and Xext development files. GTK2 is no
+longer supported. Optional tray indicator support uses
+`ayatana-appindicator3-0.1` (for example `libayatana-appindicator3-dev` on Debian).
+Without it, the frontend uses GTK3's traditional status icon.
+
+Desktop positioning, mouse pass-through and global shortcuts use X11. In a
+Wayland session the frontend runs through XWayland; these global shortcuts
+cannot control native Wayland applications. Tray visibility depends on the
+panel's support for the selected tray implementation.
+
+On Debian/Ubuntu, install the build dependencies with:
+
+```sh
+sudo apt-get install build-essential autoconf automake gettext intltool pkg-config \
+    libgtk-3-dev libdbus-glib-1-dev libnotify-dev libx11-dev libxext-dev \
+    python3 python3-dbus python3-gi
+```
+
 * On Ubuntu, dependencies are listed on the [Ubuntu Universe page](https://packages.ubuntu.com/source/focal/osdlyrics).
 * On Debian, dependencies are listed on the [Sid packages' page](https://packages.debian.org/sid/osdlyrics).
 * On ArchLinux, dependencies are listed on the [AUR package](https://aur.archlinux.org/packages/osdlyrics-git).
@@ -47,6 +66,13 @@ After cloning the repository and installing dependencies, issue the following co
 ./configure --prefix=/usr PYTHON=/usr/bin/python3
 make
 sudo make install
+```
+
+To run the GTK3 GUI regression tests, use an X11 display or install `xvfb` and
+`xauth` and run:
+
+```sh
+xvfb-run -a make -C src/tests check
 ```
 
 You can read more at [Building wiki page](https://github.com/osdlyrics/osdlyrics/wiki/Building).

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="gtk+" version="2.20"/>
+  <requires lib="gtk+" version="3.22"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkAdjustment" id="adj-osd-blur-radius">
     <property name="upper">5.0</property>
@@ -2080,7 +2080,6 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <property name="accel_group">accelgroup1</property>
         <signal name="activate" handler="ol_menu_play"/>
       </object>
     </child>
@@ -2090,7 +2089,6 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <property name="accel_group">accelgroup1</property>
         <signal name="activate" handler="ol_menu_pause"/>
       </object>
     </child>
@@ -2100,7 +2098,6 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <property name="accel_group">accelgroup1</property>
         <signal name="activate" handler="ol_menu_stop"/>
       </object>
     </child>
@@ -2110,7 +2107,6 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <property name="accel_group">accelgroup1</property>
         <signal name="activate" handler="ol_menu_prev"/>
       </object>
     </child>
@@ -2120,7 +2116,6 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <property name="accel_group">accelgroup1</property>
         <signal name="activate" handler="ol_menu_next"/>
       </object>
     </child>
@@ -2135,7 +2130,6 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <property name="accel_group">accelgroup1</property>
         <signal name="activate" handler="ol_menu_preference"/>
       </object>
     </child>
@@ -2145,7 +2139,6 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <property name="accel_group">accelgroup1</property>
         <signal name="activate" handler="ol_menu_quit"/>
       </object>
     </child>
@@ -2305,7 +2298,6 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkAccelGroup" id="accelgroup1"/>
   <object class="GtkDialog" id="search-dialog">
     <property name="width_request">300</property>
     <property name="border_width">5</property>

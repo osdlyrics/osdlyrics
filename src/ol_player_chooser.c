@@ -33,6 +33,8 @@ static const guint ALL_CHOOSER_INDEX = 1;
 static const guint MAX_CHOOSER_HEIGHT = 96 * 3; /* about 3 lines of apps */
 static const guint DEFAULT_APP_COLUMNS = 4;
 
+static void ol_player_chooser_finalize (GObject *object);
+
 G_DEFINE_TYPE (OlPlayerChooser, ol_player_chooser, GTK_TYPE_DIALOG)
 
 typedef struct _OlPlayerChooserPage
@@ -58,7 +60,7 @@ typedef struct _OlPlayerChooserPrivate
   GAppInfo *launch_app;
 } OlPlayerChooserPrivate;
 
-static void _destroy (GtkObject *object);
+static void _destroy (GtkWidget *object);
 static void _set_supported_players (OlPlayerChooser *chooser,
                                     GList *supported_players);
 static void _app_activate_cb (OlAppChooserWidget *chooser,
@@ -93,12 +95,11 @@ static gboolean _prepend_cmd_to_list (const char *path,
 static void
 ol_player_chooser_class_init (OlPlayerChooserClass *klass)
 {
+  G_OBJECT_CLASS (klass)->finalize = ol_player_chooser_finalize;
   ol_log_func ();
-  GObjectClass *gobject_class;
-  GtkObjectClass *object_class;
+  GtkWidgetClass *object_class;
 
-  gobject_class = G_OBJECT_CLASS (klass);
-  object_class = (GtkObjectClass*)klass;
+  object_class = (GtkWidgetClass*)klass;
   ol_player_chooser_parent_class = g_type_class_peek_parent (klass);
 
   object_class->destroy = _destroy;
@@ -121,7 +122,7 @@ ol_player_chooser_init (OlPlayerChooser *window)
 }
 
 static void
-ol_player_chooser_dispose(GObject *object)
+ol_player_chooser_finalize(GObject *object)
 {
     OlPlayerChooser *self = (OlPlayerChooser *)object;
     OlPlayerChooserPrivate *priv = OL_PLAYER_CHOOSER_GET_PRIVATE(self);
@@ -135,6 +136,7 @@ ol_player_chooser_dispose(GObject *object)
          *  we don't deallocate it twice. */
         (OL_PLAYER_CHOOSER(self))->priv = NULL;
     }
+  G_OBJECT_CLASS (ol_player_chooser_parent_class)->finalize (object);
 }
 
 static void
@@ -395,7 +397,7 @@ _new_bin_completion (void)
 }
 
 static void
-_destroy (GtkObject *object)
+_destroy (GtkWidget *object)
 {
   OlPlayerChooserPrivate *priv = OL_PLAYER_CHOOSER_GET_PRIVATE (object);
   if (priv->pages != NULL)
@@ -408,7 +410,7 @@ _destroy (GtkObject *object)
     g_object_unref (priv->launch_app);
     priv->launch_app = NULL;
   }
-  GTK_OBJECT_CLASS (ol_player_chooser_parent_class)->destroy (object);
+  GTK_WIDGET_CLASS (ol_player_chooser_parent_class)->destroy (object);
 }
 
 GtkWidget*

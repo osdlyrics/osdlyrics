@@ -32,7 +32,9 @@ struct _OlOsdToolbarPriv
   enum OlPlayerStatus status;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (OlOsdToolbar, ol_osd_toolbar, GTK_TYPE_ALIGNMENT);
+static void ol_osd_toolbar_finalize (GObject *object);
+
+G_DEFINE_TYPE (OlOsdToolbar, ol_osd_toolbar, GTK_TYPE_ALIGNMENT);
 
 enum {
   BTN_PLAY = 0,
@@ -61,7 +63,7 @@ static GtkButton *_add_button (OlOsdToolbar *toolbar,
 static void _update_caps (OlOsdToolbar *toolbar);
 static void _caps_changed_cb (OlPlayer *player,
                               OlOsdToolbar *toolbar);
-static void ol_osd_toolbar_destroy (GtkObject *obj);
+static void ol_osd_toolbar_destroy (GtkWidget *obj);
 
 const static struct ButtonSpec btn_spec[] = {
   {OL_STOCK_OSD_PLAY, _play_clicked},
@@ -190,7 +192,8 @@ _update_caps (OlOsdToolbar *toolbar)
 static void
 ol_osd_toolbar_class_init (OlOsdToolbarClass *klass)
 {
-  GtkObjectClass *gtk_class = GTK_OBJECT_CLASS (klass);
+  G_OBJECT_CLASS (klass)->finalize = ol_osd_toolbar_finalize;
+  GtkWidgetClass *gtk_class = GTK_WIDGET_CLASS (klass);
   gtk_class->destroy = ol_osd_toolbar_destroy;
 }
 
@@ -220,7 +223,7 @@ ol_osd_toolbar_init (OlOsdToolbar *toolbar)
 }
 
 static void
-my_gobject_dispose(GObject *object)
+ol_osd_toolbar_finalize(GObject *object)
 {
     OlOsdToolbar *toolbar = (OlOsdToolbar *)object;
     OlOsdToolbarPriv *priv = OL_OSD_TOOLBAR_GET_PRIVATE (toolbar);
@@ -234,12 +237,14 @@ my_gobject_dispose(GObject *object)
          *  we don't deallocate it twice. */
         (OL_OSD_TOOLBAR(toolbar))->priv = NULL;
     }
+  G_OBJECT_CLASS (ol_osd_toolbar_parent_class)->finalize (object);
 }
 
 static void
-ol_osd_toolbar_destroy (GtkObject *obj)
+ol_osd_toolbar_destroy (GtkWidget *obj)
 {
   ol_osd_toolbar_set_player (OL_OSD_TOOLBAR (obj), NULL);
+  GTK_WIDGET_CLASS (ol_osd_toolbar_parent_class)->destroy (obj);
 }
 
 GtkWidget *

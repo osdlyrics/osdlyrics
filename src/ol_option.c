@@ -18,32 +18,7 @@
  * along with OSD Lyrics.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <string.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkdialog.h>
-#include <gtk/gtkcellrenderertext.h>
-#include <gtk/gtktree.h>
-#include <gtk/gtktreeselection.h>
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkcellrenderer.h>
-#include <gtk/gtktogglebutton.h>
-#include <gtk/gtkspinbutton.h>
-#include <gtk/gtkcolorbutton.h>
-#include <gtk/gtkfontbutton.h>
-#include <gtk/gtkrange.h>
-#include <gtk/gtkmenuitem.h>
-#include <gtk/gtkcombobox.h>
-#include <gtk/gtkcomboboxtext.h>
-#include <gtk/gtkbox.h>
-#include <gtk/gtkbbox.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtkscale.h>
-#include <gtk/gtkfilechooser.h>
-#include <gtk/gtkfilechooserdialog.h>
-#include <gtk/gtkicontheme.h>
-#include <gtk/gtkversion.h>
-#include <gtk/gtkmain.h>
-#include <gtk/gtkcomboboxtext.h>
+#include <gtk/gtk.h>
 
 #include "ol_option.h"
 #include "ol_about.h"
@@ -1046,7 +1021,7 @@ load_check_button_options ()
   for (i = 0; i < G_N_ELEMENTS (check_button_options); i++)
   {
     GtkToggleButton *check_button = GTK_TOGGLE_BUTTON (ol_gui_get_widget (check_button_options[i].widget_name));
-    if (check_button_options != NULL)
+    if (check_button != NULL)
     {
       gtk_toggle_button_set_active (check_button,
                                     ol_config_proxy_get_bool (config,
@@ -1627,11 +1602,13 @@ _disconnect_download_engine_changed (GtkTreeView *list,
 static void
 init_startup_player (GtkWidget *widget)
 {
-  GtkComboBoxText *cb = GTK_COMBO_BOX_TEXT (widget);
+  GtkComboBox *cb = GTK_COMBO_BOX (widget);
   if (cb == NULL)
     return;
-  gtk_combo_box_text_append_text (cb, _("Choose on startup"));
-  GtkListStore *liststore = GTK_LIST_STORE (gtk_combo_box_get_model (GTK_COMBO_BOX (widget)));
+  GtkListStore *liststore = GTK_LIST_STORE (gtk_combo_box_get_model (cb));
+  GtkTreeIter first;
+  gtk_list_store_append (liststore, &first);
+  gtk_list_store_set (liststore, &first, 0, _("Choose on startup"), 1, "", -1);
   /* TODO: */
   GList *players = NULL;
   /* GList *players = g_list_sort (ol_player_get_support_players (), */
@@ -1648,7 +1625,9 @@ init_startup_player (GtkWidget *widget)
     g_object_unref (G_OBJECT (app_info));
   }
 
-  gtk_combo_box_text_append_text (cb, _("Customize"));
+  GtkTreeIter last;
+  gtk_list_store_append (liststore, &last);
+  gtk_list_store_set (liststore, &last, 0, _("Customize"), 1, "", -1);
 }
 
 static void

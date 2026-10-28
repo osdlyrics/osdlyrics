@@ -20,10 +20,7 @@
 #ifndef _OL_LYRIC_CANDIDATE_LIST_H_
 #define _OL_LYRIC_CANDIDATE_LIST_H_
 
-#include <gtk/gtktreeview.h>
-#include <gtk/gtktreestore.h>
-#include <gtk/gtktreeselection.h>
-#include <gtk/gtkcellrenderertext.h>
+#include <gtk/gtk.h>
 #include "ol_lyric_source.h"
 
 void ol_lyric_candidate_list_init (GtkTreeView *list,
