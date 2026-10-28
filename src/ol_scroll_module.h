@@ -20,10 +20,7 @@
 #ifndef _OL_SCROLL_MODULE_H_
 #define _OL_SCROLL_MODULE_H_
 
-#include <gtk/gtkicontheme.h>
-#include <gtk/gtkmenu.h>
-#include <gtk/gtkmain.h>
-#include <gtk/gtkhbox.h>
+#include <gtk/gtk.h>
 
 #include "ol_display_module.h"
 

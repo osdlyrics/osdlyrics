@@ -42,7 +42,7 @@ ol_osd_render_context_new ()
   context->linear_pos[0] = 0.0;
   context->linear_pos[1] = 0.5;
   context->linear_pos[2] = 1.0;
-  context->pango_context = gdk_pango_context_get ();
+  context->pango_context = pango_font_map_create_context (pango_cairo_font_map_get_default ());
   context->pango_layout = pango_layout_new (context->pango_context);
   context->text = NULL;
   context->blur_radius = 0.0;

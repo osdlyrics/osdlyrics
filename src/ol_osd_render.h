@@ -20,8 +20,7 @@
 #ifndef __OL_OSD_RENDER_H__
 #define __OL_OSD_RENDER_H__
 
-#include <gdk/gdkpango.h>
-#include <gdk/gdkcairo.h>
+#include <pango/pangocairo.h>
 #include "ol_color.h"
 
 enum {

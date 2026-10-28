@@ -21,24 +21,13 @@
 #ifndef _OL_APP_CHOOSER_WIDGET_H_
 #define _OL_APP_CHOOSER_WIDGET_H_
 
-#include <gtk/gtkwidget.h>
-#include <gtk/gtktable.h>
-#include <gtk/gtkicontheme.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtkimage.h>
-#include <gtk/gtkvbox.h>
-#include <gtk/gtkframe.h>
-#include <gtk/gtkbutton.h>
-#include <gtk/gtkaspectframe.h>
-#include <gtk/gtktypeutils.h>
+#include <gtk/gtk.h>
 
 typedef struct {
-  GtkWidget widget;
   GtkTable parent;
 } OlAppChooserWidget;
 
 typedef struct {
-  GtkWidgetClass widget_class;
   GtkTableClass parent_class;
 } OlAppChooserWidgetClass;
 
@@ -47,7 +36,7 @@ typedef struct {
 #define OL_APP_CHOOSER_WIDGET(obj)                                      \
   G_TYPE_CHECK_INSTANCE_CAST (obj, OL_TYPE_APP_CHOOSER_WIDGET, OlAppChooserWidget)
 #define OL_APP_CHOOSER_WIDGET_CLASS(klass)                              \
-  GTK_CHECK_CLASS_CAST (klass, OL_TYPE_APP_CHOOSER_WIDGET, OlAppChooserWidgetClass)
+  G_TYPE_CHECK_CLASS_CAST (klass, OL_TYPE_APP_CHOOSER_WIDGET, OlAppChooserWidgetClass)
 #define OL_IS_APP_CHOOSER_WIDGET(obj)               \
   G_TYPE_CHECK_INSTANCE_TYPE (obj, OL_TYPE_APP_CHOOSER_WIDGET)
 #define OL_APP_CHOOSER_WIDGET_GET_CLASS(obj)                            \

@@ -36,15 +36,17 @@ struct _OlImageButtonPriv
   GdkPixbuf *image;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (OlImageButton, ol_image_button, GTK_TYPE_BUTTON);
+static void ol_image_button_finalize (GObject *object);
 
-static void ol_image_button_destroy (GtkObject *object);
+G_DEFINE_TYPE (OlImageButton, ol_image_button, GTK_TYPE_BUTTON);
+
+static void ol_image_button_destroy (GtkWidget *object);
 static void ol_image_button_size_request (GtkWidget *widget,
                                           GtkRequisition *requisition);
 static void ol_image_button_size_allocate (GtkWidget     *widget,
                                            GtkAllocation *allocation);
-static gboolean ol_image_button_expose (GtkWidget *widget,
-                                        GdkEventExpose *event);
+static gboolean ol_image_button_draw (GtkWidget *widget,
+                                        cairo_t *cr);
 
 static void
 ol_image_button_size_request (GtkWidget *widget,
@@ -70,87 +72,96 @@ static void
 ol_image_button_size_allocate (GtkWidget     *widget,
                                GtkAllocation *allocation)
 {
-  ol_log_func ();
-  ol_debugf ("allocation: (%d, %d) %d x %d\n",
-             allocation->x, allocation->y,
-             allocation->width, allocation->height);
-  GtkButton *button = GTK_BUTTON (widget);
-  widget->allocation = *allocation;
-
-  if (gtk_widget_get_realized (widget))
-    gdk_window_move_resize (button->event_window,
-			    widget->allocation.x,
-			    widget->allocation.y,
-			    widget->allocation.width,
-			    widget->allocation.height);
+  GTK_WIDGET_CLASS (ol_image_button_parent_class)->size_allocate (widget, allocation);
 }
 
 static gboolean
-ol_image_button_expose (GtkWidget *widget,
-                        GdkEventExpose *event)
+ol_image_button_draw (GtkWidget *widget,
+                        cairo_t *cr)
 {
   OlImageButton *btn = OL_IMAGE_BUTTON (widget);
   OlImageButtonPriv *priv = OL_IMAGE_BUTTON_GET_PRIVATE (btn);
   if (priv->image == NULL)
   {
-    GTK_WIDGET_CLASS (ol_image_button_parent_class)->expose_event (widget, event);
+    GTK_WIDGET_CLASS (ol_image_button_parent_class)->draw (widget, cr);
   }
   else
   {
-    cairo_t *cr = gdk_cairo_create (event->window);
+    cairo_save (cr);
     int w, h, sw, sh, mx, my, x, y;
-    w = event->area.width; h = event->area.height;
-    mx = event->area.x + event->area.width / 2;
-    my = event->area.y + event->area.height / 2;
+    w = gtk_widget_get_allocated_width (widget);
+    h = gtk_widget_get_allocated_height (widget);
+    mx = w / 2;
+    my = h / 2;
     sw = gdk_pixbuf_get_width (priv->image) / SLICE_NUM;
     sh = gdk_pixbuf_get_height (priv->image);
     x = mx - sw / 2; y = my - sh / 2;
-    /* ol_debugf ("cut: (%d, %d) %d x %d\n", */
-    /*            event->area.x, event->area.y, */
-    /*            w, h); */
-    cairo_rectangle (cr, event->area.x, event->area.y,
+    cairo_rectangle (cr, 0, 0,
                      w, h);
     cairo_clip (cr);
-    /* ol_debugf ("cut: (%d, %d) %d x %d\n", */
-    /*            x, y, */
-    /*            sw, sh); */
     cairo_rectangle (cr, x, y,
                      sw, sh);
     cairo_clip (cr);
 
     int img_index = STATE_NORMAL;
-    GtkStateType state = gtk_widget_get_state (widget);
-    if (state == GTK_STATE_ACTIVE)
-      img_index = STATE_PRESSED;
-    else if (state == GTK_STATE_PRELIGHT || state == GTK_STATE_SELECTED)
-      img_index = STATE_ACTIVE;
-    else if (state == GTK_STATE_INSENSITIVE)
+    GtkStateFlags state = gtk_widget_get_state_flags (widget);
+    if (state & GTK_STATE_FLAG_INSENSITIVE)
       img_index = STATE_DISABLED;
+    else if (state & GTK_STATE_FLAG_ACTIVE)
+      img_index = STATE_PRESSED;
+    else if (state & (GTK_STATE_FLAG_PRELIGHT | GTK_STATE_FLAG_SELECTED))
+      img_index = STATE_ACTIVE;
     gdk_cairo_set_source_pixbuf (cr, priv->image,
                                  x - img_index * sw,
                                  y);
     cairo_paint (cr);
-    cairo_destroy (cr);
+    cairo_restore (cr);
   }
   return FALSE;
 }
 
 static void
+ol_image_button_get_preferred_width (GtkWidget *widget, gint *minimum, gint *natural)
+{
+  GtkRequisition size;
+  ol_image_button_size_request (widget, &size);
+  *minimum = *natural = size.width;
+}
+
+static void
+ol_image_button_get_preferred_height (GtkWidget *widget, gint *minimum, gint *natural)
+{
+  GtkRequisition size;
+  ol_image_button_size_request (widget, &size);
+  *minimum = *natural = size.height;
+}
+
+static void
 ol_image_button_class_init (OlImageButtonClass *klass)
 {
+  G_OBJECT_CLASS (klass)->finalize = ol_image_button_finalize;
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-  GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
+  GtkWidgetClass *object_class = GTK_WIDGET_CLASS (klass);
 
   object_class->destroy = ol_image_button_destroy;
 
-  widget_class->size_request = ol_image_button_size_request;
+  widget_class->get_preferred_width = ol_image_button_get_preferred_width;
+  widget_class->get_preferred_height = ol_image_button_get_preferred_height;
   widget_class->size_allocate = ol_image_button_size_allocate;
-  widget_class->expose_event = ol_image_button_expose;
+  widget_class->draw = ol_image_button_draw;
 }
 
 static void
 ol_image_button_init (OlImageButton *btn)
 {
+  /* Sprite frames define the button size; theme padding must not shrink it. */
+  GtkCssProvider *css = gtk_css_provider_new ();
+  gtk_css_provider_load_from_data (css,
+                                   "button { padding: 0; border-width: 0; min-width: 0; min-height: 0; }",
+                                   -1, NULL);
+  gtk_style_context_add_provider (gtk_widget_get_style_context (GTK_WIDGET (btn)),
+                                  GTK_STYLE_PROVIDER (css), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  g_object_unref (css);
   /* Allocate Private data structure */
   (OL_IMAGE_BUTTON(btn))->priv = \
       (OlImageButtonPriv *) g_malloc0(sizeof(OlImageButtonPriv));
@@ -163,7 +174,7 @@ ol_image_button_init (OlImageButton *btn)
 }
 
 static void
-ol_image_button_dispose(GObject *object)
+ol_image_button_finalize(GObject *object)
 {
     OlImageButton *self = (OlImageButton *)object;
     OlImageButtonPriv *priv = OL_IMAGE_BUTTON_GET_PRIVATE(self);
@@ -177,10 +188,11 @@ ol_image_button_dispose(GObject *object)
          *  we don't deallocate it twice. */
         (OL_IMAGE_BUTTON(self))->priv = NULL;
     }
+  G_OBJECT_CLASS (ol_image_button_parent_class)->finalize (object);
 }
 
 static void
-ol_image_button_destroy (GtkObject *object)
+ol_image_button_destroy (GtkWidget *object)
 {
   OlImageButton *btn = OL_IMAGE_BUTTON (object);
   OlImageButtonPriv *priv = OL_IMAGE_BUTTON_GET_PRIVATE (btn);
@@ -189,7 +201,7 @@ ol_image_button_destroy (GtkObject *object)
     g_object_unref (priv->image);
     priv->image = NULL;
   }
-  GTK_OBJECT_CLASS (ol_image_button_parent_class)->destroy (object);
+  GTK_WIDGET_CLASS (ol_image_button_parent_class)->destroy (object);
 }
 
 GtkWidget *

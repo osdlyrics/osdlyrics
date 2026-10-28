@@ -96,7 +96,7 @@ AC_ARG_ENABLE(appindicator,
 
 # Checks for libraries.
 AC_CHECK_LIB([dl], [exp])
-PKG_CHECK_MODULES([GTK2], [gtk+-2.0 >= 2.20.0,
+PKG_CHECK_MODULES([GTK3], [gtk+-x11-3.0 >= 3.22.0,
                           gthread-2.0,
                           gmodule-export-2.0,
                           gio-2.0 >= 2.26,
@@ -109,16 +109,16 @@ PKG_CHECK_EXISTS([libnotify >= 0.7],
 
 dnl AppIndicator support for Ubuntu
 if test x$enable_appindicator = xauto ; then
-        PKG_CHECK_EXISTS([appindicator-0.1 >= $APPINDICATOR_REQUIRED],
+        PKG_CHECK_EXISTS([ayatana-appindicator3-0.1 >= $APPINDICATOR_REQUIRED],
                          enable_appindicator="yes",
                          enable_appindicator="no")
 fi
 
 if test x$enable_appindicator = xyes ; then
-        PKG_CHECK_EXISTS([appindicator-0.1 >= $APPINDICATOR_REQUIRED],,
-                         AC_MSG_ERROR([appindicator-0.1 is not installed]))
+        PKG_CHECK_EXISTS([ayatana-appindicator3-0.1 >= $APPINDICATOR_REQUIRED],,
+                         AC_MSG_ERROR([ayatana-appindicator3-0.1 is not installed]))
         PKG_CHECK_MODULES(APP_INDICATOR,
-                        appindicator-0.1 >= $APPINDICATOR_REQUIRED)
+                        ayatana-appindicator3-0.1 >= $APPINDICATOR_REQUIRED)
         AC_SUBST(APP_INDICATOR_CFLAGS)
         AC_SUBST(APP_INDICATOR_LIBS)
         AC_DEFINE(HAVE_APP_INDICATOR, 1, [Have AppIndicator])

@@ -20,8 +20,7 @@
 #ifndef _OL_GUI_H_
 #define _OL_GUI_H_
 
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkbuilder.h>
+#include <gtk/gtk.h>
 
 /**
  * @brief Gets a widget in Glade file by name
