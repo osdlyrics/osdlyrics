@@ -651,6 +651,7 @@ ol_osd_window_map_cb (GtkWidget *widget,
                                           (GSourceFunc) ol_osd_window_mouse_timer,
                                           widget);
   }
+  ol_osd_window_set_input_shape_mask (osd, priv->locked);
   ol_osd_window_queue_reshape (osd);
   priv->configure_event = g_signal_connect (G_OBJECT (osd), "configure-event",
                                             G_CALLBACK (ol_osd_window_configure_event), osd);
@@ -694,7 +695,6 @@ ol_osd_window_realize_cb (GtkWidget *widget,
   gdk_window_set_override_redirect (gtk_widget_get_window (widget),
                                     priv->mode == OL_OSD_WINDOW_DOCK);
   ol_osd_window_reset_shape_surface (osd);
-  ol_osd_window_set_input_shape_mask (osd, priv->locked);
 }
 
 static void
@@ -872,9 +872,7 @@ ol_osd_window_set_locked (OlOsdWindow *osd, gboolean locked)
   if (priv->locked == locked)
     return;
   priv->locked = locked;
-  if (gtk_widget_get_realized (GTK_WIDGET (osd))) {
-    ol_osd_window_set_input_shape_mask (osd, locked);
-  }
+  ol_osd_window_set_input_shape_mask (osd, locked);
   ol_osd_window_queue_reshape (osd);
   gtk_widget_queue_draw (GTK_WIDGET (osd));
 }
@@ -1435,19 +1433,10 @@ static void
 ol_osd_window_set_input_shape_mask (OlOsdWindow *osd, gboolean disable_input)
 {
   ol_assert (OL_IS_OSD_WINDOW (osd));
-  GtkWidget *widget = GTK_WIDGET (osd);
-  ol_assert (gtk_widget_get_realized (widget));
-  GdkWindow *window = gtk_widget_get_window (widget);
-  if (disable_input)
-  {
-    cairo_region_t *region = cairo_region_create ();
-    gdk_window_input_shape_combine_region (window, region, 0, 0);
+  cairo_region_t *region = disable_input ? cairo_region_create () : NULL;
+  gtk_widget_input_shape_combine_region (GTK_WIDGET (osd), region);
+  if (region)
     cairo_region_destroy (region);
-  }
-  else
-  {
-    gdk_window_input_shape_combine_region (window, NULL, 0, 0);
-  }
 }
 
 /**
