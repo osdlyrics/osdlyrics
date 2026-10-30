@@ -19,7 +19,11 @@
  */
 #include "config.h"
 #if HAVE_APP_INDICATOR
+#if HAVE_AYATANA_APP_INDICATOR
+#include <libayatana-appindicator/app-indicator.h>
+#else
 #include <libappindicator/app-indicator.h>
+#endif
 #endif  /* HAVE_APP_INDICATOR */
 #include "ol_trayicon.h"
 #include "ol_app.h"
@@ -30,8 +34,7 @@
 #include "ol_config_proxy.h"
 #include "ol_commands.h"
 #include "ol_debug.h"
-#include <gtk/gtkstatusicon.h>
-#include <gtk/gtktooltip.h>
+#include <gtk/gtk.h>
 
 #if HAVE_APP_INDICATOR
 static AppIndicator *indicator = NULL;

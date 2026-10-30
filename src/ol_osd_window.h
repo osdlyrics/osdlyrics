@@ -27,14 +27,11 @@
 #ifndef __OSD_WINDOW_H_
 #define __OSD_WINDOW_H_
 
-#include <gtk/gtkwindow.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtktypeutils.h>
-#include <gtk/gtktypeutils.h>
+#include <gtk/gtk.h>
 #include "ol_osd_render.h"
 
 #define OL_OSD_WINDOW(obj)                  G_TYPE_CHECK_INSTANCE_CAST (obj, ol_osd_window_get_type (), OlOsdWindow)
-#define OL_OSD_WINDOW_CLASS(klass)          GTK_CHECK_CLASS_CAST (klass, ol_osd_window_get_type (), OlOsdWindowClass)
+#define OL_OSD_WINDOW_CLASS(klass)          G_TYPE_CHECK_CLASS_CAST (klass, ol_osd_window_get_type (), OlOsdWindowClass)
 #define OL_IS_OSD_WINDOW(obj)               G_TYPE_CHECK_INSTANCE_TYPE (obj, ol_osd_window_get_type ())
 #define OL_OSD_WINDOW_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), ol_osd_window_get_type (), OlOsdWindowClass))
 #define OL_OSD_WINDOW_MAX_LINE_COUNT        2

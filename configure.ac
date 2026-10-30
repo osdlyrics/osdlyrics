@@ -96,7 +96,7 @@ AC_ARG_ENABLE(appindicator,
 
 # Checks for libraries.
 AC_CHECK_LIB([dl], [exp])
-PKG_CHECK_MODULES([GTK2], [gtk+-2.0 >= 2.20.0,
+PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.22,
                           gthread-2.0,
                           gmodule-export-2.0,
                           gio-2.0 >= 2.26,
@@ -107,20 +107,20 @@ PKG_CHECK_MODULES([NOTIFY], [libnotify])
 PKG_CHECK_EXISTS([libnotify >= 0.7],
   AC_DEFINE(HAVE_LIBNOTIFY_0_7, 1, [Have libnotify >= 0.7]))
 
-dnl AppIndicator support for Ubuntu
-if test x$enable_appindicator = xauto ; then
-        PKG_CHECK_EXISTS([appindicator-0.1 >= $APPINDICATOR_REQUIRED],
-                         enable_appindicator="yes",
-                         enable_appindicator="no")
-fi
-
-if test x$enable_appindicator = xyes ; then
-        PKG_CHECK_EXISTS([appindicator-0.1 >= $APPINDICATOR_REQUIRED],,
-                         AC_MSG_ERROR([appindicator-0.1 is not installed]))
+dnl AppIndicator support (prefer Ayatana, fall back to the legacy Ubuntu one)
+if test x$enable_appindicator != xno ; then
         PKG_CHECK_MODULES(APP_INDICATOR,
-                        appindicator-0.1 >= $APPINDICATOR_REQUIRED)
-        AC_SUBST(APP_INDICATOR_CFLAGS)
-        AC_SUBST(APP_INDICATOR_LIBS)
+                          [ayatana-appindicator3-0.1],
+                          [enable_appindicator=yes
+                           AC_DEFINE(HAVE_AYATANA_APP_INDICATOR, 1, [Use Ayatana AppIndicator])],
+                          [PKG_CHECK_MODULES(APP_INDICATOR,
+                                             [appindicator3-0.1 >= $APPINDICATOR_REQUIRED],
+                                             [enable_appindicator=yes],
+                                             [AS_IF([test x$enable_appindicator = xyes],
+                                                    [AC_MSG_ERROR([appindicator is not installed])])
+                                              enable_appindicator=no])])
+fi
+if test x$enable_appindicator = xyes ; then
         AC_DEFINE(HAVE_APP_INDICATOR, 1, [Have AppIndicator])
 fi
 AM_CONDITIONAL(HAVE_APP_INDICATOR, test x"$enable_appindicator" = xyes)

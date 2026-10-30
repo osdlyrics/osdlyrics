@@ -20,7 +20,7 @@
 #ifndef _OL_OSD_MODULE_H_
 #define _OL_OSD_MODULE_H_
 
-#include <gtk/gtkmenu.h>
+#include <gtk/gtk.h>
 
 #include "ol_display_module.h"
 
