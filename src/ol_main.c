@@ -23,7 +23,7 @@
 #include <signal.h>
 #include <pwd.h>
 #include <gio/gio.h>
-#include <gtk/gtkmain.h>
+#include <gtk/gtk.h>
 #include "config.h"
 #include "ol_lrc.h"
 #include "ol_player.h"
@@ -622,6 +622,9 @@ _initialize (int argc, char **argv)
   g_thread_init(NULL);
 #endif
   g_set_prgname (_(PROGRAM_NAME));
+  /* The OSD window positions itself and grabs global keys, which needs X11.
+     On Wayland this runs through XWayland. */
+  gdk_set_allowed_backends ("x11");
   gtk_init (&argc, &argv);
   _parse_cmd_args (&argc, &argv);
   initialized = FALSE;

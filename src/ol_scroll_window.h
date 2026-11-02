@@ -21,15 +21,12 @@
 #ifndef __SCROLL_WINDOW_H_
 #define __SCROLL_WINDOW_H_
 
-#include <gtk/gtkwindow.h>
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkalignment.h>
-#include <gtk/gtktypeutils.h>
+#include <gtk/gtk.h>
 #include <ol_debug.h>
 #include "ol_color.h"
 
 #define OL_SCROLL_WINDOW(obj)                   G_TYPE_CHECK_INSTANCE_CAST (obj, ol_scroll_window_get_type (), OlScrollWindow)
-#define OL_SCROLL_WINDOW_CLASS(klass)           GTK_CHECK_CLASS_CAST (klass, ol_scroll_window_get_type (), OlScrollWindowClass)
+#define OL_SCROLL_WINDOW_CLASS(klass)           G_TYPE_CHECK_CLASS_CAST (klass, ol_scroll_window_get_type (), OlScrollWindowClass)
 #define OL_IS_SCROLL_WINDOW(obj)                G_TYPE_CHECK_INSTANCE_TYPE (obj, ol_scroll_window_get_type ())
 #define OL_SCROLL_WINDOW_GET_CLASS(obj)         (G_TYPE_INSTANCE_GET_CLASS ((obj), ol_scroll_window_get_type (), OlScrollWindowClass))
 

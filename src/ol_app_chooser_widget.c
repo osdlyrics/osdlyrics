@@ -51,7 +51,7 @@ static GtkWidget *_load_image_from_gicon (GIcon *icon);
 static GtkWidget *_image_from_app_info (GAppInfo *app_info);
 static void _calc_size (guint count, guint *n_rows, guint *n_columns);
 static gint _app_info_cmp (GAppInfo **lhs, GAppInfo **rhs);
-static void ol_app_chooser_widget_destroy (GtkObject *object);
+static void ol_app_chooser_widget_destroy (GtkWidget *object);
 
 G_DEFINE_TYPE_WITH_PRIVATE (OlAppChooserWidget,
                             ol_app_chooser_widget,
@@ -82,9 +82,9 @@ ol_app_chooser_widget_init (OlAppChooserWidget *chooser)
 }
 
 static void
-ol_app_chooser_widget_destroy (GtkObject *object)
+ol_app_chooser_widget_destroy (GtkWidget *object)
 {
-  GtkObjectClass *parent_class = GTK_OBJECT_CLASS(ol_app_chooser_widget_parent_class) ;
+  GtkWidgetClass *parent_class = GTK_WIDGET_CLASS(ol_app_chooser_widget_parent_class) ;
   parent_class->destroy (object);
 }
 

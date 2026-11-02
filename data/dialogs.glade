@@ -121,10 +121,13 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
         <property name="spacing">2</property>
         <child>
           <object class="GtkNotebook" id="notebook1">
+            <property name="show_border">False</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <child>
               <object class="GtkVBox" id="vbox5">
+                <property name="spacing">3</property>
+                <property name="margin_top">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkHBox" id="hbox-display-mode">
@@ -309,6 +312,8 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
             <child>
               <object class="GtkVBox" id="vbox1">
+                <property name="spacing">3</property>
+                <property name="margin_top">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkHBox" id="hbox2">
@@ -340,6 +345,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -376,6 +382,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -434,6 +441,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
@@ -486,6 +494,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">3</property>
                   </packing>
                 </child>
@@ -536,6 +545,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
@@ -569,11 +579,13 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                     </child>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkFrame" id="lrc-align-frame">
+                    <property name="margin_top">8</property>
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <property name="shadow_type">none</property>
@@ -665,6 +677,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                 </child>
                 <child>
                   <object class="GtkFrame" id="frame1">
+                    <property name="margin_top">8</property>
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <property name="shadow_type">none</property>
@@ -950,6 +963,8 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
             <child>
               <object class="GtkVBox" id="vbox10">
+                <property name="spacing">3</property>
+                <property name="margin_top">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkFrame" id="frame4">
@@ -1124,6 +1139,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                 </child>
                 <child>
                   <object class="GtkFrame" id="frame5">
+                    <property name="margin_top">8</property>
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <property name="shadow_type">none</property>
@@ -1278,6 +1294,8 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
             <child>
               <object class="GtkVBox" id="vbox4">
+                <property name="spacing">3</property>
+                <property name="margin_top">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkFrame" id="lrc-path-frame1">
@@ -1287,12 +1305,13 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                     <child>
                       <object class="GtkAlignment" id="alignment5">
                         <property name="visible">True</property>
-                        <property name="left_padding">12</property>
                         <child>
                           <object class="GtkVBox" id="vbox6">
+                            <property name="spacing">3</property>
                             <property name="visible">True</property>
                             <child>
                               <object class="GtkScrolledWindow" id="scrolledwindow1">
+                                <property name="shadow_type">in</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="hscrollbar_policy">automatic</property>
@@ -1405,18 +1424,21 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                 </child>
                 <child>
                   <object class="GtkFrame" id="lrc-path-frame">
+                    <property name="margin_top">8</property>
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <property name="shadow_type">none</property>
                     <child>
                       <object class="GtkAlignment" id="alignment4">
                         <property name="visible">True</property>
-                        <property name="left_padding">12</property>
                         <child>
                           <object class="GtkVBox" id="vbox7">
+                            <property name="spacing">3</property>
                             <property name="visible">True</property>
                             <child>
                               <object class="GtkScrolledWindow" id="scrolledwindow2">
+                                <property name="height_request">72</property>
+                                <property name="shadow_type">in</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="hscrollbar_policy">automatic</property>
@@ -1549,6 +1571,8 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
             <child>
               <object class="GtkVBox" id="vbox3">
+                <property name="spacing">3</property>
+                <property name="margin_top">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkFrame" id="frame3">
@@ -1630,6 +1654,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
                 </child>
                 <child>
                   <object class="GtkFrame" id="frame-proxy">
+                    <property name="margin_top">8</property>
                     <property name="visible">True</property>
                     <property name="label_xalign">0</property>
                     <property name="shadow_type">none</property>
@@ -1928,6 +1953,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
             <property name="position">2</property>
           </packing>
         </child>
@@ -2175,6 +2201,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
             <property name="position">1</property>
           </packing>
         </child>
@@ -2385,8 +2412,10 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
               <packing>
                 <property name="left_attach">2</property>
                 <property name="right_attach">3</property>
-                <property name="bottom_attach">3</property>
+                <property name="bottom_attach">2</property>
                 <property name="x_options">GTK_FILL</property>
+                <property name="y_options">GTK_FILL</property>
+                <property name="x_padding">4</property>
               </packing>
             </child>
             <child>
@@ -2404,14 +2433,25 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
               </packing>
             </child>
             <child>
-              <object class="GtkTreeView" id="search-engine">
+              <object class="GtkScrolledWindow" id="search-engine-scroll">
                 <property name="visible">True</property>
-                <property name="headers-visible">False</property>
-                <property name="reorderable">True</property>
+                <property name="hscrollbar_policy">never</property>
+                <property name="vscrollbar_policy">automatic</property>
+                <property name="shadow_type">in</property>
+                <property name="min_content_height">110</property>
+                <child>
+                  <object class="GtkTreeView" id="search-engine">
+                    <property name="visible">True</property>
+                    <property name="headers-visible">False</property>
+                    <property name="reorderable">True</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="left_attach">1</property>
-                <property name="right_attach">2</property>
+                <property name="right_attach">3</property>
+                <property name="y_options">GTK_FILL</property>
+                <property name="y_padding">2</property>
                 <property name="top_attach">2</property>
                 <property name="bottom_attach">3</property>
               </packing>
@@ -2453,11 +2493,12 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
           <object class="GtkScrolledWindow" id="search-candidates">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="shadow_type">in</property>
+            <property name="min_content_height">150</property>
             <property name="hscrollbar_policy">automatic</property>
             <property name="vscrollbar_policy">automatic</property>
             <child>
               <object class="GtkTreeView" id="search-candidates-list">
-                <property name="height_request">150</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="enable_grid_lines">vertical</property>
@@ -2465,6 +2506,7 @@ SimplyZhao &lt;simplyzhao@gmail.com&gt;</property>
             </child>
           </object>
           <packing>
+            <property name="expand">True</property>
             <property name="position">3</property>
           </packing>
         </child>

@@ -58,7 +58,7 @@ typedef struct _OlPlayerChooserPrivate
   GAppInfo *launch_app;
 } OlPlayerChooserPrivate;
 
-static void _destroy (GtkObject *object);
+static void _destroy (GtkWidget *object);
 static void _set_supported_players (OlPlayerChooser *chooser,
                                     GList *supported_players);
 static void _app_activate_cb (OlAppChooserWidget *chooser,
@@ -95,10 +95,10 @@ ol_player_chooser_class_init (OlPlayerChooserClass *klass)
 {
   ol_log_func ();
   GObjectClass *gobject_class;
-  GtkObjectClass *object_class;
+  GtkWidgetClass *object_class;
 
   gobject_class = G_OBJECT_CLASS (klass);
-  object_class = (GtkObjectClass*)klass;
+  object_class = (GtkWidgetClass*)klass;
   ol_player_chooser_parent_class = g_type_class_peek_parent (klass);
 
   object_class->destroy = _destroy;
@@ -395,7 +395,7 @@ _new_bin_completion (void)
 }
 
 static void
-_destroy (GtkObject *object)
+_destroy (GtkWidget *object)
 {
   OlPlayerChooserPrivate *priv = OL_PLAYER_CHOOSER_GET_PRIVATE (object);
   if (priv->pages != NULL)
@@ -408,7 +408,7 @@ _destroy (GtkObject *object)
     g_object_unref (priv->launch_app);
     priv->launch_app = NULL;
   }
-  GTK_OBJECT_CLASS (ol_player_chooser_parent_class)->destroy (object);
+  GTK_WIDGET_CLASS (ol_player_chooser_parent_class)->destroy (object);
 }
 
 GtkWidget*

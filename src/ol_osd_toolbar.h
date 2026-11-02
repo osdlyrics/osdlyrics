@@ -20,16 +20,11 @@
 #ifndef _OL_OSD_TOOLBAR_H_
 #define _OL_OSD_TOOLBAR_H_
 
-#include <gtk/gtkbutton.h>
-#include <gtk/gtkhbox.h>
-#include <gtk/gtkvbox.h>
-#include <gtk/gtkicontheme.h>
-#include <gtk/gtkalignment.h>
-#include <gtk/gtktypeutils.h>
+#include <gtk/gtk.h>
 #include "ol_player.h"
 
 #define OL_OSD_TOOLBAR(obj)                  G_TYPE_CHECK_INSTANCE_CAST (obj, ol_osd_toolbar_get_type (), OlOsdToolbar)
-#define OL_OSD_TOOLBAR_CLASS(klass)          GTK_CHECK_CLASS_CAST (klass, ol_osd_toolbar_get_type (), OlOsdToolbarClass)
+#define OL_OSD_TOOLBAR_CLASS(klass)          G_TYPE_CHECK_CLASS_CAST (klass, ol_osd_toolbar_get_type (), OlOsdToolbarClass)
 #define OL_IS_OSD_TOOLBAR(obj)               G_TYPE_CHECK_INSTANCE_TYPE (obj, ol_osd_toolbar_get_type ())
 #define OL_OSD_TOOLBAR_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), ol_osd_toolbar_get_type (), OlOsdToolbarClass))
 

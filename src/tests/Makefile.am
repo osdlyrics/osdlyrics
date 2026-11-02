@@ -17,7 +17,7 @@ AM_CPPFLAGS = \
 	-DDATADIR='"$(datadir)"' \
 	-DICONDIR='"$(OL_ICONDIR)"' \
 	-DGUIDIR='"$(OL_GUIDIR)"' \
-	@GTK2_CFLAGS@ \
+	@GTK_CFLAGS@ \
 	@DBUS_GLIB_CFLAGS@ \
 	-I$(top_srcdir)/src \
 	-I$(top_srcdir)/src/tests \
@@ -28,7 +28,7 @@ AM_CFLAGS = \
 	$(NULL)
 
 LDADD = \
-	@GTK2_LIBS@ \
+	@GTK_LIBS@ \
 	@DBUS_GLIB_LIBS@ \
 	-lm \
 	$(NULL)

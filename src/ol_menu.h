@@ -19,14 +19,7 @@
  */
 #ifndef _OL_MENU_H_
 #define _OL_MENU_H_
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkdialog.h>
-#include <gtk/gtkfilechooser.h>
-#include <gtk/gtkfilechooserdialog.h>
-#include <gtk/gtkcheckmenuitem.h>
-#include <gtk/gtkmenuitem.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtkmain.h>
+#include <gtk/gtk.h>
 
 /**
  * @brief Gets singleton popup menu

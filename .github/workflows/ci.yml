@@ -18,7 +18,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get upgrade
       
       - name: Install dependencies
-        run: sudo apt-get install dh-python intltool lib{dbus-glib-1,gtk2.0,notify,x11}-dev python3{,-dbus,-gi}
+        run: sudo apt-get install dh-python intltool lib{dbus-glib-1,gtk-3,notify,x11}-dev python3{,-dbus,-gi}
 
       - name: Version
         run: ./check-version.sh
@@ -27,7 +27,7 @@ jobs:
         run: ./autogen.sh
 
       - name: Configure
-        run: ./configure --prefix=/usr PYTHON=/usr/bin/python3 CFLAGS="-DGTK_DISABLE_DEPRECATED"
+        run: ./configure --prefix=/usr PYTHON=/usr/bin/python3
 
       - name: Make
         run: make

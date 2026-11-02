@@ -20,9 +20,7 @@
 #ifndef _OL_LYRIC_CANDIDATE_SELECTOR_H_
 #define _OL_LYRIC_CANDIDATE_SELECTOR_H_
 
-#include <gtk/gtkbutton.h>
-#include <gtk/gtktogglebutton.h>
-#include <gtk/gtktreeselection.h>
+#include <gtk/gtk.h>
 
 #include "ol_metadata.h"
 #include "ol_lyric_source.h"
