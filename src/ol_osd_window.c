@@ -933,14 +933,12 @@ ol_osd_window_compute_osd_height (OlOsdWindow *osd)
 {
   ol_assert_ret (OL_IS_OSD_WINDOW (osd) && osd->render_context != NULL,
                  DEFAULT_HEIGHT);
-  OlOsdWindowPrivate *priv = OL_OSD_WINDOW_GET_PRIVATE (osd);
   int font_height = ol_osd_render_get_font_height (osd->render_context);
 
-  int height = font_height *
-    (osd->line_count + (osd->line_count - 1) * LINE_PADDING) +
-    ol_osd_render_get_outline_width (osd->render_context);
-  if (ol_osd_window_should_blur (osd))
-    height += priv->blur_radius * 2.0;
+  /* Measure one empty line to include the renderer's outline and shadow. */
+  int height;
+  ol_osd_render_get_pixel_size (osd->render_context, "", NULL, &height);
+  height += font_height * (osd->line_count - 1) * (1 + LINE_PADDING);
   return height;
 }
 

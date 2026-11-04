@@ -78,8 +78,11 @@ ol_osd_render_paint_text (OlOsdRenderContext *context,
   ol_assert (text != NULL);
   ol_osd_render_set_text (context, text);
   int width, height;
-  xpos += context->outline_width / 2.0 + context->blur_radius;
-  ypos += context->outline_width / 2.0 + context->blur_radius;
+  double padding = context->outline_width / 2.0;
+  if (context->blur_radius > 0.0)
+    padding += ceil (context->blur_radius * 3.0) + 1;
+  xpos += padding;
+  ypos += padding;
   pango_layout_get_pixel_size (context->pango_layout, &width, &height);
   /* draws the outline of the text */
   cairo_move_to (cr, xpos, ypos);
@@ -89,6 +92,7 @@ ol_osd_render_paint_text (OlOsdRenderContext *context,
   if (context->outline_width > 0)
   {
     cairo_set_line_width (cr, context->outline_width);
+    cairo_set_line_join (cr, CAIRO_LINE_JOIN_ROUND);
     if (context->blur_radius > 1e-4)
     {
       cairo_stroke_preserve (cr);
@@ -135,10 +139,13 @@ ol_osd_render_get_pixel_size (OlOsdRenderContext *context,
   ol_osd_render_set_text (context, text);
   int w, h;
   pango_layout_get_pixel_size (context->pango_layout, &w, &h);
+  double padding = context->outline_width / 2.0;
+  if (context->blur_radius > 0.0)
+    padding += ceil (context->blur_radius * 3.0) + 1;
   if (width != NULL)
-    *width = round (w + context->outline_width + context->blur_radius * 2);
+    *width = ceil (w + padding * 2);
   if (height != NULL)
-    *height = round (h + context->outline_width + context->blur_radius * 2);
+    *height = ceil (h + padding * 2);
 }
 
 void
