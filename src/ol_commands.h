@@ -29,16 +29,18 @@
 #ifndef _OL_COMMANDS_H_
 #define _OL_COMMANDS_H_
 
+#include<glib.h>
+
 /** 
  * @brief switch lock/unlock status on OSD windows
  * 
  */
-void ol_osd_lock_unlock ();
+void ol_osd_lock_unlock (char *keystring, gpointer user_data);
 
 /** 
  * @brief switch show/hide OSD
  * 
  */
-void ol_osd_switch_display ();
+void ol_osd_switch_display (char *keystring, gpointer user_data);
 
 #endif /* _OL_COMMANDS_H_ */
