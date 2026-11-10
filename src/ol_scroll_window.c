@@ -170,7 +170,7 @@ ol_scroll_window_init (OlScrollWindow *self)
                            GDK_BUTTON_RELEASE_MASK |
                            GDK_POINTER_MOTION_MASK |
                            GDK_POINTER_MOTION_HINT_MASK |
-                           GDK_DESTROY);
+                           GDK_SCROLL_MASK);
     /* Set RGBA visual */
     GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET (self));
     GdkVisual *visual = gdk_screen_get_rgba_visual (screen);
@@ -886,6 +886,7 @@ ol_scroll_window_motion_notify (GtkWidget *widget,
                                 GdkEventMotion *event)
 {
   ol_assert_ret (OL_IS_SCROLL_WINDOW (widget), FALSE);
+  gdk_event_request_motions (event);
   OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (widget);
   if (priv->seeking)
   {

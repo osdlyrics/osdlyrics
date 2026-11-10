@@ -36,9 +36,26 @@
 #include "ol_debug.h"
 #include <gtk/gtk.h>
 
+static void
+adjust_offset_by_scroll (GdkScrollDirection direction)
+{
+  int sign = direction == GDK_SCROLL_UP ? 1 : -1;
+  ol_app_adjust_lyric_offset (sign * 200);
+}
+
 #if HAVE_APP_INDICATOR
 static AppIndicator *indicator = NULL;
+
+static void
+indicator_scroll (AppIndicator *indicator,
+                  gint delta,
+                  GdkScrollDirection direction,
+                  gpointer userdata)
+{
+  adjust_offset_by_scroll (direction);
+}
 #else  /* HAVE_APP_INDICATOR */
+
 static const char *UNKNOWN_TITLE = N_("Unknown title");
 static const char *UNKNOWN_ARTIST = N_("Unknown artist");
 static const char *INFO_FORMAT =
@@ -135,13 +152,13 @@ popup (GtkStatusIcon *status_icon,
 
 static void scroll (GtkStatusIcon *icon, GdkEventScroll *event, gpointer userdata)
 {
-	int sign = event->direction == GDK_SCROLL_UP ? 1 : -1;
-	ol_app_adjust_lyric_offset(sign * 200);
+  adjust_offset_by_scroll (event->direction);
 }
 #endif  /* HAVE_APP_INDICATOR */
 
 void ol_trayicon_init ()
 {
+
 #if HAVE_APP_INDICATOR
   if (indicator == NULL)
   {
@@ -151,6 +168,8 @@ void ol_trayicon_init ()
     app_indicator_set_status (indicator, APP_INDICATOR_STATUS_ACTIVE);
     app_indicator_set_attention_icon (indicator, OL_STOCK_TRAYICON);
     app_indicator_set_menu (indicator, GTK_MENU (ol_menu_get_popup ()));
+    g_signal_connect (indicator, "scroll-event",
+                      G_CALLBACK (indicator_scroll), NULL);
   }
 #else
 
