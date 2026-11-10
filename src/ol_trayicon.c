@@ -39,8 +39,10 @@
 static void
 adjust_offset_by_scroll (GdkScrollDirection direction)
 {
-  int sign = direction == GDK_SCROLL_UP ? 1 : -1;
-  ol_app_adjust_lyric_offset (sign * 200);
+  if (direction == GDK_SCROLL_UP || direction == GDK_SCROLL_LEFT)
+    ol_app_adjust_lyric_offset (200);
+  else if (direction == GDK_SCROLL_DOWN || direction == GDK_SCROLL_RIGHT)
+    ol_app_adjust_lyric_offset (-200);
 }
 
 #if HAVE_APP_INDICATOR
