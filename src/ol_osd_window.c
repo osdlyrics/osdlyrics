@@ -1748,7 +1748,8 @@ ol_osd_window_init (OlOsdWindow *osd)
     gtk_widget_add_events(GTK_WIDGET(osd),
                           GDK_BUTTON_PRESS_MASK |
                           GDK_BUTTON_RELEASE_MASK |
-                          GDK_POINTER_MOTION_MASK);
+                          GDK_POINTER_MOTION_MASK |
+                          GDK_SCROLL_MASK);
     g_signal_connect (G_OBJECT (osd), "button-press-event",
                       G_CALLBACK (ol_osd_window_button_press), osd);
     g_signal_connect (G_OBJECT (osd), "button-release-event",

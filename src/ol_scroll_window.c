@@ -170,7 +170,7 @@ ol_scroll_window_init (OlScrollWindow *self)
                            GDK_BUTTON_RELEASE_MASK |
                            GDK_POINTER_MOTION_MASK |
                            GDK_POINTER_MOTION_HINT_MASK |
-                           GDK_DESTROY);
+                           GDK_SCROLL_MASK);
     /* Set RGBA visual */
     GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET (self));
     GdkVisual *visual = gdk_screen_get_rgba_visual (screen);
@@ -465,9 +465,19 @@ _calc_paint_pos (OlScrollWindow *scroll,
   }
   else
   {
-    if (lyric_id)
-      *lyric_id = scroll->current_lyric_id;
+    gint id = scroll->current_lyric_id;
     priv->saved_lrc_y = _calc_lrc_ypos (scroll, scroll->percentage);
+    /* By-lines mode scrolls at the start of a line, so animate from the
+       previous line into the current one instead of into the next one. */
+    if (priv->scroll_mode == OL_SCROLL_WINDOW_BY_LINES)
+    {
+      if (id > 0)
+        id--;
+      else
+        priv->saved_lrc_y = 0;
+    }
+    if (lyric_id)
+      *lyric_id = id;
     if (lrc_y)
       *lrc_y = priv->saved_lrc_y;
   }
@@ -767,10 +777,9 @@ ol_scroll_window_begin_seek (OlScrollWindow *scroll,
                              GdkEventButton *event)
 {
   OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (scroll);
+  _calc_paint_pos (scroll, &priv->saved_lyric_id, &priv->saved_seek_offset);
   priv->seeking = TRUE;
-  priv->saved_seek_offset = priv->saved_lrc_y;
   priv->saved_pointer_y = event->y;
-  priv->saved_lyric_id = scroll->current_lyric_id;
 }
 
 static gboolean
@@ -886,6 +895,7 @@ ol_scroll_window_motion_notify (GtkWidget *widget,
                                 GdkEventMotion *event)
 {
   ol_assert_ret (OL_IS_SCROLL_WINDOW (widget), FALSE);
+  gdk_event_request_motions (event);
   OlScrollWindowPrivate *priv = OL_SCROLL_WINDOW_GET_PRIVATE (widget);
   if (priv->seeking)
   {
