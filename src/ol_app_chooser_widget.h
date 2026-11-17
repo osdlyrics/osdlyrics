@@ -37,7 +37,7 @@ typedef struct {
   G_TYPE_CHECK_INSTANCE_CAST (obj, OL_TYPE_APP_CHOOSER_WIDGET, OlAppChooserWidget)
 #define OL_APP_CHOOSER_WIDGET_CLASS(klass)                              \
   G_TYPE_CHECK_CLASS_CAST (klass, OL_TYPE_APP_CHOOSER_WIDGET, OlAppChooserWidgetClass)
-#define OL_IS_APP_CHOOSER_WIDGET(obj)               \
+#define OL_IS_APP_CHOOSER_WIDGET(obj)                                   \
   G_TYPE_CHECK_INSTANCE_TYPE (obj, OL_TYPE_APP_CHOOSER_WIDGET)
 #define OL_APP_CHOOSER_WIDGET_GET_CLASS(obj)                            \
   (G_TYPE_INSTANCE_GET_CLASS ((obj),                                    \
