@@ -1595,11 +1595,13 @@ _disconnect_download_engine_changed (GtkTreeView *list,
 static void
 init_startup_player (GtkWidget *widget)
 {
-  GtkComboBoxText *cb = GTK_COMBO_BOX_TEXT (widget);
-  if (cb == NULL)
+  if (widget == NULL)
     return;
-  gtk_combo_box_text_append_text (cb, _("Choose on startup"));
   GtkListStore *liststore = GTK_LIST_STORE (gtk_combo_box_get_model (GTK_COMBO_BOX (widget)));
+  GtkTreeIter iter;
+  gtk_list_store_insert_with_values (liststore, &iter, -1,
+                                     0, _("Choose on startup"),
+                                     1, "", -1);
   /* TODO: */
   GList *players = NULL;
   /* GList *players = g_list_sort (ol_player_get_support_players (), */
@@ -1616,7 +1618,9 @@ init_startup_player (GtkWidget *widget)
     g_object_unref (G_OBJECT (app_info));
   }
 
-  gtk_combo_box_text_append_text (cb, _("Customize"));
+  gtk_list_store_insert_with_values (liststore, &iter, -1,
+                                     0, _("Customize"),
+                                     1, "", -1);
 }
 
 static void

@@ -24,13 +24,11 @@
 #include <gtk/gtk.h>
 
 typedef struct {
-  GtkWidget widget;
-  GtkTable parent;
+  GtkGrid parent;
 } OlAppChooserWidget;
 
 typedef struct {
-  GtkWidgetClass widget_class;
-  GtkTableClass parent_class;
+  GtkGridClass parent_class;
 } OlAppChooserWidgetClass;
 
 #define OL_TYPE_APP_CHOOSER_WIDGET                                      \
