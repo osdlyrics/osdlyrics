@@ -21,7 +21,7 @@
 #include "ol_debug.h"
 
 void
-ol_osd_lock_unlock ()
+ol_osd_lock_unlock (char *keystring, gpointer user_data)
 {
   OlConfigProxy *config = ol_config_proxy_get_instance ();
   ol_assert (config != NULL);
@@ -30,7 +30,7 @@ ol_osd_lock_unlock ()
 }
 
 void
-ol_osd_switch_display ()
+ol_osd_switch_display (char *keystring, gpointer user_data)
 {
   OlConfigProxy *config = ol_config_proxy_get_instance ();
   ol_assert (config != NULL);
