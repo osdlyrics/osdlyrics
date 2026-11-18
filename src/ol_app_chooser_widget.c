@@ -49,13 +49,12 @@ static void _app_activate (GtkWidget *button, GAppInfo *info);
 static GtkWidget *_load_image_from_name (const char *icon_name);
 static GtkWidget *_load_image_from_gicon (GIcon *icon);
 static GtkWidget *_image_from_app_info (GAppInfo *app_info);
-static void _calc_size (guint count, guint *n_rows, guint *n_columns);
+static guint _calc_columns (guint count, guint n_columns);
 static gint _app_info_cmp (GAppInfo **lhs, GAppInfo **rhs);
-static void ol_app_chooser_widget_destroy (GtkWidget *object);
 
 G_DEFINE_TYPE_WITH_PRIVATE (OlAppChooserWidget,
                             ol_app_chooser_widget,
-                            GTK_TYPE_TABLE);
+                            GTK_TYPE_GRID);
 
 static void
 ol_app_chooser_widget_class_init (OlAppChooserWidgetClass *klass)
@@ -81,13 +80,6 @@ ol_app_chooser_widget_init (OlAppChooserWidget *chooser)
   priv->n_columns = -1;
 }
 
-static void
-ol_app_chooser_widget_destroy (GtkWidget *object)
-{
-  GtkWidgetClass *parent_class = GTK_WIDGET_CLASS(ol_app_chooser_widget_parent_class) ;
-  parent_class->destroy (object);
-}
-
 void
 ol_app_chooser_widget_set_app_list (OlAppChooserWidget *chooser,
                                     GList *app_list,
@@ -110,25 +102,21 @@ ol_app_chooser_widget_set_app_list (OlAppChooserWidget *chooser,
       g_ptr_array_add (priv->app_list, g_object_ref (info));
   }
   g_ptr_array_sort (priv->app_list, (GCompareFunc) _app_info_cmp);
-  guint n_rows = 0;
-  _calc_size (priv->app_list->len, &n_rows, &n_columns);
+  n_columns = _calc_columns (priv->app_list->len, n_columns);
   priv->n_columns = n_columns;
   gtk_container_foreach (GTK_CONTAINER (chooser),
                          _remove_child,
                          NULL);
-  gtk_table_resize (GTK_TABLE (chooser), n_rows, n_columns);
   guint i, row, col;
   row = 0; col = 0;
   for (i = 0; i < priv->app_list->len; i++)
   {
     GtkWidget *app_button = _new_app_button (chooser, i);
     gtk_widget_show_all (app_button);
-    gtk_table_attach (GTK_TABLE (chooser),
-                      app_button,
-                      col, col + 1, /* left, right */
-                      row, row + 1, /* top, bottom */
-                      GTK_EXPAND, 0,         /* x and y options */
-                      0, 0);        /* x and y padding */
+    gtk_widget_set_hexpand (app_button, TRUE);
+    gtk_widget_set_halign (app_button, GTK_ALIGN_CENTER);
+    gtk_widget_set_valign (app_button, GTK_ALIGN_CENTER);
+    gtk_grid_attach (GTK_GRID (chooser), app_button, col, row, 1, 1);
     row += (col + 1) / n_columns;
     col = (col + 1) % n_columns;
   }
@@ -143,19 +131,12 @@ _remove_child (GtkWidget *widget, gpointer userdata)
   gtk_container_remove (GTK_CONTAINER (parent), widget);
 }
 
-static void
-_calc_size (guint count, guint *n_rows, guint *n_columns)
+static guint
+_calc_columns (guint count, guint n_columns)
 {
-  ol_assert (n_rows != NULL && n_columns != NULL);
-  if (*n_columns == 0)
-  {
-    *n_columns = ceil (sqrt (count));
-    if (*n_columns < DEFAULT_N_COLUMN)
-      *n_columns = DEFAULT_N_COLUMN;
-  }
-  *n_rows = count / *n_columns;
-  if (*n_rows == 0 || (*n_rows) * (*n_columns) < count)
-    *n_rows = *n_rows + 1;
+  if (n_columns == 0)
+    n_columns = MAX (DEFAULT_N_COLUMN, (guint) ceil (sqrt (count)));
+  return n_columns;
 }
 
 static GtkWidget *
@@ -171,7 +152,7 @@ _new_app_button (OlAppChooserWidget *chooser, guint index)
   gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
   gtk_widget_set_size_request (label, LABLE_WIDTH, -1);
 
-  GtkWidget *vbox = gtk_vbox_new (FALSE, 0);
+  GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_box_pack_start (GTK_BOX (vbox), image, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
 
@@ -229,7 +210,7 @@ _load_image_from_gicon (GIcon *icon)
                                                    GTK_ICON_SIZE_BUTTON,
                                                    0)) != NULL)
   {
-    gtk_icon_info_free (icon_info);
+    g_object_unref (icon_info);
     return gtk_image_new_from_gicon (icon, GTK_ICON_SIZE_BUTTON);
   }
   else

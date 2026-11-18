@@ -418,6 +418,7 @@ ol_osd_module_update_next_lyric (OlOsdModule *osd, OlLrcIter *iter)
     osd->lrc_next_id = -1;
     return;
   }
+  guint current_id = ol_lrc_iter_get_id (iter);
   if (ol_lrc_iter_next (iter))
     _advance_to_nonempty_lyric (iter);
   gint id;
@@ -439,6 +440,7 @@ ol_osd_module_update_next_lyric (OlOsdModule *osd, OlLrcIter *iter)
     ol_osd_window_set_lyric (osd->window, next_line, text);
     ol_osd_window_set_percentage (osd->window, next_line, 0.0);
   }
+  ol_lrc_iter_move_to (iter, current_id);
 }
 
 static void

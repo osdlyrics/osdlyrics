@@ -152,7 +152,7 @@ _new_page (OlPlayerChooser *window,
   page->chooser = OL_APP_CHOOSER_WIDGET (ol_app_chooser_widget_new ());
   gtk_widget_show (GTK_WIDGET (page->chooser));
   page->panel = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new (NULL, NULL));
-  gtk_scrolled_window_add_with_viewport (page->panel, GTK_WIDGET (page->chooser));
+  gtk_container_add (GTK_CONTAINER (page->panel), GTK_WIDGET (page->chooser));
   GtkViewport *viewport = GTK_VIEWPORT (gtk_bin_get_child (GTK_BIN (page->panel)));
   gtk_viewport_set_shadow_type (viewport, GTK_SHADOW_NONE);
   gtk_scrolled_window_set_policy (page->panel,
@@ -169,7 +169,7 @@ _new_page (OlPlayerChooser *window,
   _page_button_toggled (page->page_button, page);
   if (priv->pages->len > 0)
     gtk_box_pack_start (priv->page_button_panel,
-                        gtk_vseparator_new (),
+                        gtk_separator_new (GTK_ORIENTATION_VERTICAL),
                         FALSE,
                         FALSE,
                         5);
@@ -232,7 +232,7 @@ _set_apps_to_page (OlPlayerChooser *window,
   ol_app_chooser_widget_set_app_list (chooser, app_list, DEFAULT_APP_COLUMNS);
   GtkRequisition chooser_req;
   gint box_height;
-  gtk_widget_size_request (GTK_WIDGET (chooser), &chooser_req);
+  gtk_widget_get_preferred_size (GTK_WIDGET (chooser), &chooser_req, NULL);
   gtk_widget_get_size_request (GTK_WIDGET (priv->chooser_panel), NULL, &box_height);
   gint height = MIN (MAX_CHOOSER_HEIGHT,
                      MAX (chooser_req.height, box_height));
@@ -249,10 +249,11 @@ _setup_ui (OlPlayerChooser *window)
   /* Setup info widgets */
   priv->info_label = GTK_LABEL (gtk_label_new (NULL));
   gtk_label_set_line_wrap (priv->info_label, TRUE);
-  gtk_misc_set_alignment (GTK_MISC (priv->info_label), 0.0, 0.0);
-  priv->info_icon = GTK_IMAGE (gtk_image_new_from_stock (GTK_STOCK_DIALOG_INFO,
-                                                         GTK_ICON_SIZE_DIALOG));
-  GtkWidget *info_box = gtk_hbox_new (FALSE, 10);
+  gtk_label_set_xalign (priv->info_label, 0.0);
+  gtk_label_set_yalign (priv->info_label, 0.0);
+  priv->info_icon = GTK_IMAGE (gtk_image_new_from_icon_name ("dialog-information",
+                                                            GTK_ICON_SIZE_DIALOG));
+  GtkWidget *info_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 10);
   gtk_box_pack_start (GTK_BOX (info_box),
                       GTK_WIDGET (priv->info_icon),
                       FALSE,    /* expand */
@@ -264,15 +265,15 @@ _setup_ui (OlPlayerChooser *window)
                       TRUE,     /* fill */
                       0);
   /* Setup app choosers */
-  priv->page_button_panel = GTK_BOX (gtk_hbox_new (FALSE, 0));
-  priv->chooser_panel = GTK_BOX (gtk_hbox_new (FALSE, 0));
+  priv->page_button_panel = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  priv->chooser_panel = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   _new_page (window, _("Supported players"));
   _new_page (window, _("All players"));
   _set_apps_to_page (window,
                      ALL_CHOOSER_INDEX,
                      g_app_info_get_all_for_type ("audio/mp3"));
   GtkWidget *apps_frame = gtk_frame_new (_("Choose a player to launch"));
-  GtkBox *page_vbox = GTK_BOX (gtk_vbox_new (FALSE, 0));
+  GtkBox *page_vbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_widget_show (GTK_WIDGET (page_vbox));
   gtk_box_pack_start (page_vbox,
                       GTK_WIDGET (priv->page_button_panel),
@@ -286,7 +287,7 @@ _setup_ui (OlPlayerChooser *window)
                     0);       /* padding */
   gtk_container_add (GTK_CONTAINER (apps_frame), GTK_WIDGET (page_vbox));
   /* Setup custom command */
-  priv->custom_cmd_panel = GTK_BOX (gtk_hbox_new (FALSE, 5));
+  priv->custom_cmd_panel = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5));
   GtkWidget *cmd_label = gtk_label_new (_("Use command:"));
   GtkWidget *cmd_entry = gtk_entry_new ();
   priv->cmd_entry = GTK_ENTRY (cmd_entry);
@@ -304,7 +305,7 @@ _setup_ui (OlPlayerChooser *window)
   gtk_box_pack_start (priv->custom_cmd_panel, cmd_entry, TRUE, TRUE, 0);
   gtk_box_pack_start (priv->custom_cmd_panel, launch_button, FALSE, TRUE, 0);
 
-  GtkWidget *final_hbox = gtk_hbox_new (FALSE, 0);
+  GtkWidget *final_hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
   GtkWidget *remember_button = gtk_check_button_new_with_label (_("Remember my choice"));
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (remember_button), TRUE);
   priv->remember_button = remember_button;
@@ -341,7 +342,7 @@ _setup_ui (OlPlayerChooser *window)
   gtk_widget_show_all (GTK_WIDGET (final_hbox));
 
   gtk_dialog_add_button (GTK_DIALOG (window),
-                         GTK_STOCK_CLOSE,
+                         _("_Close"),
                          GTK_RESPONSE_CLOSE);
   gtk_window_set_title (GTK_WINDOW (window), _("Choose a player to launch"));
   gtk_window_set_resizable (GTK_WINDOW (window), FALSE);
@@ -460,7 +461,7 @@ _launch_app (OlPlayerChooser *window,
     gchar *title = g_strdup_printf (_("Failed to launch %s"),
                                     g_app_info_get_name (app_info));
     ol_player_chooser_set_info (window, title, err->message);
-    ol_player_chooser_set_image_by_name (window, GTK_STOCK_DIALOG_ERROR);
+    ol_player_chooser_set_image_by_name (window, "dialog-error");
     g_free (title);
     g_error_free (err);
   }
@@ -581,7 +582,7 @@ ol_player_chooser_set_info_by_state (OlPlayerChooser *window,
     ol_player_chooser_set_info (window,
                                 _("There is no supported player running"),
                                 _("Please choose a player below to launch"));
-    ol_player_chooser_set_image_by_name (window, GTK_STOCK_DIALOG_INFO);
+    ol_player_chooser_set_image_by_name (window, "dialog-information");
     break;
   case OL_PLAYER_CHOOSER_STATE_LAUNCH_FAIL: {
     gchar *title = g_strdup_printf (_("Failed to connect to %s"),
@@ -589,7 +590,7 @@ ol_player_chooser_set_info_by_state (OlPlayerChooser *window,
     gchar *desc = g_strdup_printf (_("%s is not supported by OSD Lyrics, or not running. Please launch another player"),
                                    g_app_info_get_name (priv->launch_app));
     ol_player_chooser_set_info (window, title, desc);
-    ol_player_chooser_set_image_by_name (window, GTK_STOCK_DIALOG_ERROR);
+    ol_player_chooser_set_image_by_name (window, "dialog-error");
     g_free (title);
     g_free (desc);
     _set_launch_app (window, NULL);

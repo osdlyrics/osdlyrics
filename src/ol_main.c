@@ -622,10 +622,10 @@ _initialize (int argc, char **argv)
   g_thread_init(NULL);
 #endif
   g_set_prgname (_(PROGRAM_NAME));
-  /* The OSD window positions itself and grabs global keys, which needs X11.
-     On Wayland this runs through XWayland. */
+  /* Wayland has no API to pin a window on screen, so force X11 (XWayland). */
   gdk_set_allowed_backends ("x11");
   gtk_init (&argc, &argv);
+  gtk_window_set_default_icon_name (PACKAGE);
   _parse_cmd_args (&argc, &argv);
   initialized = FALSE;
   g_bus_own_name (G_BUS_TYPE_SESSION,
