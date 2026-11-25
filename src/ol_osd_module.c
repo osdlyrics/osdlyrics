@@ -194,6 +194,7 @@ static struct _ConfigMapping _config_mapping[] = {
 };
 
 static gboolean _config_is_setting = FALSE;
+static gint _saved_x = G_MININT, _saved_y = G_MININT;
 
 static void
 ol_osd_moved_handler (OlOsdWindow *osd, gpointer data)
@@ -205,6 +206,8 @@ ol_osd_moved_handler (OlOsdWindow *osd, gpointer data)
   OlConfigProxy *config = ol_config_proxy_get_instance ();
   int x, y;
   ol_osd_window_get_pos (osd, &x, &y);
+  _saved_x = x;
+  _saved_y = y;
   ol_config_proxy_set_int (config, "OSD/x", x);
   ol_config_proxy_set_int (config, "OSD/y", y);
   _config_is_setting = FALSE;
@@ -332,9 +335,11 @@ _pos_changed_cb (OlConfigProxy *config,
                  const char *key,
                  OlOsdModule *osd)
 {
-  ol_osd_window_move (osd->window,
-                      ol_config_proxy_get_int (config, "OSD/x"),
-                      ol_config_proxy_get_int (config, "OSD/y"));
+  int x = ol_config_proxy_get_int (config, "OSD/x");
+  int y = ol_config_proxy_get_int (config, "OSD/y");
+  if (x == _saved_x && y == _saved_y)
+    return;
+  ol_osd_window_move (osd->window, x, y);
 }
 
 static void

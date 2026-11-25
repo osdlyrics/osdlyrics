@@ -80,6 +80,9 @@ struct __OlOsdWindowPrivate
   gulong configure_event;
   gboolean mouse_over;
   gboolean mouse_over_lyrics;
+  /* Tracked from crossing events. Under XWayland the pointer position freezes
+     once it moves onto a Wayland surface, so polling alone can't detect leaving. */
+  gboolean pointer_inside;
   GtkRequisition child_requisition;
   cairo_surface_t *active_lyric_surfaces[OL_OSD_WINDOW_MAX_LINE_COUNT];
   cairo_surface_t *inactive_lyric_surfaces[OL_OSD_WINDOW_MAX_LINE_COUNT];
@@ -597,6 +600,7 @@ ol_osd_window_enter_notify (GtkWidget *widget, GdkEventCrossing *event)
   ol_assert_ret (OL_IS_OSD_WINDOW (widget), FALSE);
   OlOsdWindowPrivate *priv = OL_OSD_WINDOW_GET_PRIVATE (widget);
   OlOsdWindow *osd = OL_OSD_WINDOW (widget);
+  priv->pointer_inside = TRUE;
   priv->mouse_over = TRUE;
   ol_osd_window_queue_reshape (osd);
   gtk_widget_queue_draw (widget);
@@ -621,7 +625,7 @@ ol_osd_window_check_mouse_leave (OlOsdWindow *osd)
   rect.height = gtk_widget_get_allocated_height (widget);
   if ((priv->mode != OL_OSD_WINDOW_DOCK ||
        priv->drag_state == DRAG_NONE) &&
-      !_point_in_rect (rel_x, rel_y, &rect))
+      (!priv->pointer_inside || !_point_in_rect (rel_x, rel_y, &rect)))
   {
     priv->mouse_over = FALSE;
     ol_osd_window_queue_reshape (osd);
@@ -634,6 +638,9 @@ ol_osd_window_leave_notify (GtkWidget *widget, GdkEventCrossing *event)
 {
   ol_assert_ret (OL_IS_OSD_WINDOW (widget), FALSE);
   OlOsdWindow *osd = OL_OSD_WINDOW (widget);
+  OlOsdWindowPrivate *priv = OL_OSD_WINDOW_GET_PRIVATE (widget);
+  if (event->mode == GDK_CROSSING_NORMAL && event->detail != GDK_NOTIFY_INFERIOR)
+    priv->pointer_inside = FALSE;
   ol_osd_window_check_mouse_leave (osd);
   return FALSE;
 }
@@ -803,7 +810,8 @@ ol_osd_window_mouse_timer (gpointer data)
         .width = gtk_widget_get_allocated_width (widget),
         .height = gtk_widget_get_allocated_height (widget),
       };
-      gboolean mouse_over = _point_in_rect (rel_x, rel_y, &window_rect);
+      gboolean mouse_over = _point_in_rect (rel_x, rel_y, &window_rect) &&
+        (priv->pointer_inside || priv->drag_state != DRAG_NONE);
       if (mouse_over != priv->mouse_over)
       {
         priv->mouse_over = mouse_over;
@@ -1734,6 +1742,7 @@ ol_osd_window_init (OlOsdWindow *osd)
     priv->child_requisition.width = 0;
     priv->child_requisition.height = 0;
     priv->mouse_over_lyrics = FALSE;
+    priv->pointer_inside = FALSE;
     priv->composited_signal = 0;
     priv->raw_x = 0;
     priv->raw_y = 0;
